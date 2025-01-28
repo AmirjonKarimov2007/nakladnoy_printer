@@ -69,7 +69,6 @@ async def get_order(call: CallbackQuery):
     markup.insert(InlineKeyboardButton(text=f"🖨Chiqarish",callback_data=f"print_order:{deal_id}:today"))
     markup.insert(InlineKeyboardButton(text=f"📥Yuklash",callback_data=f"download:{deal_id}:{client_id}:today"))
     markup.insert(InlineKeyboardButton(text=f"✅Yuborish",callback_data=f"send_client:{deal_id}:{client_id}:today"))
-    markup.insert(InlineKeyboardButton(text=f"⚙️Sozlamalar",callback_data=f"fix_order:{deal_id}:{client_id}:today"))
 
     try:
         await call.message.edit_text(text=f"<b>{text}</b>",reply_markup=markup)
@@ -107,7 +106,6 @@ async def get_order(call: CallbackQuery):
     markup.insert(InlineKeyboardButton(text=f"🖨Chiqarish",callback_data=f"print_order:{deal_id}:yesterday"))
     markup.insert(InlineKeyboardButton(text=f"📥Yuklash",callback_data=f"download:{deal_id}:{client_id}:yesterday"))
     markup.insert(InlineKeyboardButton(text=f"✅Yuborish",callback_data=f"send_client:{deal_id}:{client_id}:yesterday"))
-    markup.insert(InlineKeyboardButton(text=f"⚙️Tahrirlash",callback_data=f"fix_order:{deal_id}:{client_id}:yesterday"))
     await call.message.edit_text(text=f"<b>{text}</b>",reply_markup=markup)
 
 @dp.callback_query_handler(IsAdmin(),text_contains=f"print_order:",state='*')

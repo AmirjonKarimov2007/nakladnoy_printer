@@ -32,7 +32,6 @@ def dates_markup(saler_manager_id):
     markup = InlineKeyboardMarkup(row_width=1)
     markup.insert(InlineKeyboardButton(text=f"✅Bugun",callback_data=f"today:{saler_manager_id}"))
     markup.insert(InlineKeyboardButton(text=f"🗓Kechangi",callback_data=f"yesterday:{saler_manager_id}"))
-    markup.insert(InlineKeyboardButton(text=f"📅Sana",callback_data=f"calendar:{saler_manager_id}"))
     return markup
 
 

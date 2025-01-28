@@ -21,6 +21,7 @@ def kill_task():
             except psutil.AccessDenied:
                 pass
 
+
 def print_excel_file_sync(file_path):
     try:
         pythoncom.CoInitialize()
@@ -30,18 +31,21 @@ def print_excel_file_sync(file_path):
         wb = excel.Workbooks.Open(abs_path)  
         ws = wb.ActiveSheet
 
-        ws.Columns.AutoFit()
+        # AutoFit barcha ustunlar uchun
+        # ws.Columns.AutoFit()
 
+        # Sahifaga sig'dirish parametrlarini o'zgartirish
         ws.PageSetup.Zoom = False
-        ws.PageSetup.FitToPagesWide = 1
-        ws.PageSetup.FitToPagesTall = False 
+        ws.PageSetup.FitToPagesWide = 1  # Barcha ustunlarni bitta sahifada joylashtirish
+        ws.PageSetup.FitToPagesTall = 1  # Bitta sahifada vertikal joylashuvi
 
-        ws.PageSetup.PaperSize = 9  
-        ws.PageSetup.Orientation = 1
+        # Sahifa o'lchami va yo'nalishini sozlash
+        ws.PageSetup.PaperSize = 9  # A4 format
+        ws.PageSetup.Orientation = 1  # Portret
 
         # Chop etish
         wb.PrintOut()
-        
+
         # Faylni yopish
         wb.Close(SaveChanges=False)
         excel.Quit()
@@ -49,7 +53,11 @@ def print_excel_file_sync(file_path):
         return True
     except Exception as e:
         print(e)
-        return False 
+        kill_task()
+        return False
+
+
+
 async def print_excel_file(file_path):
     try:
         loop = asyncio.get_event_loop()
@@ -131,11 +139,13 @@ async def process_order(deal_id,output_path,moment):
         return barcode
 
     def calculate_row_height(name):
-        if len(name) > 50:
-            return 30
+        if len(name) > 80:
+            return 48
+        elif len(name) > 30:
+            return 32
         return 15
     E_qator = 0
-    def format_product_name(name, max_length=50):
+    def format_product_name(name, max_length=40):
         return '\n'.join(name[i:i+max_length] for i in range(0, len(name), max_length))
 
     for i, product in enumerate(products, start=1):
@@ -212,6 +222,7 @@ async def process_order(deal_id,output_path,moment):
     ws['G10'].alignment = Alignment(horizontal='center', vertical='center')
     ws['G10'].font = Font(bold=True)
 
+    ws.column_dimensions['A'].width = 3
     ws.column_dimensions['D'].width = 9.6
     ws.column_dimensions['E'].width = E_qator
     ws.column_dimensions['F'].width = 11
