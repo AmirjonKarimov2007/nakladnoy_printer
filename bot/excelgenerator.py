@@ -30,7 +30,7 @@ def print_excel_file_sync(file_path):
         wb = excel.Workbooks.Open(abs_path)  
         ws = wb.ActiveSheet
 
-        ws.Columns.AutoFit()
+        # ws.Columns.AutoFit()
 
         ws.PageSetup.Zoom = False
         ws.PageSetup.FitToPagesWide = 1
@@ -132,40 +132,46 @@ async def process_order(deal_id,output_path,moment):
 
     def calculate_row_height(name):
         if len(name) > 80:
-            return 48
+            return 48 
         elif len(name) > 30:
-            return 32
-        return 15
-    E_qator = 0
-    def format_product_name(name, max_length=40):
-        return '\n'.join(name[i:i+max_length] for i in range(0, len(name), max_length))
+            return 32 
+        return 15 
 
+    # Mahsulot nomini formatlash (shu yerda siz maxsus uzunlikka bo'lib formatlashni amalga oshirasiz)
+    def format_product_name(name, max_length=40):
+        # Mahsulot nomini bo'linib ketmasdan to'liq bir qatorga qo'shish
+        formatted_name = ' '.join(name.split())
+        # Agar nom uzunligi max_length ga yetadigan bo'lsa, qatorni bo'lib tashlash
+        if len(formatted_name) > max_length:
+            formatted_name = '\n'.join([formatted_name[i:i+max_length] for i in range(0, len(formatted_name), max_length)])
+        return formatted_name
+
+    E_qator = 0
     for i, product in enumerate(products, start=1):
         ws[f'A{row}'] = i
         barcode = format_barcode(product['product_barcode'])
         ws[f'B{row}'] = barcode
-        ws[f'C{row}'] = format_product_name(product['product_name'])  # << Bu yerda qo‘lladik
+        product_name = format_product_name(product['product_name'])
+        ws[f'C{row}'] = product_name
         ws[f'D{row}'] = f"{product['order_quant']}"
         box_quant = get_box_details(quantity=product['order_quant'], box_quant=product['box_quant'])
         ws[f'E{row}'] = box_quant
         ws[f'F{row}'] = product['product_price']
         ws[f'G{row}'] = product['sold_amount']
-        
-        
+
+        # Barcode va nomning balandligini hisoblash
+        barcode_lines = barcode.count('\n') + 1
+        row_height = 18 + (barcode_lines - 1) * 18  # Barcode uchun balandlik
+        name_height = calculate_row_height(product['product_name'])  # Mahsulot nomi uchun balandlik
+        total_count += int(product['order_quant'])
         box_quant_length = len(str(box_quant))
         if box_quant_length>E_qator:
-            E_qator = box_quant_length+2
+            E_qator = box_quant_length
 
-        barcode_lines = barcode.count('\n') + 1
-        
-        row_height = 18 + (barcode_lines - 1) * 18
-
-        name = product['product_name']
-        name_height = calculate_row_height(name)
-        total_count += int(product['order_quant'])
-
+        # Eng balandini tanlab olish
         ws.row_dimensions[row].height = max(row_height, name_height)
 
+        # To'liq formatlash
         for col in range(1, 8):
             cell = ws.cell(row=row, column=col)
             cell.border = border_style
@@ -177,7 +183,7 @@ async def process_order(deal_id,output_path,moment):
                 cell.alignment = Alignment(horizontal='left', vertical='top', wrap_text=True)
 
         row += 1
-    
+
     for col in range(1, 8):
         if col == 3:
             ws.column_dimensions[chr(64 + col)].width = 50
@@ -199,9 +205,11 @@ async def process_order(deal_id,output_path,moment):
     
     if currency_code == "840":
         uzs = f"UZS: {float(all_price) * USD:,.2f}"
+        ws[f'A{black_row}'] = f"Итого: {all_price}$|->{uzs}"
+
     else:
-        uzs = ''
-    ws[f'A{black_row}'] = f"Итого: {all_price}$|->{uzs}"
+        ws[f'A{black_row}'] = f"Итого: {all_price}"
+
     ws[f'A{black_row}'].alignment = Alignment(horizontal='right', vertical='center', wrap_text=True)
     ws[f'A{black_row}'].font = Font(bold=True)
     ws[f'A{black_row}'].border = border_style
@@ -215,9 +223,10 @@ async def process_order(deal_id,output_path,moment):
     ws['G10'].font = Font(bold=True)
 
     ws.column_dimensions['A'].width = 3
-    ws.column_dimensions['D'].width = 9.6
-    ws.column_dimensions['E'].width = E_qator
+    ws.column_dimensions['D'].width = 9
+    ws.column_dimensions['E'].width = E_qator+3
     ws.column_dimensions['F'].width = 11
+    
     ws.column_dimensions['G'].width = 12
     try:
         if not os.path.exists('orders'):
