@@ -17,7 +17,7 @@ async def spiskalar(message: types.Message):
     saler_manager_id = user['saler_id']
     if saler_manager_id:
         markup = dates_markup(saler_manager_id)
-        await message.answer(text="<b>📅Qaysi vaqtdagi buyuermalarning ro'yxatini olmoqchisiz?</b>",reply_markup=markup)
+        await message.answer(text="<b>📅Qaysi vaqtdagi buyurtmalarning ro'yxatini olmoqchisiz?</b>",reply_markup=markup)
     else:
         await message.answer("📅Sizning hisobingizga Saler Manager ID bog'lanmagan.ID ni olish uchun @Amirjon_Karimov ga murojaat qiling.")
 
