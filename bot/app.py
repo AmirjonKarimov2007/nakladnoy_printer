@@ -21,7 +21,6 @@ async def on_startup(dispatcher):
         await db.create_table_channel()
         await db.create_table_admins()
         await db.create_table_files()
-        do_all()
     except Exception as err:
           print(err)
     # Get the user ID from the incoming update

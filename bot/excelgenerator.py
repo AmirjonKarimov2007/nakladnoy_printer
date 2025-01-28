@@ -21,7 +21,6 @@ def kill_task():
             except psutil.AccessDenied:
                 pass
 
-
 def print_excel_file_sync(file_path):
     try:
         pythoncom.CoInitialize()
@@ -31,21 +30,18 @@ def print_excel_file_sync(file_path):
         wb = excel.Workbooks.Open(abs_path)  
         ws = wb.ActiveSheet
 
-        # AutoFit barcha ustunlar uchun
-        # ws.Columns.AutoFit()
+        ws.Columns.AutoFit()
 
-        # Sahifaga sig'dirish parametrlarini o'zgartirish
         ws.PageSetup.Zoom = False
-        ws.PageSetup.FitToPagesWide = 1  # Barcha ustunlarni bitta sahifada joylashtirish
-        ws.PageSetup.FitToPagesTall = 1  # Bitta sahifada vertikal joylashuvi
+        ws.PageSetup.FitToPagesWide = 1
+        ws.PageSetup.FitToPagesTall = False 
 
-        # Sahifa o'lchami va yo'nalishini sozlash
-        ws.PageSetup.PaperSize = 9  # A4 format
-        ws.PageSetup.Orientation = 1  # Portret
+        ws.PageSetup.PaperSize = 9  
+        ws.PageSetup.Orientation = 1
 
         # Chop etish
         wb.PrintOut()
-
+        
         # Faylni yopish
         wb.Close(SaveChanges=False)
         excel.Quit()
@@ -53,11 +49,7 @@ def print_excel_file_sync(file_path):
         return True
     except Exception as e:
         print(e)
-        kill_task()
-        return False
-
-
-
+        return False 
 async def print_excel_file(file_path):
     try:
         loop = asyncio.get_event_loop()
