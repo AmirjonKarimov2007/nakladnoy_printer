@@ -222,7 +222,7 @@ async def process_order(deal_id,output_path,moment):
     ws['G10'].alignment = Alignment(horizontal='center', vertical='center')
     ws['G10'].font = Font(bold=True)
 
-    ws.column_dimensions['A'].width = 3
+    ws.column_dimensions['A'].width = 5
     ws.column_dimensions['D'].width = 9
     ws.column_dimensions['E'].width = E_qator+3
     ws.column_dimensions['F'].width = 11
