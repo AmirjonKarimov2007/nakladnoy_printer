@@ -110,6 +110,8 @@ async def get_order(call: CallbackQuery):
 
 @dp.callback_query_handler(IsAdmin(),text_contains=f"print_order:",state='*')
 async def prin_order(call: CallbackQuery):
+    await call.answer("⏳Spiska chiqarish uchun arizangiz qabul qilindi iltimos kuting.")
+
     deal_id = call.data.rsplit(":")[1]
     date = call.data.rsplit(":")[2]
     if date=='today':

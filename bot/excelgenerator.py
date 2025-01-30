@@ -131,14 +131,16 @@ async def process_order(deal_id,output_path,moment):
         return barcode
 
     def calculate_row_height(name):
-        if len(name) > 80:
+        if len(name) >=100:
+            return 95
+        if len(name) >= 80:
             return 48 
-        elif len(name) > 30:
+        elif len(name) >= 30:
             return 32 
         return 15 
 
     # Mahsulot nomini formatlash (shu yerda siz maxsus uzunlikka bo'lib formatlashni amalga oshirasiz)
-    def format_product_name(name, max_length=40):
+    def format_product_name(name, max_length=45):
         # Mahsulot nomini bo'linib ketmasdan to'liq bir qatorga qo'shish
         formatted_name = ' '.join(name.split())
         # Agar nom uzunligi max_length ga yetadigan bo'lsa, qatorni bo'lib tashlash

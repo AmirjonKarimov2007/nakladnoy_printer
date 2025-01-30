@@ -242,6 +242,9 @@ def update_orders(order_file, output_file):
     
     # Yangilangan ma'lumotni output_file ga saqlaymiz
     save_json(orders, output_file)
+
+
+
 async def get_today_orders_by_manager(sales_manager_id):
     await get_today_orders()
     orders_file = 'today_orders.json'
@@ -260,7 +263,12 @@ async def get_today_orders_by_manager(sales_manager_id):
             if deal_time.date() == datetime.today().date():
                 filtered_orders.append(order)
     
-    return filtered_orders
+    return filtered_orders[::-1]
+
+
+
+
+
 async def get_last_day_orders_by_manager(sales_manager_id):
     await get_lastday_orders()
     orders_file = 'lastday_orders.json'
@@ -276,7 +284,7 @@ async def get_last_day_orders_by_manager(sales_manager_id):
         if order["sales_manager_id"] == sales_manager_id and order["deal_time"].startswith(yerterday)
     ]
     
-    return filtered_orders
+    return filtered_orders[::-1]
 
 
 async def check_user_saler_id(saler_id):
