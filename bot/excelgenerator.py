@@ -156,7 +156,6 @@ async def process_order(deal_id, output_path, moment):
         row = 11
         E_qator = 0
 
-        # Mahsulotlarni qatorlarga yozish
         for i, product in enumerate(products, start=1):
             ws[f'A{row}'] = i
             barcode = format_barcode(product['product_barcode'])
@@ -168,18 +167,15 @@ async def process_order(deal_id, output_path, moment):
             ws[f'E{row}'] = box_quant
 
             product_price = float(product['product_price'])
-            ws[f'F{row}'] = f"{product_price:,.2f}"  # Masalan: 1,234.56
+            ws[f'F{row}'] = f"{product_price:,.2f}"  
             sold_amount = float(product['sold_amount'])
-            ws[f'G{row}'] = f"{sold_amount:,.2f}"  # Masalan: 2,345.67
-            ws[f'G{row}'] = product['sold_amount']
-            # Qator balandligini avtomatik moslashtirish
+            ws[f'G{row}'] = f"{sold_amount:,.2f}" 
             ws.row_dimensions[row].auto_size = True 
             total_count += int(product['order_quant'])
             box_quant_length = len(str(box_quant))
             if box_quant_length > E_qator:
                 E_qator = box_quant_length
 
-            # Formatlash
             for col in range(1, 8):
                 cell = ws.cell(row=row, column=col)
                 cell.border = border_style
