@@ -9,6 +9,12 @@ import win32com.client
 from functions import *
 import pythoncom
 import psutil
+import os
+import asyncio
+import psutil
+import pythoncom
+import win32com.client
+from data.config import USD
 
 def kill_task():
     task_name = 'EXCEL.EXE'
@@ -30,26 +36,31 @@ def print_excel_file_sync(file_path):
         wb = excel.Workbooks.Open(abs_path)  
         ws = wb.ActiveSheet
 
+        # AutoFit qilish
         # ws.Columns.AutoFit()
 
+        # Chop etish sozlamalari
         ws.PageSetup.Zoom = False
         ws.PageSetup.FitToPagesWide = 1
         ws.PageSetup.FitToPagesTall = False 
-
-        ws.PageSetup.PaperSize = 9  
-        ws.PageSetup.Orientation = 1
+        ws.PageSetup.PaperSize = 9  # A4 qog'oz o'lchami
+        ws.PageSetup.Orientation = 1  # Portret rejimi
 
         # Chop etish
         wb.PrintOut()
         
-        # Faylni yopish
+        # Faylni yopish va Excel ilovasini to'xtatish
         wb.Close(SaveChanges=False)
         excel.Quit()
         pythoncom.CoUninitialize()
         return True
     except Exception as e:
-        print(e)
+        print(f"Xatolik yuz berdi: {e}")
         return False 
+    finally:
+        # Har holatda Excel ilovasini yopishni ta'minlash
+        kill_task()
+
 async def print_excel_file(file_path):
     try:
         loop = asyncio.get_event_loop()
@@ -59,178 +70,175 @@ async def print_excel_file(file_path):
         else:
             return False
     except Exception as e:
-        print(e)
+        print(f"Asinxron xatolik yuz berdi: {e}")
         return False
 
-async def process_order(deal_id,output_path,moment):
 
-    def get_box_details(quantity,box_quant):
-        if not isinstance(box_quant, int):
-                return f"{quantity} шт."
-        else:
-            quantity = int(quantity)
-            box_quant = int(box_quant)
-            if box_quant == 0:
-                return 0
-            full_boxes = quantity // box_quant
-            remaining_items = quantity % box_quant
-            if remaining_items==0:
-                return f"{full_boxes} коробка"
-            elif full_boxes==0:
-                return f"{remaining_items} шт."
-            else:
-                return f"{full_boxes} коробка,{remaining_items} шт."
-    if moment=='today':
-        order_info = await get_today_order_info_by_deal_id(deal_id)
-    elif moment=='yesterday':
-        order_info = await get_lastday_order_info_by_deal_id(deal_id)
+
+def get_box_details(quantity, box_quant):
+    if not isinstance(box_quant, int):
+        return f"{quantity} шт."
+    quantity = int(quantity)
+    box_quant = int(box_quant)
+    if box_quant == 0:
+        return "0"
+    full_boxes = quantity // box_quant
+    remaining_items = quantity % box_quant
+    if remaining_items == 0:
+        return f"{full_boxes} коробка"
+    elif full_boxes == 0:
+        return f"{remaining_items} шт."
     else:
-        order_info = await get_order_info_by_deal_id(deal_id)
-    products = order_info['order_products']
-    currency_code = order_info['currency_code']
-    all_price = order_info['total_amount']
-    date = order_info['booked_date']
-    time = order_info['deal_time']
-    name = order_info['sales_manager_name']
-    room_name = order_info['room_name']
-    client_name = order_info['person_name']
-    wb = load_workbook("shablon.xlsx")
-    ws = wb.active
-    total_count = 0
-    row = 11
-    ws['A4'] = f"Дата отгрузки: {date}"  
-    ws['A8'] = f"Время заказа: {time}" 
-    ws['D2'] = f"Торговый представитель: {name}" 
-    ws['D3'] = f"Телефон торгового представителя:{room_name}" 
-    ws['D4'] = f"Контрагент:{client_name}" 
-     
-    border_style = Border(
-        left=Side(border_style="thin", color="000000"),
-        right=Side(border_style="thin", color="000000"),
-        top=Side(border_style="thin", color="000000"),
-        bottom=Side(border_style="thin", color="000000")
-    )
+        return f"{full_boxes} коробка, {remaining_items} шт."
+def format_barcode(barcode):
+    barcode = str(barcode)
+    if '|' in barcode:
+        return barcode.replace('|', '\n')
+    return barcode
 
-    def set_column_width(ws, col_idx, start_row, end_row):
-        max_length = 0
-        column = col_idx
-        for row in range(start_row, end_row + 1):
-            cell = ws.cell(row=row, column=column)
-            try:
-                if len(str(cell.value)) > max_length:
-                    max_length = len(str(cell.value))
-            except:
-                pass
-        adjusted_width = (max_length + 2)
-        ws.column_dimensions[chr(64 + col_idx)].width = adjusted_width
+def format_product_name(name, max_length=45):
+    formatted_name = ' '.join(name.split())
+    if len(formatted_name) > max_length:
+        formatted_name = '\n'.join([formatted_name[i:i+max_length] for i in range(0, len(formatted_name), max_length)])
+    return formatted_name
 
-    def format_barcode(barcode):
-        barcode = str(barcode)
-        if '|' in barcode:
-            return barcode.replace('|', '\n')
-        return barcode
+def set_column_width(ws, col_idx, start_row, end_row):
+    max_length = 0
+    for row in range(start_row, end_row + 1):
+        cell = ws.cell(row=row, column=col_idx)
+        try:
+            if len(str(cell.value)) > max_length:
+                max_length = len(str(cell.value))
+        except:
+            pass
+    adjusted_width = (max_length + 2)
+    ws.column_dimensions[get_column_letter(col_idx)].width = adjusted_width
 
-    def calculate_row_height(name):
-        if len(name) >=100:
-            return 95
-        if len(name) >= 80:
-            return 48 
-        elif len(name) >= 30:
-            return 32 
-        return 15 
-
-    # Mahsulot nomini formatlash (shu yerda siz maxsus uzunlikka bo'lib formatlashni amalga oshirasiz)
-    def format_product_name(name, max_length=45):
-        # Mahsulot nomini bo'linib ketmasdan to'liq bir qatorga qo'shish
-        formatted_name = ' '.join(name.split())
-        # Agar nom uzunligi max_length ga yetadigan bo'lsa, qatorni bo'lib tashlash
-        if len(formatted_name) > max_length:
-            formatted_name = '\n'.join([formatted_name[i:i+max_length] for i in range(0, len(formatted_name), max_length)])
-        return formatted_name
-
-    E_qator = 0
-    for i, product in enumerate(products, start=1):
-        ws[f'A{row}'] = i
-        barcode = format_barcode(product['product_barcode'])
-        ws[f'B{row}'] = barcode
-        product_name = format_product_name(product['product_name'])
-        ws[f'C{row}'] = product_name
-        ws[f'D{row}'] = f"{product['order_quant']}"
-        box_quant = get_box_details(quantity=product['order_quant'], box_quant=product['box_quant'])
-        ws[f'E{row}'] = box_quant
-        ws[f'F{row}'] = product['product_price']
-        ws[f'G{row}'] = product['sold_amount']
-
-        # Barcode va nomning balandligini hisoblash
-        barcode_lines = barcode.count('\n') + 1
-        row_height = 18 + (barcode_lines - 1) * 18  # Barcode uchun balandlik
-        name_height = calculate_row_height(product['product_name'])  # Mahsulot nomi uchun balandlik
-        total_count += int(product['order_quant'])
-        box_quant_length = len(str(box_quant))
-        if box_quant_length>E_qator:
-            E_qator = box_quant_length
-
-        # Eng balandini tanlab olish
-        ws.row_dimensions[row].height = max(row_height, name_height)
-
-        # To'liq formatlash
-        for col in range(1, 8):
-            cell = ws.cell(row=row, column=col)
-            cell.border = border_style
-            cell.font = Font(size=12)
-
-            if col in [4, 5, 6, 7]:
-                cell.alignment = Alignment(horizontal='right', vertical='top', wrap_text=True)
-            else:
-                cell.alignment = Alignment(horizontal='left', vertical='top', wrap_text=True)
-
-        row += 1
-
-    for col in range(1, 8):
-        if col == 3:
-            ws.column_dimensions[chr(64 + col)].width = 50
-        else:
-            set_column_width(ws, col, start_row=12, end_row=row-1)
-
-    ws.column_dimensions['B'].width = 16
-
-    black_row = row
-    black_fill = PatternFill(start_color="D5D5D5", end_color="D5D5D5", fill_type="solid")
-
-    for col in range(1, 8):
-        ws.cell(row=black_row, column=col).fill = black_fill
-        cell = ws.cell(row=black_row, column=col)
-        cell.border = border_style
-
-    ws.merge_cells(f'A{black_row}:G{black_row}')
-    from data.config import USD
-    
-    if currency_code == "840":
-        uzs = f"UZS: {float(all_price) * USD:,.2f}"
-        ws[f'A{black_row}'] = f"Итого: {all_price}$|->{uzs}"
-
-    else:
-        ws[f'A{black_row}'] = f"Итого: {all_price}"
-
-    ws[f'A{black_row}'].alignment = Alignment(horizontal='right', vertical='center', wrap_text=True)
-    ws[f'A{black_row}'].font = Font(bold=True)
-    ws[f'A{black_row}'].border = border_style
-
-    ws['D10'] = total_count
-    ws['D10'].alignment = Alignment(horizontal='center', vertical='center')
-    ws['D10'].font = Font(bold=True)
-
-    ws['G10'] = all_price
-    ws['G10'].alignment = Alignment(horizontal='center', vertical='center')
-    ws['G10'].font = Font(bold=True)
-
-    ws.column_dimensions['A'].width = 5
-    ws.column_dimensions['D'].width = 9
-    ws.column_dimensions['E'].width = E_qator+3
-    ws.column_dimensions['F'].width = 11
-    
-    ws.column_dimensions['G'].width = 12
+async def process_order(deal_id, output_path, moment):
     try:
+        # Buyurtma ma'lumotlarini olish
+        if moment == 'today':
+            order_info = await get_today_order_info_by_deal_id(deal_id)
+        elif moment == 'yesterday':
+            order_info = await get_lastday_order_info_by_deal_id(deal_id)
+        else:
+            order_info = await get_order_info_by_deal_id(deal_id)
+
+        products = order_info['order_products']
+        currency_code = order_info['currency_code']
+        all_price = order_info['total_amount']
+        date = order_info['booked_date']
+        time = order_info['deal_time']
+        name = order_info['sales_manager_name']
+        room_name = order_info['room_name']
+        client_name = order_info['person_name']
+
+        # Excel faylini yuklash
+        wb = load_workbook("shablon.xlsx")
+        ws = wb.active
+
+        # Sarlavhalarni to'ldirish
+        ws['A4'] = f"Дата отгрузки: {date}"  
+        ws['A8'] = f"Время заказа: {time}" 
+        ws['D2'] = f"Торговый представитель: {name}" 
+        ws['D3'] = f"Телефон торгового представителя: {room_name}" 
+        ws['D4'] = f"Контрагент: {client_name}" 
+
+        # Chegaralar uchun stil
+        border_style = Border(
+            left=Side(border_style="thin", color="000000"),
+            right=Side(border_style="thin", color="000000"),
+            top=Side(border_style="thin", color="000000"),
+            bottom=Side(border_style="thin", color="000000")
+        )
+
+        total_count = 0
+        row = 11
+        E_qator = 0
+
+        # Mahsulotlarni qatorlarga yozish
+        for i, product in enumerate(products, start=1):
+            ws[f'A{row}'] = i
+            barcode = format_barcode(product['product_barcode'])
+            ws[f'B{row}'] = barcode
+            product_name = format_product_name(product['product_name'])
+            ws[f'C{row}'] = product_name
+            ws[f'D{row}'] = f"{product['order_quant']}"
+            box_quant = get_box_details(quantity=product['order_quant'], box_quant=product['box_quant'])
+            ws[f'E{row}'] = box_quant
+
+            product_price = float(product['product_price'])
+            ws[f'F{row}'] = f"{product_price:,.2f}"  # Masalan: 1,234.56
+            sold_amount = float(product['sold_amount'])
+            ws[f'G{row}'] = f"{sold_amount:,.2f}"  # Masalan: 2,345.67
+            ws[f'G{row}'] = product['sold_amount']
+            # Qator balandligini avtomatik moslashtirish
+            ws.row_dimensions[row].auto_size = True 
+            total_count += int(product['order_quant'])
+            box_quant_length = len(str(box_quant))
+            if box_quant_length > E_qator:
+                E_qator = box_quant_length
+
+            # Formatlash
+            for col in range(1, 8):
+                cell = ws.cell(row=row, column=col)
+                cell.border = border_style
+                cell.font = Font(size=12) 
+                if col in [4, 5, 6, 7]:
+                    cell.alignment = Alignment(horizontal='right', vertical='top', wrap_text=True)
+                else:
+                    cell.alignment = Alignment(horizontal='left', vertical='top', wrap_text=True)
+
+            row += 1
+
+        # Qator balandligini avtomatik moslashtirish
+        ws.row_dimensions[row].auto_size = True  # Avtomatik balandlik
+
+        # Ustunlarni kengligini sozlash
+        for col in range(1, 8):
+            if col == 3:
+                ws.column_dimensions[get_column_letter(col)].width = 50
+            else:
+                set_column_width(ws, col, start_row=12, end_row=row-1)
+
+        ws.column_dimensions['B'].width = 16
+
+        # Jami qatorini qo'shish
+        black_row = row
+        black_fill = PatternFill(start_color="D5D5D5", end_color="D5D5D5", fill_type="solid")
+
+        for col in range(1, 8):
+            ws.cell(row=black_row, column=col).fill = black_fill
+            cell = ws.cell(row=black_row, column=col)
+            cell.border = border_style
+
+        ws.merge_cells(f'A{black_row}:G{black_row}')
+
+        if currency_code == "840":
+            uzs = f"UZS: {float(all_price) * USD:,.2f}"
+            ws[f'A{black_row}'] = f"Итого: {all_price}$|->{uzs}"
+        else:
+            ws[f'A{black_row}'] = f"Итого: {all_price}"
+
+        ws[f'A{black_row}'].alignment = Alignment(horizontal='right', vertical='center', wrap_text=True)
+        ws[f'A{black_row}'].font = Font(bold=True)
+        ws[f'A{black_row}'].border = border_style
+
+        ws['D10'] = total_count
+        ws['D10'].alignment = Alignment(horizontal='center', vertical='center')
+        ws['D10'].font = Font(bold=True)
+
+        ws['G10'] = all_price
+        ws['G10'].alignment = Alignment(horizontal='center', vertical='center')
+        ws['G10'].font = Font(bold=True)
+
+        ws.column_dimensions['A'].width = 5
+        ws.column_dimensions['D'].width = 9
+        ws.column_dimensions['E'].width = E_qator + 3
+        ws.column_dimensions['F'].width = 11
+        ws.column_dimensions['G'].width = 12
+
+        # Faylni saqlash
         if not os.path.exists('orders'):
             os.makedirs('orders')
         wb.save(f"orders/{output_path}.xlsx")
@@ -240,8 +248,8 @@ async def process_order(deal_id,output_path,moment):
             kill_task()
             return True
         else:
+            print(f"Xatolik yuz berdi: {e}")
             return False
-
 
 async def main():
     await process_order(deal_id="120462256",output_path="1",moment='today')

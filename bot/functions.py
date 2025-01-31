@@ -5,7 +5,20 @@ import json
 import requests
 from requests.auth import HTTPBasicAuth
 import pytz
+import aiohttp
+import json
+from datetime import datetime
+import asyncio
+import ssl
+
+
+
+
 uzbekistan_tz = pytz.timezone('Asia/Tashkent')
+today = datetime.now(uzbekistan_tz).strftime('%d.%m.%Y')
+
+
+
 def get_info_for_product():
     url = "https://smartup.online/b/anor/mxsx/mr/inventory$export"
 
@@ -95,12 +108,6 @@ def do_all():
     else:
         return False
 
-import aiohttp
-import json
-from datetime import datetime
-import asyncio
-today = datetime.now(uzbekistan_tz).strftime('%d.%m.%Y')
-import ssl
 
 async def get_today_orders():
     url = "https://smartup.online/b/trade/txs/tdeal/order$export"
@@ -263,7 +270,7 @@ async def get_today_orders_by_manager(sales_manager_id):
             if deal_time.date() == datetime.today().date():
                 filtered_orders.append(order)
     
-    return filtered_orders[::-1]
+    return filtered_orders
 
 
 

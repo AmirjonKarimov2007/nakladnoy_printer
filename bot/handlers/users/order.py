@@ -34,7 +34,7 @@ async def spiskalar(call: types.CallbackQuery):
 
 @dp.callback_query_handler(IsAdmin(),text_contains="today:",state='*')
 async def today_spiska(call: CallbackQuery):
-    await call.answer(cache_time=1)
+    await call.answer("✅Bugungi spiskalar bo'limiga o'tdingiz ozgina sabr qiling.")
     saler_id = call.data.rsplit(":")[1]
     today_orders = await get_today_orders_by_manager(sales_manager_id=saler_id)
     markup = InlineKeyboardMarkup(row_width=1)
@@ -110,8 +110,6 @@ async def get_order(call: CallbackQuery):
 
 @dp.callback_query_handler(IsAdmin(),text_contains=f"print_order:",state='*')
 async def prin_order(call: CallbackQuery):
-    await call.answer("⏳Spiska chiqarish uchun arizangiz qabul qilindi iltimos kuting.")
-
     deal_id = call.data.rsplit(":")[1]
     date = call.data.rsplit(":")[2]
     if date=='today':
@@ -142,14 +140,18 @@ users_pages = {}
 
 @dp.message_handler(IsSuperAdmin(), text="📃Barcha Spiskalar", state="*")
 async def spiskalar(message: types.Message):
+    xabar = await message.answer(text='⏳')
     await get_today_orders()
 
     user_id = message.from_user.id
     users_pages[user_id] = 0 
 
     await show_orders(message, user_id, page=0)
+    await xabar.delete()
+    
 
 async def show_orders(message: types.Message, user_id: int, page: int, call=None):
+    
     orders = await today_all_orders()
     orders = [order for order in orders if order["room_id"] == str(ROOM_ID)]
     if not orders:
