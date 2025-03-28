@@ -1,6 +1,6 @@
 import win32print
 
-def set_default_printer(printer_name="EPSON L3150 Series"):
+def set_default_printer(printer_name="Canon MF3010"):
     try:
         win32print.SetDefaultPrinter(printer_name)
         print(f"Default printer set to: {printer_name}")

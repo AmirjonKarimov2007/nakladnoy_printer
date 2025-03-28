@@ -18,7 +18,7 @@ from data.config import USD
 from loader import db
 import win32print
 
-def set_default_printer(printer_name="EPSON L3150 Series"):
+def set_default_printer(printer_name="Canon MF3010"):
     try:
         win32print.SetDefaultPrinter(printer_name)
         print(f"Default printer set to: {printer_name}")
@@ -115,6 +115,7 @@ def format_product_name(name, max_length=45):
         formatted_name = '\n'.join([formatted_name[i:i+max_length] for i in range(0, len(formatted_name), max_length)])
     return formatted_name
 
+
 def set_column_width(ws, col_idx, start_row, end_row):
     max_length = 0
     for row in range(start_row, end_row + 1):
@@ -127,7 +128,7 @@ def set_column_width(ws, col_idx, start_row, end_row):
     adjusted_width = (max_length + 2)
     ws.column_dimensions[get_column_letter(col_idx)].width = adjusted_width
 
-async def process_order(deal_id, output_path, moment):
+async def process_order(deal_id, output_path, moment,moneytype = "usd"):
     try:
         if moment == 'today':
             order_info = await get_today_order_info_by_deal_id(deal_id)
@@ -144,6 +145,7 @@ async def process_order(deal_id, output_path, moment):
         time = order_info['deal_time']
         name = order_info['sales_manager_name']
         room_name = order_info['room_name']
+        
         client_name = order_info['person_name']
 
         wb = load_workbook("shablon.xlsx")
@@ -156,7 +158,7 @@ async def process_order(deal_id, output_path, moment):
         ws['A4'] = f"Дата отгрузки: {date}"  
         ws['A8'] = f"Время заказа: {time}" 
         ws['D2'] = f"Торговый представитель: {name}" 
-        ws['D3'] = f"Телефон торгового представителя: {room_name}" 
+        
         ws['D4'] = f"Контрагент: {client_name}" 
         ws['D3'] = f"Телефон торгового представителя: +{phone_number}" 
 
@@ -170,7 +172,7 @@ async def process_order(deal_id, output_path, moment):
         total_count = 0
         row = 11
         E_qator = 0
-
+        warehouse = 0
         for i, product in enumerate(products, start=1):
             ws[f'A{row}'] = i
             barcode = format_barcode(product['product_barcode'])
@@ -179,8 +181,10 @@ async def process_order(deal_id, output_path, moment):
             ws[f'C{row}'] = product_name
             ws[f'D{row}'] = f"{product['order_quant']}"
             box_quant = get_box_details(quantity=product['order_quant'], box_quant=product['box_quant'])
+            warehouse = product['warehouse_code']
             ws[f'E{row}'] = box_quant
             product_price = float(product['product_price'])
+          
             if product_price.is_integer():
                 ws[f'F{row}'] = f"{int(product_price):,}"
             else:
@@ -233,6 +237,10 @@ async def process_order(deal_id, output_path, moment):
             ws[f'A{black_row}'] = f"Итого: {all_price}$|->{uzs}"
         else:
             ws[f'A{black_row}'] = f"Итого: {all_price}"
+        if warehouse=="111":
+            ws['C10'] = "Meta-falcon chinni bozor"
+        elif warehouse=="11":
+            ws['C10'] = "Chinni bozor"
 
         ws[f'A{black_row}'].alignment = Alignment(horizontal='right', vertical='center', wrap_text=True)
         ws[f'A{black_row}'].font = Font(bold=True)

@@ -122,7 +122,7 @@ async def get_today_orders():
     data = {
         
         "filial_codes": [{"filial_code": "5012602"}],
-        "statuses":["B#N"],
+        "statuses":[],
       
         "begin_deal_date": today,
         "end_deal_date": today,
@@ -163,7 +163,7 @@ async def get_lastday_orders():
 
     data = {
         "filial_codes": [{"filial_code": "5012602"}],
-        "statuses":["B#N"],
+        "statuses":[],
         "begin_deal_date": yesterday,
         "end_deal_date": yesterday,
     }
