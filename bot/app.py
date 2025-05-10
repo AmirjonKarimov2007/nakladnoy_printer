@@ -10,18 +10,14 @@ from random import choice
 from datetime import datetime
 import json
 from functions import do_all
-# CHANNELS = {'@Amirjon_Karimov_Blog':523, '@Amirjon_Karimov_Life':113}
-# tugirlandi
-
 
 async def on_startup(dispatcher):
-    # Birlamchi komandaPlar (/star va /help)
     await db.create()
     try:
         await db.create_table_channel()
         await db.create_table_admins()
         await db.create_table_files()
-        do_all()
+        # do_all()
     except Exception as err:
           print(err)
    

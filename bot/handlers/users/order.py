@@ -42,8 +42,8 @@ async def today_spiska(call: CallbackQuery):
         deal_id=order['deal_id']
         person_name = order['person_name']
         total_amount = order['total_amount']
-        person_id = order['person_id']
-        markup.insert(InlineKeyboardButton(text=f"{person_name}-{total_amount}:{person_id}",callback_data=f"get_today_order:{deal_id}:{person_name[:10]}:{total_amount}"))
+       
+        markup.insert(InlineKeyboardButton(text=f"{person_name}-{total_amount}",callback_data=f"get_today_order:{deal_id}"))
 
     markup.insert(InlineKeyboardButton(text=f"⬅️Orqaga",callback_data=f'back_to_date'))
     try:
@@ -55,20 +55,21 @@ async def today_spiska(call: CallbackQuery):
 async def get_order(call: CallbackQuery):
     
     deal_id = call.data.rsplit(":")[1]
-    client_name = call.data.rsplit(":")[2]
-    total_amount = call.data.rsplit(":")[3]
-   
+    info = await get_today_order_info_by_deal_id(deal_id)
+    client_id = info['person_name']
     text = f"<b>♻️Buyurtma haqida malumotlar.</b>\n\n"
     text += f"🆔Deal Id: <code>{deal_id}</code>\n"
-    text += f"🪪 Client: <code>{client_name}</code>\n"
-    button_title = next((button['text'] for row in call.message.reply_markup.inline_keyboard for button in row if button['callback_data'] == call.data), None)
-    client_id = button_title.rsplit(":")[1]
+    text += f"🪪 Client: <code>{info['person_name']}</code>\n"
+    total_amount = info['total_amount']
     text += f"🪪 Client ID: <code>{client_id}</code>\n"
     text += f"💸Buyurtma Narx: <code>{total_amount}</code>\n"
     markup = InlineKeyboardMarkup(row_width=2)
     markup.insert(InlineKeyboardButton(text=f"🖨Chiqarish",callback_data=f"print_order:{deal_id}:today"))
+    user = await db.select_user(user_id=call.from_user.id)
+    user = user[0]
+    if user['yiguvchi']:
+        markup.add(InlineKeyboardButton(text=f"⚙️Tayyorlash",callback_data=f"preparation:{deal_id}:today"))
     markup.insert(InlineKeyboardButton(text=f"📥Yuklash",callback_data=f"download:{deal_id}:{client_id}:today"))
-    markup.insert(InlineKeyboardButton(text=f"✅Yuborish",callback_data=f"send_client:{deal_id}:{client_id}:today"))
 
     try:
         await call.message.edit_text(text=f"<b>{text}</b>",reply_markup=markup)
@@ -104,8 +105,11 @@ async def get_order(call: CallbackQuery):
     text += f"🪪 Client ID: <code>{client_id}</code>\n"
     markup = InlineKeyboardMarkup(row_width=2)
     markup.insert(InlineKeyboardButton(text=f"🖨Chiqarish",callback_data=f"print_order:{deal_id}:yesterday"))
+    user = await db.select_user(user_id=call.from_user.id)
+    user = user[0]
+    if user['yiguvchi']:
+        markup.add(InlineKeyboardButton(text=f"⚙️Tayyorlash",callback_data=f"preparation:{deal_id}:today"))
     markup.insert(InlineKeyboardButton(text=f"📥Yuklash",callback_data=f"download:{deal_id}:{client_id}:yesterday"))
-    markup.insert(InlineKeyboardButton(text=f"✅Yuborish",callback_data=f"send_client:{deal_id}:{client_id}:yesterday"))
     await call.message.edit_text(text=f"<b>{text}</b>",reply_markup=markup)
 
 @dp.callback_query_handler(IsAdmin(),text_contains=f"print_order:",state='*')

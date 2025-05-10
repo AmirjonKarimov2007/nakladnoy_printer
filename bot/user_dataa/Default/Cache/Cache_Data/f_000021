@@ -1,0 +1,1838 @@
+<script biruni>
+page.require('e-imzo');
+page.init(function(param, xparam, $filter) {
+  var t = page.query('table');
+  t.sort(['-deal_time']);
+  if (xparam.where) t.where(xparam.where);
+  else if (param.where) t.where(param.where);
+
+  if (page.isInit()) t.filter('source_table', '=', ['MDEAL_HEADERS', 'MVT_VISIT_HEADERS']);
+
+  var pg = page.grid('table');
+
+  pg.asHtml('status_html', 'status', function(row) {
+    return `<div class="alert alert-custom alert-light py-1 px-3 m-0 text-center" style="background-color: ${ row.status_color };">
+              <div class="alert-text" style="color: ${ textColor(row.status_color) }">${ row.status_name }</div>
+            </div>`;
+  });
+
+  var person_balances = ['person_balance1', 'person_balance2', 'person_balance3', 'person_balance4', 'person_balance5'];
+  _.each(person_balances, (balance, index) => {
+    pg.asHtml('person_balance_html' + (index + 1), balance, function(row) {
+      return `<div class="alert-text" style="color: ${ row[balance].includes('-') ? '#109c0b' : 'red' }">${ $filter('bNumber')(row[balance]) }</div>`;
+    });
+  });
+});
+page.ctrl(function(scope, model, fi, t, bConfig, $timeout, $q, $http, bRoutes, bFrame) {
+  var q = model || {}, d = {};
+  q.fakuraSignErrors = [];
+  q.fakturaDocuments = [];
+  q.service_type = 'faktura';
+
+  var modal_e_imzo = page.$content.find('form[name=modal-e-imzo]>.modal');
+  var modal_e_imzo_errors = page.$content.find('form[name=modal-e-imzo-errors]>.modal');
+  var modal_order_copy = page.$content.find('form[name=modal-order-copy]>.modal');
+
+  t.suppress('table.person_balance1','table.person_balance2','table.person_balance3','table.person_balance4','table.person_balance5');
+
+  q.margin_invoice_url = model.margin_invoice_url;
+  q.statuses = _.mapRows(model.statuses, ['status', 'status_name']);
+  q.reports = _.mapRows(model.reports, ['uri', 'name', 'uri_setting']);
+  q.cheques = _.mapRows(model.cheques, ['uri', 'name', 'uri_setting']);
+  q.invoices = _.mapRows(model.invoices, ['uri', 'template_id', 'name', 'uri_setting']);
+  q.table_name_order = model.table_name_order;
+  q.is_chat_open = false;
+  q.tChat = t('chat')();
+  q.tAddChat = t('add chat')();
+  q.litr_name = t('litr')();
+  q.ss_host = 'https://v3.soliqservis.uz:3443/api';
+
+  function showCopyModal(row) {
+    q.copyOrder = row;
+    q.copyOrderPersons = [{ person_id: row.person_id, name: row.person_name }];
+
+    modal_order_copy.modal('show');
+  }
+
+  function hideCopyModal() {
+    q.copyOrder = {};
+    q.copyOrderPersons = [{}]
+
+    modal_order_copy.modal('hide');
+  }
+
+  function onChangePerson(query, value) {
+    query.searchValue(value);
+    query.param({ room_id: q.copyOrder.room_id });
+
+    if (q.copyOrderPersons.length > 0) {
+      query.where(['person_id', '<>', _.pluck(q.copyOrderPersons, 'person_id')]);
+    } else {
+      query.where([]);
+    }
+  }
+
+  function copy() {
+    let data = {
+      deal_id: q.copyOrder.deal_id,
+      person_id: _.pluck(q.copyOrderPersons, 'person_id')
+    }
+
+    page.post(':copy_order', data).then(page.reload, page.alert);
+  }
+
+  // E-Imzo
+  var errorBrowserWS = t('The browser does not support WebSocket technology. Install the latest version of the browser')();
+  var eimzoVersionNotSuitable = t('The version of the e-imzo plugin is not suitable for this operation. Please update the plugin')();
+  var eimzoError = t('error occured while sign with e-imzo')();
+
+  function showEImzoModal(documents) {
+    q.fakturaDocuments = documents;
+    q.fakuraSignErrors = [];
+    modal_e_imzo.modal('show');
+  }
+
+  function hideEImzoModal() {
+    q.fakturaDocuments = [];
+    modal_e_imzo.modal('hide');
+  }
+
+  function onFailEImzo(info) {
+    return function (exception, reason) {
+      if (reason) $timeout(page.alert(`${info} ${reason}`));
+      else if (exception) $timeout(page.alert(`${info} ${exception}`));
+      else $timeout(page.alert(`${info} ${errorBrowserWS}`));
+    }
+  }
+
+  function onFailSign(uniqueId, message) {
+    return function (exception, reason) {
+      q.fakuraSignErrors.push({
+        uniqueId: uniqueId,
+        error: message,
+        exception: exception,
+        reason: reason
+      });
+      q.deferrable[uniqueId].resolve();
+    }
+  }
+
+  function checkEImzoVersionSuccess(major, minor) {
+    if (EIMZOClient.NEW_API) {
+      EIMZOClient.installApiKeys(prepareEImzoKeys, onFailEImzo("installApiKeys"));
+    } else {
+      onFailEImzo(eimzoVersionNotSuitable);
+    }
+  }
+
+  function prepareEImzoKeys() {
+    EIMZOClient.listAllUserKeys((key, index)=> {
+      return `item-${key.serialNumber}-${index}`;
+    }, createEImzoElement, addEImzoDocument, onFailEImzo("listAllUserKeys"));
+  }
+
+  function addEImzoDocument(elems, firstId) {
+    var div = $('.user-keys');
+    _.each(elems, elem=> div.append(elem))
+  }
+
+  function createEImzoElement(itemId, v) {
+    var now = new Date();
+    v.expired = dates.compare(now, v.validTo) > 0;
+
+    var item = $(`
+    <div class="form-group" ${bConfig.escapeHtml(itemId)}>
+      <div class="p-3 col-sm-24 border" style="background-color: white; border-radius: 4px; cursor: pointer;">
+        <a style="color: gray">
+          <img src="assets/e-imzo/pfx.ico"/>
+          <b>№ СЕРТИФИКАТА: </b> ${bConfig.escapeHtml(v.serialNumber)}<br/>
+          <b>ИНН: </b> ${bConfig.escapeHtml(v.TIN)} <b>${v.TIN == v.UID? "ФИЗИЧЕСКОЕ ЛИЦО": "ЮРИДИЧЕСКОЕ ЛИЦО"}</b><br/>
+          <b>Ф.И.О: </b>${bConfig.escapeHtml(v.CN)}<br/>
+          <b>Организация: </b>${bConfig.escapeHtml(v.O)}<br/>
+          <span style="font-size: 12px; ${v.expired ? "color: red;": ""}">
+            <b>Срок действия сертификата ${bConfig.escapeHtml(v.validFrom.ddmmyyyy())} - ${bConfig.escapeHtml(v.validTo.ddmmyyyy())} ${v.expired ? "истек": ""}</b>
+          </span>
+        </a>
+      </div>
+    </div>`);
+
+    item.click(_.partial(EIMZOClient.loadKey, v, _.partial(signFakturaPkcs7, v.serialNumber, _), onFailEImzo("loadKey")));
+
+    return item;
+  }
+
+  // Sign start after click e-imzo key
+  function signFakturaPkcs7(serialNumber, keyId) {
+    q.deferrable = {};
+    q.promises = [];
+
+    if (q.service_type == 'faktura') {
+      for (var i = 0; i < q.fakturaDocuments.length; i ++) {
+        var data = {};
+        _.each(q.fakturaDocuments[i], (v, k) => data[k.toLowerCase()] = v);
+
+        if (data.uniqueid && data.hashcode) {
+          let defer = $q.defer();
+          q.deferrable[data.uniqueid] = defer;
+          q.promises.push(defer.promise);
+          data.certificateserial = serialNumber;
+
+          EIMZOClient.createPkcs7(keyId, data.hashcode, null, _.partial(signSoliqPkcs7, keyId, data, _), onFailSign(data.uniqueid, "createFakturaPkcs7"));
+        }
+      }
+    } else {
+      var data = q.ss_data;
+      data.certificateserial = serialNumber;
+
+      let defer = $q.defer();
+      q.deferrable[data.deal_id] = defer;
+      q.promises.push(defer.promise);
+
+      EIMZOClient.createPkcs7(keyId, data.hashcode, timestamper, _.partial(sendSignedSSDocument, data, _), onFailSign(data.deal_id, "createFakturaPkcs7"));
+    }
+
+    $q.all(q.promises).then(() => {
+      hideEImzoModal();
+
+      if (q.fakuraSignErrors.length == 0) page.reload();
+      else modal_e_imzo_errors.modal('show');
+    });
+  }
+
+  // Get timestamp from roaming(faktura) server
+  function getRoamingTimestamp(signatureHex, onSuccess, onFail) {
+    page.post(':get_roaming_timestamp', { signature_hex: signatureHex }).then(result => {
+      var res = {};
+      _.each(result, (v, k) => res[k.toLowerCase()] = v);
+
+      if (res.success == true) onSuccess(res.timestamp);
+      else onFail(eimzoError);
+    }, error => {
+      if (_.isObject(error)) onFail(error.message);
+      else onFail(error);
+    });
+  }
+
+  // After sign faktura hashcode sign soliq hashcode
+  function signSoliqPkcs7(keyId, data, signedFakturaPkcs7) {
+    data.signedcontent = signedFakturaPkcs7;
+    var soliqHashCode = data.roamingownersignature || data.roamingjsoncontent;
+
+    EIMZOClient.createPkcs7(keyId, soliqHashCode, getRoamingTimestamp, _.partial(sendSignedDocument, data, _), onFailSign(data.uniqueid, "createSoliqPkcs7"));
+  }
+
+  // Send signed document to faktura
+  function sendSignedDocument(data, signedSoliqPkcs7) {
+    page.post('$sign_faktura', {
+      uniqueid: data.uniqueid,
+      signedcontent: data.signedcontent,
+      certificateserial: data.certificateserial,
+      roamingsignedcontent: signedSoliqPkcs7
+    }).then(() => {
+      q.deferrable[data.uniqueid].resolve();
+    }, error => {
+      if (_.isObject(error)) onFailSign(data.uniqueid, error.message)(null, null);
+      else onFailSign(data.uniqueid, error)(null, null);
+    });
+  }
+
+  // Send signed document to soliq service
+  function sendSignedSSDocument(data, signedSoliqPkcs7) {
+    fi.sign_ss_faktura({ signed_document: signedSoliqPkcs7, deal_id: data.deal_id }).then(page.reload, page.alert);
+  }
+
+  function loadEImzo() {
+    EIMZOClient.checkVersion(checkEImzoVersionSuccess, function() {
+      $("body").find("#notinstalled").css("display", "block");
+    });
+  }
+
+  function loadEImzoList() {
+    const host = window.location.hostname;
+
+    $http.post(bRoutes.LOAD_EIMZO_API_KEY, host).then(function(result) {
+      if (result.data) {
+        EIMZOClient.API_KEYS = _.union(EIMZOClient.API_KEYS, [host, result.data]);
+      }
+      loadEImzo();
+    }, function(error) {
+      loadEImzo();
+    });
+  }
+
+  if (q.e_imzo_loading_off == 'N') loadEImzoList();
+
+  function makeAction(action, message, data) {
+    page.confirm(message, function() {
+      action(data).then(page.reload, page.alert);
+    });
+  }
+
+  function changeStatusOne(row, s) {
+    let deals = [];
+    deals.push({deal_id: row.deal_id, modified_id: row.modified_id});
+
+    makeAction(_.partial(page.post, ':change_status'), t('change to $1?')(s.status_name), { deals: deals, status: s.status });
+  }
+
+  function changeStatusMany(s) {
+    let deals = [];
+
+    _.each(q.checked[s.status], function(checked) {
+      deals.push(_.pick(checked, 'deal_id', 'modified_id'));
+    });
+
+    makeAction(_.partial(page.post, ':change_status'), t('change status to $1 for $2 deal(s)?')(q.checked[s.status].length, s.status_name), { deals: deals, status: s.status });
+  }
+
+  function reduceChecked(key, index){
+    return _.reduce(q.checked.rows, function(m, n) {
+      return pF(m + pF(n[key] || 0));
+    }, 0);
+  };
+
+  function calcChecked() {
+    q.checked_amount = [];
+    q.checked_weight_brutto = reduceChecked('c_total_weight_brutto', '');
+    q.checked_weight_brutto_measure = t('kg')();
+    q.checked_weight_netto = reduceChecked('c_total_weight_netto', '');
+    q.checked_weight_netto_measure = t('kg')();
+    q.checked_litr = reduceChecked('c_total_litr', '');
+
+    if (q.checked_weight_brutto > 1000) {
+      q.checked_weight_brutto = Math.round(q.checked_weight_brutto) / 1000;
+      q.checked_weight_brutto_measure = t('tonns')();
+    }
+
+    if (q.checked_weight_netto > 1000) {
+      q.checked_weight_netto = Math.round(q.checked_weight_netto) / 1000;
+      q.checked_weight_netto_measure = t('tonns')();
+    }
+
+    _.each(q.currencies, function(item) {
+      var val = reduceChecked('total_deal_amount' + (item.index));
+      q.checked_amount[item.index] = val;
+    });
+  };
+
+  function changeStatusCheck(old_status, new_status, has_equipment) {
+    return new_status != old_status && (has_equipment == 'N' || has_equipment == 'Y' && new_status == 'C');
+  }
+
+  function onCheck(checked) {
+    q.checked = [];
+    q.checked.rows = checked.rows();
+
+    q.reportChecked = _.filter(checked.rows(), x => x.deal_id);
+    q.reportChecked.size = q.reportChecked.length;
+    q.reportChecked.has = !!q.reportChecked.length;
+    q.send_to_faktura = _.filter(checked.rows(), x => checkActionGrant(x, 'send_to_faktura'));
+    q.sign_faktura = _.filter(checked.rows(), x => checkActionGrant(x, 'sign_faktura'));
+    q.send_waybill_to_faktura = _.filter(checked.rows(), x => checkActionGrant(x, 'send_waybill_to_faktura'));
+    q.sign_waybill = _.filter(checked.rows(), x => checkActionGrant(x, 'sign_waybill'));
+    q.clear_faktura = _.filter(checked.rows(), x => x.sent_faktura == 'Y');
+    q.clear_waybill = _.filter(checked.rows(), x => x.sent_waybill == 'Y');
+    q.send_to_fiscal = _.filter(checked.rows(), x => checkActionGrant(x, 'send_to_fiscal'));
+    q.clear_markings = _.filter(checked.rows(), x => checkActionGrant(x, 'clear_markings'));
+
+    q.checked.rows = _.filter(q.checked.rows, x => x.editable == 'Y');
+
+    _.each(q.statuses, x => q.checked[x.status] = _.filter(q.checked.rows, c => changeStatusCheck(c.status, x.status, c.has_equipment)));
+    q.checked.has = !!q.checked.rows.length;
+
+    q.attach_data = {};
+    q.attach_data.rows = _.filter(q.checked.rows, x => checkActionGrant(x, 'attach_data'));
+    q.attach_data.size = q.attach_data.rows.length;
+    q.attach_data.has = !!q.attach_data.size;
+
+    q.change_price_type = {};
+    q.change_price_type.rows = _.filter(q.checked.rows, x => checkActionGrant(x, 'change_price_type'));
+    q.change_price_type.size = q.change_price_type.rows.length;
+    q.change_price_type.has = !!q.change_price_type.size;
+
+    calcChecked();
+    calcMarginBottom();
+  }
+
+  function onDblClick(row) {
+    page.isDialog() ? page.close(row) : fi.view ? view(row) : fi.edit ? edit(row) : null;
+  }
+
+  function closeIfDialog(result) {
+    page.isDialog() && page.close(result);
+  }
+
+  function add() {
+    fi.add(null, closeIfDialog);
+  }
+
+  function edit(row) {
+    fi.edit({ deal_id: row.deal_id, modified_id: row.modified_id }, closeIfDialog);
+  }
+
+  function editBeta(row) {
+    fi.edit_beta({ deal_id: row.deal_id, modified_id: row.modified_id }, closeIfDialog);
+  }
+
+  function selectOne(row) {
+    page.close({ deal_id: row.deal_id });
+  }
+
+  function view(row) {
+    fi.view({ deal_id: row.deal_id }, function (hasCallback){
+      if (hasCallback){ page.reload(); }
+    });
+  }
+
+  function invoice(row, deal_id, invoice_view_kind) {
+    page.post(':save_report_template', { deal_id: deal_id }).then(function(result) {
+      bFrame.openWindow(row.uri, { template_id: row.template_id, report_template_id : result.report_template_id, invoice_view_kind: invoice_view_kind });
+    });
+  }
+
+  function invoiceOne(r, row, invoice_view_kind) {
+    invoice(r, row.deal_id, invoice_view_kind);
+  }
+
+  function invoiceMany(r, invoice_view_kind) {
+    invoice(r, _.pluck(q.reportChecked, 'deal_id',), invoice_view_kind);
+  }
+
+  function invoiceSetting(r) {
+    page.open(r.uri_setting, _.pick(r, 'template_id'));
+  }
+
+  function transactions(row) {
+    window.open(page.url('transactions', {
+      rt: 'html',
+      deal_id: row.deal_id
+    }));
+  }
+
+  function report(rep, deal_id, rt) {
+    page.post(':save_report_template', { deal_id: deal_id }).then(function(result) {
+      bFrame.openWindow(rep.uri, { report_template_id : result.report_template_id, rt : rt });
+    });
+  }
+
+  function reportOne(row, rep, rt) {
+    report(rep, row.deal_id, rt);
+  }
+
+  function reportMany(rep, rt) { report(rep, _.pluck(q.reportChecked, 'deal_id'), rt); }
+
+  function reportSetting(uri_setting) {
+    page.open(uri_setting);
+  }
+
+  function chequeOne(row, cheq) {
+    window.open('#' + bConfig.pathPrefix() + cheq.uri + '?' + $.param({deal_id: row.deal_id}, true));
+  }
+
+  function chequeSetting(uri_setting) {
+    page.open(uri_setting, {is_setting: 'Y'});
+  }
+
+  function exportOrder(data) {
+    window.open(page.url('export', data));
+  }
+
+  function exportOrderOne(row) {
+    exportOrder({ deal_id: row.deal_id });
+  }
+
+  function exportOrderMany() {
+    exportOrder({ deal_id: _.pluck(q.reportChecked, 'deal_id') });
+  }
+
+  function margin_invoice(row, rt){
+    q.invoice_margin_deal_ids = row ? row.deal_id : _.pluck(q.reportChecked, 'deal_id'),
+    q.invoice_margin = {
+      rt : rt
+    };
+    page.$content.find('.marginInvoiceModal').modal('show');
+  };
+
+  function drawInvoice (){
+    page.$content.find('.marginInvoiceModal').modal('hide');
+    if (!q.invoice_margin.margin) q.invoice_margin.margin = 0;
+    var auths = bConfig.auths();
+    _.each(auths, function(val, key) {
+      q.invoice_margin['-' + key] = val;
+    });
+
+    page.post(':save_report_template', { deal_id: q.invoice_margin_deal_ids }).then(function(result) {
+      q.invoice_margin.report_template_id = result.report_template_id;
+      window.open('b/trade/rep/tdeal/invoices/invoice_three:run?' + $.param(_.defaults({}, q.invoice_margin, auths), true));
+    });
+  };
+
+  function changeMargin (){
+    if (parseFloat(q.invoice_margin.margin) > 100) q.invoice_margin.margin = 100;
+    if (parseFloat(q.invoice_margin.margin) < -100) q.invoice_margin.margin = -100;
+  };
+
+  //-------------------- FAKTURA --------------------
+  function sendDocumentToFaktura(fn, deal_id, message) {
+    page.confirm(message, function() {
+      fn({ deal_id: deal_id }).then(page.reload, error => {
+        if (_.isObject(error)) page.alert(JSON.stringify(error.message));
+        else page.alert(error);
+      });
+    });
+  }
+
+  function sendToFakturaOne(row) {
+    page.post(':check_faktura_document', { deal_id: row.deal_id }).then(function(result) {
+      if (result.doc_already_created == 'Y') {
+        $.notify({ message: t('document already created in faktura with uniqueId = $1')(result.unique_id) }, { type: "success", placement: { from: 'bottom' } });
+        page.reload();
+      } else {
+        sendDocumentToFaktura(fi.send_to_faktura, row.deal_id, t('send deal to faktura?')());
+      }   
+    }, page.alert);
+  }
+
+  function sendToFakturaMany() {
+    sendDocumentToFaktura(fi.send_to_faktura, _.pluck(q.send_to_faktura, 'deal_id'), t('send to $1 deal(s) faktura?')(q.send_to_faktura.length));
+  }
+
+  function updateFaktura(row) {
+    page.confirm(t('update faktura?')(), function() {
+      page.post(':update_faktura', { deal_id: row.deal_id }).then(page.reload, error => {
+        if (_.isObject(error)) page.alert(JSON.stringify(error.message));
+        else page.alert(error);
+      });
+    });
+  }
+
+  function signFaktura(deal_id, message) {
+    page.confirm(message, () => {
+      page.post(":get_document_hashcodes", { deal_id: deal_id, doc_type: 'F' }).then(res => {
+        var result = {}
+        _.each(res, (v, k) => result[k.toLowerCase()] = v);
+
+        if (result.success == false) page.alert(eimzoError)
+        else showEImzoModal(result.documents);
+      }, error => {
+        if (_.isObject(error)) page.alert(error.message);
+        else page.alert(error);
+      });
+    });
+  }
+
+  function signFakturaOne(row) {
+    signFaktura(row.deal_id, t('sign deal in faktura?')());
+  }
+
+  function signFakturaMany() {
+    signFaktura(_.pluck(q.sign_faktura, 'deal_id'), t('sign $1 deal(s) in faktura?')(q.sign_faktura.length));
+  }
+
+  function sendDocumentAndSign(fn, deal_id, message, type) {
+    page.confirm(message, function() {
+      fn({ deal_id: deal_id }).then(() => {
+        page.post(":get_document_hashcodes", { deal_id: deal_id, doc_type: type }).then(res => {
+          var result = {}
+          _.each(res, (v, k) => result[k.toLowerCase()] = v);
+
+          if (result.success == false) page.alert(eimzoError)
+          else showEImzoModal(result.documents);
+        }, page.alert);
+      }, error => {
+        if (_.isObject(error)) page.alert(JSON.stringify(error.message));
+        else page.alert(error);
+      });
+    });
+  }
+
+  function sendToFakturaAndSignOne(row) {
+    page.post(':check_faktura_document', { deal_id: row.deal_id }).then(function(result) {
+      if (result.doc_already_created == 'Y') {
+        $.notify({ message: t('document already created in faktura with uniqueId = $1')(result.unique_id) }, { type: "success", placement: { from: 'bottom' } });
+        page.post(":get_document_hashcodes", { deal_id: row.deal_id, doc_type: 'F' }).then(res => {
+          var result = {}
+          _.each(res, (v, k) => result[k.toLowerCase()] = v);
+
+          if (result.success == false) page.alert(eimzoError)
+          else showEImzoModal(result.documents);
+        }, page.alert);
+      } else {
+        sendDocumentAndSign(fi.send_to_faktura,
+                         row.deal_id,
+                         t('send deal to faktura and sign?')(), 
+                         'F');
+      }   
+    }, page.alert);
+  }
+
+  function sendToFakturaAndSignMany() {
+    sendDocumentAndSign(fi.send_to_faktura,
+                        _.pluck(q.send_to_faktura, 'deal_id'),
+                        t('send to $1 deal(s) faktura and sign?')(q.send_to_faktura.length),
+                        'F');
+  }
+
+  function clearFaktura(action, deal_id, message) {
+    page.confirm(message, function() {
+      action({deal_id: deal_id}).then(page.reload, function(res) {
+        if (_.isObject(res)) {
+          page.alert(JSON.stringify(res.message));
+        } else {
+          page.alert(res);
+        }
+      });
+    });
+  }
+
+  function clearFakturaOne(row) {
+    clearFaktura(fi.clear_faktura, row.deal_id, t('clear deal to faktura?')());
+  }
+
+  function clearFakturaMany() {
+    clearFaktura(fi.clear_faktura, _.pluck(q.clear_faktura, 'deal_id'), t('clear $1 deal(s) faktura?')(q.clear_faktura.length));
+  }
+
+  function sendWaybillOne(row) {
+    sendDocumentToFaktura(fi.send_waybill_to_faktura, row.deal_id, t('send waybill to faktura?')());
+  }
+
+  function sendAndSignWaybillOne(row) {
+    sendDocumentAndSign(fi.send_waybill_to_faktura, row.deal_id, t('send and sign waybill?')(), 'W');
+  }
+
+  function sendWaybillToFakturaMany(){
+    sendDocumentToFaktura(fi.send_waybill_to_faktura, _.pluck(q.send_waybill_to_faktura, 'deal_id'), t('send $1 waybill(s) to faktura?')(q.send_waybill_to_faktura.length));
+  }
+
+  function sendWaybillToFakturaAndSignMany() {
+    sendDocumentAndSign(fi.send_waybill_to_faktura, _.pluck(q.send_waybill_to_faktura, 'deal_id'), t('send and sign $1 waybill(s)?')(q.send_waybill_to_faktura.length), 'W');
+  }
+
+  function clearWaybillOne(row) {
+    clearFaktura(fi.clear_waybill, row.deal_id, t('clear deal to waybill?')());
+  }
+
+  function clearWaybillMany() {
+    clearFaktura(fi.clear_waybill, _.pluck(q.clear_waybill, 'deal_id'), t('clear $1 deal(s) waybill(s)?')(q.clear_waybill.length));
+  }
+
+  function fakturaCheckActions(row) {
+    return (fi.send_to_faktura && checkActionGrant(row, 'send_to_faktura')) ||
+           (fi.sign_faktura && checkActionGrant(row, 'sign_faktura')) ||
+           (fi.clear_faktura && row.sent_faktura == 'Y');
+  }
+
+  function waybillCheckActions(row) {
+    return (fi.send_waybill_to_faktura && checkActionGrant(row, 'send_waybill_to_faktura')) ||
+           (fi.sign_waybill && checkActionGrant(row, 'sign_waybill')) ||
+           (fi.clear_waybill && row.sent_waybill == 'Y');
+  }
+
+  //-------------------- Soliq Service --------------------
+  function sendSSDocument(fn, data, message) {
+    page.confirm(message, function() {
+      fn(data).then(result => {
+        if (result.success) {
+          $.notify({ message: result.data }, { type: result.success == 'Y' ? "success" : "warning", placement: { from: 'bottom' } });
+          page.reload();
+        } else page.alert;
+      }, page.alert);
+    });
+  }
+
+  function sendSSFaktura(row) {
+    sendSSDocument(fi.send_ss_faktura, { deal_id: row.deal_id }, t('send faktura to soliq service?')());
+  }
+
+  function updateSSFaktura(row) {
+    sendSSDocument(fi.send_ss_faktura, { deal_id: row.deal_id, is_update: 'Y' }, t('update faktura document in soliqservis.uz?')());
+  }
+
+  function updateSSFakturaStatus(row, type) {
+    page.confirm(t('update faktura document status from soliqservis.uz?')(), function() {
+      fi.update_ss_faktura_status({ deal_id: row.deal_id }).then(page.reload, page.alert);
+    });
+  }
+
+  function cancelSSDocument(row, type) {
+    page.confirm(t('delete faktura document from soliqservis.uz?')(), function() {
+      fi.cancel_ss_document({ deal_id: row.deal_id, doc_type: type }).then(page.reload, page.alert);
+    });
+  }
+
+  function sendSSWaybill(row) {
+    sendSSDocument(fi.send_ss_waybill, { deal_id: row.deal_id }, t('send waybill to soliq service?')());
+  }
+
+  function updateSSWaybill(row) {
+    sendSSDocument(fi.send_ss_waybill, { deal_id: row.deal_id, is_update: 'Y' }, t('update waybill document in soliqservis.uz?')());
+  }
+
+  function updateSSWaybillStatus(row, type) {
+    page.confirm(t('update waybill document status from soliqservis.uz?')(), function() {
+      fi.update_ss_waybill_status({ deal_id: row.deal_id }).then(page.reload, page.alert);
+    });
+  }
+
+  var timestamper = function (signature_hex, callback, fail) {
+    $.ajax({
+      url: q.ss_host + `/provider/api/utils/timestamp?signatureHex=${signature_hex}`,
+      method: 'GET',
+      success: function (data) {
+        if (data.success) callback(data.data);
+        else fail(data.reason); 
+      },
+      error: function (response) {
+        fail(response);
+      }
+    });
+  };
+
+  function signDocument(message, fn, data){
+    q.service_type = 'soliq_service';
+    page.confirm(message, function() {
+      fn(data).then( function() {
+        fi.get_ss_factura_data(data).then(function(res){
+          q.ss_data = {};
+          q.ss_data.hashcode = JSON.stringify(res);
+          q.ss_data.deal_id = data.deal_id;
+
+          showEImzoModal();
+        }, page.alert);
+      }, page.alert);
+    });
+  }
+
+  function signSSFactura(row) {
+    signDocument(t('sign faktura document in soliqservis.uz?')(), fi.update_ss_faktura_status, { deal_id: row.deal_id });
+  }
+
+  function sendAndSignSSFactura(row) {
+    signDocument(t('send and sign faktura document in soliqservis.uz?')(), fi.send_ss_faktura, { deal_id: row.deal_id });
+  }
+
+  function soliqFakturaCheckActions(row) {
+    return (fi.send_ss_faktura && checkActionGrant(row, 'send_ss_faktura')) ||
+           (fi.send_ss_faktura && checkActionGrant(row, 'update_ss_faktura')) ||
+           (fi.cancel_ss_document && row.sent_ss_faktura == 'Y' && row.sign_ss_faktura == 'N' && checkActionGrant(row, 'cancel_ss_document')) ||
+           (fi.update_ss_faktura_status && checkActionGrant(row, 'update_ss_faktura_status'));
+  }
+
+  function soliqWaybillCheckActions(row) {
+    return (fi.send_ss_waybill && checkActionGrant(row, 'send_ss_waybill')) ||
+           (fi.send_ss_waybill && checkActionGrant(row, 'update_ss_waybill')) ||
+           (fi.cancel_ss_document && row.sent_ss_waybill == 'Y' && row.sign_ss_waybill == 'N' && checkActionGrant(row, 'cancel_ss_document')) ||
+           (fi.update_ss_waybill_status && checkActionGrant(row, 'update_ss_waybill_status'));
+  }
+
+  //-------------------- Fiscal --------------------
+  function sendToFiscal() {
+    if (q.send_to_fiscal_deal_ids.length > 0) {
+      let deal_id = q.send_to_fiscal_deal_ids[0];
+      q.send_to_fiscal_deal_ids = _.without(q.send_to_fiscal_deal_ids, deal_id);
+
+      fi.send_to_fiscal({ deal_id: deal_id }).then(sendToFiscal, function(res) {
+        if (_.isObject(res)) {
+          q.fiscal_error_messages.push(t('deal_id:$1')(deal_id) + '=>' + JSON.stringify(res.message));
+        } else {
+          q.fiscal_error_messages.push(t('deal_id:$1')(deal_id) + '=>' + res);
+        }
+
+        sendToFiscal();
+      });
+    } else {
+      if (q.fiscal_error_messages.length > 0) {
+        page.alert(q.fiscal_error_messages.join('\n\n'));
+      } else {
+        page.reload();
+      }
+    }
+  }
+
+  function sendToFiscalOne(row) {
+    page.confirm(t('send deal to fiscal?')(), function() {
+      q.send_to_fiscal_deal_ids = [];
+      q.fiscal_error_messages = [];
+      q.send_to_fiscal_deal_ids.push(row.deal_id);
+
+      sendToFiscal();
+    });
+  }
+
+  function sendToWms(deal_id) {
+    page.confirm(t('send deal to wms?')(), function() {
+      fi.send_to_wms({ deal_id: deal_id }).then(page.reload, page.alert);
+    });
+  }
+
+  function sendToFiscalMany() {
+    page.confirm(t('send to $1 deal(s) fiscal?')(q.send_to_fiscal.length), function() {
+      q.fiscal_error_messages = [];
+      q.send_to_fiscal_deal_ids = _.pluck(q.send_to_fiscal, 'deal_id');
+
+      sendToFiscal();
+    });
+  }
+
+  function attachMarking(row) {
+    fi.attach_marking({ deal_id: row.deal_id }, closeIfDialog);
+  }
+
+  function clearMarkings(deal_id, message) {
+    page.confirm(message, function() {
+      fi.clear_markings({deal_id: deal_id}).then(page.reload, function(res) {
+        if (_.isObject(res)) {
+          page.alert(JSON.stringify(res.message));
+        } else {
+          page.alert(res);
+        }
+      });
+    });
+  }
+
+  function clearMarkingsOne(row) {
+    clearMarkings(row.deal_id, t('clear deal to markings?')());
+  }
+
+  function clearMarkingsMany() {
+    clearMarkings(_.pluck(q.clear_markings, 'deal_id'), t('clear $1 deal(s) markings?')(q.clear_markings.length));
+  }
+
+  function returnOne(row) {
+    fi.return({ deal_id: row.deal_id });
+  }
+
+  function changeBooking(row) {
+    fi.change_booking({ deal_id: row.deal_id, modified_id: row.modified_id });
+  }
+
+  var sc = [ // success
+    { grant: fi.add, func: add },
+    { grant: fi.import, func: fi.import },
+    { grant: fi.import_many, func: fi.import_many },
+  ];
+
+  q.sc = {};
+  q.sc.acc = _.filter(sc, x => x.grant);
+  q.sc.length = q.sc.acc.length;
+  if (q.sc.length > 0) {
+    q.sc.firstFunc = q.sc.acc[0].func;
+    q.sc.first = q.sc.acc[0].grant;
+  }
+
+  var btn_group_view = [
+    { grant: fi.view, func: view },
+    { grant: fi.files, func: files },
+    { grant: fi.transactions, func: transactions }
+  ];
+
+  q.btn_group_view = {};
+  q.btn_group_view.acc = _.filter(btn_group_view, x => x.grant);
+  q.btn_group_view.length = q.btn_group_view.acc.length;
+  if (q.btn_group_view.length > 0) {
+    q.btn_group_view.firstFunc = q.btn_group_view.acc[0].func;
+    q.btn_group_view.first = q.btn_group_view.acc[0].grant;
+  }
+
+  var btn_group_edit = [
+    { grant: fi.edit, func: edit, action_name: 'edit' },
+    { grant: fi.attach_data, func: attachDataOne, action_name: 'attach_data' },
+    { grant: fi.change_price_type, func: changePriceTypeOne, action_name: 'change_price_type' },
+    { grant: fi.return, func: returnOne, action_name: 'return' },
+    { grant: fi.change_booking, func: changeBooking, action_name: 'change_booking' }
+  ];
+
+  function checkActionGrant(row, action_name) {
+    if (action_name == 'edit') return row.editable == 'Y' && _.contains([q.ds_draft, q.ds_new, q.ds_executing], row.status);
+    if (action_name == 'edit_beta') return row.editable == 'Y' && _.contains([q.ds_draft, q.ds_new, q.ds_executing], row.status);
+    if (action_name == 'attach_data') return row.editable == 'Y' && _.contains([q.ds_draft, q.ds_new, q.ds_executing, q.ds_wait_shipping, q.ds_shipped], row.status);
+    if (action_name == 'change_price_type') return row.editable == 'Y' && _.contains([q.ds_draft, q.ds_new, q.ds_executing, q.ds_wait_shipping, q.ds_shipped], row.status);
+    if (action_name == 'return') return row.editable == 'Y' && _.contains([q.ds_wait_shipping, q.ds_shipped, q.ds_delivered], row.status);
+    if (action_name == 'send_to_faktura') return row.payment_kind == 'B' && row.editable == 'Y' && row.sent_faktura == 'N' && _.contains([q.ds_wait_shipping, q.ds_shipped, q.ds_delivered], row.status);
+    if (action_name == 'update_faktura') return row.editable == 'Y' && row.sent_faktura == 'Y' && row.signed_faktura == 'N';
+    if (action_name == 'sign_faktura') return row.editable == 'Y' && row.sent_faktura == 'Y' && row.signed_faktura == 'N';
+    if (action_name == 'send_waybill_to_faktura') return row.editable == 'Y' && _.contains([q.ds_wait_shipping, q.ds_shipped, q.ds_delivered], row.status) && row.sent_waybill == 'N';
+    if (action_name == 'sign_waybill') return row.editable == 'Y' && _.contains([q.ds_wait_shipping, q.ds_shipped, q.ds_delivered], row.status) && row.signed_waybill == 'N';
+    if (action_name == 'clear_markings') return q.use_marking == 'Y' && row.with_marking == 'Y' &&  _.contains([q.ds_wait_shipping, q.ds_new], row.status);
+    if (action_name == 'send_to_fiscal') return row.payment_kind == 'C' && _.contains([q.ds_wait_shipping, q.ds_shipped, q.ds_delivered], row.status);
+    if (action_name == 'change_booking') return row.editable == 'Y' && _.contains([q.ds_draft, q.ds_new, q.ds_executing], row.status);
+
+    //soliq service
+    if (action_name == 'send_ss_faktura') return row.payment_kind == 'B' && row.editable == 'Y' && row.sent_ss_faktura == 'N' && _.contains([q.ds_wait_shipping, q.ds_shipped, q.ds_delivered], row.status);
+    if (action_name == 'sign_ss_faktura') return row.editable == 'Y' && row.sent_ss_faktura == 'Y' && row.signed_ss_faktura == 'N';
+    if (action_name == 'update_ss_faktura') return row.editable == 'Y' && row.sent_ss_faktura == 'Y' && row.signed_ss_faktura == 'N';
+    if (action_name == 'update_ss_faktura_status') return row.editable == 'Y' && row.sent_ss_faktura == 'Y';
+    if (action_name == 'cancel_ss_document') return row.editable == 'Y';
+    if (action_name == 'send_ss_waybill') return row.payment_kind == 'B' && row.editable == 'Y' && row.sent_ss_waybill == 'N' && _.contains([q.ds_wait_shipping, q.ds_shipped, q.ds_delivered], row.status);
+    if (action_name == 'update_ss_waybill') return row.editable == 'Y' && row.sent_ss_waybill == 'Y' && row.signed_ss_waybill == 'N';
+    if (action_name == 'update_ss_waybill_status') return row.editable == 'Y' && row.sent_ss_waybill == 'Y';
+    if (action_name == 'send_to_wms') return q.use_wms == 'Y' && row.status == q.wms_status;  
+  }
+
+  function checkBtnGroupEdit(row) {
+    if (!row.editable == 'Y' || row.has_equipment == 'Y' || row.has_archived_exchange == 'Y') return false;
+
+    q.btn_group_edit = {};
+    q.btn_group_edit.acc = _.filter(btn_group_edit, x => x.grant && checkActionGrant(row, x.action_name));
+    q.btn_group_edit.length = q.btn_group_edit.acc.length;
+    if (q.btn_group_edit.length > 0) {
+      q.btn_group_edit.firstFunc = q.btn_group_edit.acc[0].func;
+      q.btn_group_edit.first = q.btn_group_edit.acc[0].grant;
+    }
+
+    return q.btn_group_edit.length;
+  }
+
+  function pF(val) {
+    return parseFloat(parseFloat(val || 0).toFixed(6));
+  }
+
+  scope.$watch(page.query('table').fetching, function(val){
+    if (!val) return;
+
+    const currencies_starting_index = 1,
+          currencies_ending_index = 5,
+          initial_row = 0,
+          name = 0,
+          amount = 1;
+    q.currencies = [];
+    q.total_amounts = [];
+
+    var table = page.query('table').result().table;
+    q.all_count = table.length > 0 ? table[0].all_count : 0;
+    q.full_weight_brutto = table.length > 0 ? table[0].full_weight_brutto : 0;
+    q.full_weight_netto = table.length > 0 ? table[0].full_weight_netto : 0;
+    q.full_litr = table.length > 0 ? table[0].full_litr : 0;
+
+    if (q.full_weight_brutto > 0) {
+      page.post(':get_weight_name', {total_weight: q.full_weight_brutto}).then(function(result){
+        q.full_weight_name_brutto = result;
+      }, page.alert);
+    }
+
+    if (q.full_weight_netto > 0) {
+      page.post(':get_weight_name', {total_weight: q.full_weight_netto}).then(function(result){
+        q.full_weight_name_netto = result;
+      }, page.alert);
+    }
+
+    if (table.length > 0){
+      _.each(_.range(currencies_starting_index, currencies_ending_index), function(index){
+        var currency_amount_arr = table[0]['currency_amount' + index].split('~');
+        if (currency_amount_arr.length > 1 && parseFloat(currency_amount_arr[amount]) > 0){
+          q.currencies.push({ name:currency_amount_arr[name], index: index });
+          q.total_amounts[index] = currency_amount_arr[amount];
+        }
+      });
+    }
+
+    calcChecked();
+    calcMarginBottom();
+  });
+
+  function audit() {
+    fi.audit({ table_name: model.table_name_order });
+  }
+
+  function attachDataOne(row) {
+    fi.attach_data({ deal_id: row.deal_id });
+  }
+
+  function attachDataMany() {
+    fi.attach_data({ deal_id: _.pluck(q.attach_data.rows, 'deal_id') });
+  }
+
+  function changePriceTypeOne(row) {
+    fi.change_price_type({ deal_id: row.deal_id });
+  }
+
+  function changePriceTypeMany() {
+    fi.change_price_type({ deal_id: _.pluck(q.change_price_type.rows, 'deal_id') });
+  }
+
+  function calcMarginBottom() {
+    $timeout(function() {
+      var div_height = page.$content.find('.totalInfoDiv').height();
+
+      q.grid_margin_bottom = div_height + 7 + 'px';
+    }, 300);
+  }
+
+  function getNumStr(str){
+    return str ? String(str) : '0';
+  }
+
+  //-------------------- ORDER SETTINGS --------------------
+  function openSettingsModal() {
+    page.post(':load_order_settings').then(function(result) {
+      d = result;
+      d.ignore_legal_person_types = _.mapRows(result.ignore_legal_person_types, ['person_type_id', 'person_group_id', 'name']);
+      d.ignore_natural_person_types = _.mapRows(result.ignore_natural_person_types, ['person_type_id', 'person_group_id', 'name']);
+
+      $timeout(function() {
+        page.$content.find('.orderSettingsModal').modal('show');
+        scope.d = d;
+      });
+    }, page.alert);
+  }
+
+  function changePersonGroup(person_kind, query, value) {
+    query.param({ person_kind: person_kind });
+    query.searchValue(value);
+  }
+
+  function deletePersonGroup(person_kind) {
+    if (person_kind == 'L') {
+      d.ignore_legal_person_group_id = '';
+      d.ignore_legal_person_group_name = '';
+      d.ignore_legal_person_types = [];
+    } else {
+      d.ignore_natural_person_group_id = '';
+      d.ignore_natural_person_group_name = '';
+      d.ignore_natural_person_types = [];
+    }
+  }
+
+  function changePersonType(person_group_id, query, value) {
+    query.param({ person_group_id: person_group_id });
+    query.searchValue(value);
+  }
+
+  function saveOrderSettings() {
+    var data = {
+      draft_order_after_days: d.draft_order_after_days,
+      ignore_person_type_ids: [],
+      allow_person_delivery_addresses: d.allow_person_delivery_addresses
+    };
+
+    _.each(d.ignore_legal_person_types, x => {
+      data.ignore_person_type_ids.push(x.person_type_id);
+    })
+
+    _.each(d.ignore_natural_person_types, x => {
+      data.ignore_person_type_ids.push(x.person_type_id);
+    })
+
+    page.post(':save_order_settings', data).then(function(result) {
+      $timeout(function() {
+        page.$content.find('.orderSettingsModal').modal('hide');
+      });
+    }, page.alert);
+  }
+  //-------------------- ORDER SETTINGS END --------------------
+  function files(row){
+    page.post(':product_cards', {
+      deal_id : row.deal_id
+    }).then(function(result){
+       var data = {
+         product_id : result[0] || [],
+         card_id : result[1] || []
+       }
+      fi.files(data);
+    }, page.alert);
+  };
+
+
+  // --------------------------------- CHAT FUNCTIONS ----------------------------------
+  function loadChat(chat_id) {
+    q.chatPage = {};
+    q.chatPage = page.subpage('deal_chat');
+
+    q.chatPage.run(fi.deal_chat.uri, { chat_id: chat_id, uri: '/trade/tdeal/order/order_list', uri_param: { deal_id: q.active_deal_id } });
+  }
+
+  function openChat(deal_id) {
+    q.active_deal_id = deal_id;
+    $timeout(() => {
+      q.is_chat_open = true;
+      page.post(':get_deal_chats', { deal_id : deal_id }).then(function(result) {
+        q.chats = {};
+        let tableDiv = document.querySelector('.tableDiv');
+        tableDiv.style.width = '80%';
+        let chatDiv = document.querySelector('.chatDiv');
+        chatDiv.style.width = '20%';
+        addResizeable();
+
+        if (result.length > 0) {
+          q.is_chat_exists = true;
+          q.chats = _.mapRows(result, ['chat_id', 'chat_name']);
+          loadChat(q.chats[0].chat_id);
+        } else {
+          q.is_chat_exists = false;
+        }
+      }, page.alert);
+    });
+  }
+
+  function closeChat() {
+    $timeout(() => {
+      let tableDiv = document.querySelector('.tableDiv');
+      tableDiv.style.width = '100%';
+    })
+    q.is_chat_open = false;
+  }
+
+  function addResizeable() {
+    let tableEl = document.querySelector('.tableDiv');
+    let chatEl = document.querySelector('.chatDiv');
+    let resizerEl = document.querySelector('#resizer');
+    let formRowEl = document.querySelector('#formRow');
+
+    let x = 0;
+    let tableWidth = 0;
+
+    const onMouseDown = function(event) {
+      x = event.clientX;
+      tableWidth = tableEl.getBoundingClientRect().width;
+      chatWidth = chatEl.getBoundingClientRect().width;
+
+      document.addEventListener('mousemove', onMouseMove);
+      document.addEventListener('mouseup', onMouseUp);
+    }
+
+    const onMouseMove = function(event) {
+      let dx = event.clientX - x;
+      let formRowWidth = formRowEl.getBoundingClientRect().width;
+      let newTableWidth = ((tableWidth + dx) * 100) / formRowWidth;
+      let newChatWidth = ((chatWidth - dx) * 100) / formRowWidth;
+
+      if (newTableWidth > 20 && newTableWidth < 80) {
+        tableEl.style.width = newTableWidth + '%';
+        chatEl.style.width = newChatWidth +'%';
+      }
+
+      tableEl.style.userSelect = 'none';
+      tableEl.style.pointerEvents = 'none';
+
+      document.body.style.cursor = 'col-resize';
+
+      chatEl.style.userSelect = 'none';
+      chatEl.style.pointerEvents = 'none';
+    }
+
+    const onMouseUp = function(event) {
+      tableEl.style.removeProperty('user-select');
+      tableEl.style.removeProperty('pointer-events');
+      document.body.style.removeProperty('cursor');
+      chatEl.style.removeProperty('user-select');
+      chatEl.style.removeProperty('pointer-events');
+
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+    }
+
+    resizerEl.addEventListener('mousedown', onMouseDown);
+  }
+
+  function dealChats() {
+    fi.deal_chat_list({ source_table: q.table_name_order});
+  }
+
+  function addChat() {
+    fi.add_chat({ source_table: q.table_name_order, source_id: q.active_deal_id }, function(result) {
+      openChat(q.active_deal_id);
+    });
+  }
+  // --------------------------------- END CHAT FUNCTIONS ----------------------------------
+
+  scope.q = q;
+  scope.d = d;
+});
+</script>
+<div class="b-toolbar row">
+  <div class="col-sm-14">
+    <div class="btn-group" ng-if="q.sc.length">
+      <button type="button" class="btn btn-success" id="trade81-button-add" ng-click="q.sc.firstFunc()" ng-if="q.sc.first" b-hotkey="add">{{ q.sc.first.title }}</button>
+      <button type="button" class="btn btn-success dropdown-toggle" ng-if="q.sc.length > 1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+      <div class="dropdown-menu" ng-if="q.sc.length > 1">
+        <a href class="dropdown-item" ng-repeat="acc in q.sc.acc | limitTo: (1 - q.sc.length)" ng-click="acc.func()" ng-if="acc.grant">{{ acc.grant.title }}</a>
+      </div>
+    </div>
+    <button type="button" class="btn btn-success" ng-click="fi.add_beta()" ng-if="fi.add_beta">{{ fi.add_beta.title }}</button>
+    <button type="button" class="btn btn-success" id="trade81-button-add_retail" ng-click="fi.add_retail()" ng-if="fi.add_retail">{{ fi.add_retail.title }}</button>
+    <button type="button" class="btn btn-default" id="trade81-button-order_settings" ng-click="openSettingsModal()" ng-if="fi.order_settings">{{ fi.order_settings.title }}</button>
+    <button  type="button" class="btn btn-default" id="trade81-button-deal_chats" ng-click="dealChats()" ng-if="fi.deal_chat_list"><i class="fa fa-comment-alt"></i>{{ fi.deal_chat_list.title }}</button>
+    <button type="button" class="btn btn-default px-4" id="trade81-button-audit" ng-click="audit()" ng-if="fi.audit" ng-show="!q.checked.has" b-toggle="tooltip" title="{{ fi.audit.title }}" data-placement="bottom"><i class="fas fa-history p-0"></i></button>
+    <div class="btn-group" ng-if="q.checked.has && fi.change_status">
+      <button type="button" class="btn btn-primary dropdown-toggle" id="trade81-button-change_status_many" data-toggle="dropdown"><t>change status</t></button>
+      <div class="dropdown-menu">
+        <a href class="dropdown-item" ng-repeat="s in q.statuses" ng-click="changeStatusMany(s)" ng-if="!!q.checked[s.status].length">{{ s.status_name }} {{ q.checked[s.status].length }}</a>
+      </div>
+    </div>
+    <div class="btn-group" ng-if="fi.attach_data">
+      <button type="button" class="btn btn-success" id="trade81-button-attach_data_many" ng-click="attachDataMany()" ng-show="q.attach_data.has"><t p1="q.attach_data.size">attach_data $1</t></button>
+      <button type="button" class="btn btn-success dropdown-toggle" ng-if="fi.change_price_type" ng-show="q.change_price_type.has" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+      <div class="dropdown-menu">
+        <a href class="dropdown-item" ng-click="changePriceTypeMany()"><t p1="q.change_price_type.size">change_price_type $1</t></a>
+      </div>
+    </div>
+    <button type="button" class="btn btn-default" ng-click="changePriceTypeMany()" ng-if="fi.change_price_type && !fi.attach_data" ng-show="q.change_price_type.has">
+      <t p1="q.change_price_type.size">change_price_type $1</t>
+    </button>
+    <div class="btn-group" ng-if="fi.report" ng-show="q.reportChecked.has">
+      <button type="button" class="btn btn-default dropdown-toggle" id="trade81-button-report_many" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <t p1="q.reportChecked.size">report $1</t>
+      </button>
+      <div class="dropdown-menu">
+        <a class="dropdown-item cursor-pointer" ng-repeat="r in q.reports" ng-click="reportMany(r, 'html')">
+          <button type="button" class="btn btn-default btn-icon" ng-click="$event.stopPropagation(); reportMany(r, 'xlsx')">
+            <i class="far fa-file-excel"></i>
+          </button>&nbsp;
+          {{ r.name }}
+        </a>
+
+        <li ng-if="fi.margin_invoice">
+          <a class="dropdown-item cursor-pointer" ng-click="margin_invoice(_, 'html')">
+            <button type="button" class="btn btn-default btn-icon" ng-click="$event.stopPropagation(); margin_invoice(_, 'xlsx')">
+              <i class="far fa-file-excel"></i>
+            </button>&nbsp;
+            <t>invoice with margin</t>
+          </a>
+        </li>
+
+        <a class="dropdown-item cursor-pointer" ng-click="exportOrderMany()"><t p1="q.reportChecked.length">export order $1</t></a>
+      </div>
+    </div>
+    <div class="btn-group" ng-if="q.invoices.length > 0" ng-show="q.reportChecked.has">
+      <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <t p1="q.reportChecked.size">invoice $1</t>
+      </button>
+      <div class="dropdown-menu">
+        <a class="dropdown-item cursor-pointer" ng-repeat="r in q.invoices" ng-click="invoiceMany(r, q.ivk_onlyoffice)">
+          <button type="button" class="btn btn-xs btn-default btn-icon" ng-if="r.uri_setting" ng-click="$event.stopPropagation(); invoiceSetting(r)">
+            <i class="fa fa-cog"></i>
+          </button>&nbsp;
+          <button type="button" class="btn btn-xs btn-default btn-icon ml-1" ng-click="$event.stopPropagation(); invoiceMany(r, q.ivk_excel)">
+            <i class="far fa-file-excel"/>
+          </button>&nbsp;
+          {{ r.name }}
+        </a>
+      </div>
+    </div>
+    <div class="btn-group" ng-if="(fi.send_to_faktura && q.send_to_faktura.length > 0) ||
+                                  (fi.sign_faktura && q.sign_faktura.length > 0) ||
+                                  (fi.clear_faktura && q.clear_faktura.length > 0) ||
+                                  (fi.send_waybill_to_faktura && q.send_waybill_to_faktura.length > 0) ||
+                                  (fi.clear_waybill && q.clear_waybill.length > 0)">
+      <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <t>faktura</t>
+        <span class="caret"></span>
+      </button>
+      <div class="dropdown-menu">
+        <a class="dropdown-item cursor-pointer" ng-if="fi.send_to_faktura" ng-show="q.send_to_faktura.length > 0" ng-click="sendToFakturaMany()">
+          <t p1="q.send_to_faktura.length">send to faktura $1</t>
+        </a>
+        <a class="dropdown-item cursor-pointer" ng-if="fi.sign_faktura" ng-show="q.sign_faktura.length > 0" ng-click="signFakturaMany()">
+          <t p1="q.sign_faktura.length">sign faktura $1</t>
+        </a>
+        <a class="dropdown-item cursor-pointer" ng-if="fi.send_to_faktura && fi.sign_faktura" ng-show="q.send_to_faktura.length > 0" ng-click="sendToFakturaAndSignMany()">
+          <t p1="q.send_to_faktura.length">send to faktura and sign $1</t>
+        </a>
+        <a class="dropdown-item cursor-pointer" ng-if="fi.clear_faktura" ng-show="q.clear_faktura.length > 0" ng-click="clearFakturaMany()">
+          <t p1="q.clear_faktura.length">clear faktura $1</t>
+        </a>
+        <a class="dropdown-item cursor-pointer" ng-if="fi.send_waybill_to_faktura" ng-show="q.send_waybill_to_faktura.length > 0" ng-click="sendWaybillToFakturaMany()">
+          <t p1="q.send_waybill_to_faktura.length">send waybill to faktura $1</t>
+        </a>
+        <a class="dropdown-item cursor-pointer" ng-if="fi.send_waybill_to_faktura && fi.sign_faktura" ng-show="q.send_waybill_to_faktura.length > 0" ng-click="sendWaybillToFakturaAndSignMany()">
+          <t p1="q.send_waybill_to_faktura.length">send waybill to faktura and sign $1</t>
+        </a>
+        <a class="dropdown-item cursor-pointer" ng-if="fi.clear_waybill" ng-show="q.clear_waybill.length > 0" ng-click="clearWaybillMany()">
+          <t p1="q.clear_waybill.length">clear waybill $1</t>
+        </a>
+      </div>
+    </div>
+    <button type="button" class="btn btn-default" ng-click="sendToFiscalMany()" ng-if="fi.send_to_fiscal" ng-show="q.send_to_fiscal.length > 0">
+      <t p1="q.send_to_fiscal.length">send to fiscal $1</t>
+    </button>
+    <button type="button" class="btn btn-default" ng-click="clearMarkingsMany()" ng-if="fi.clear_markings && q.use_marking == 'Y'" ng-show="q.clear_markings.length > 0">
+      <t p1="q.clear_markings.length">clear markings $1</t>
+    </button>
+    <button type="button" class="btn btn-default" ng-click="page.close()" ng-hide="page.isFirst()">{{ page.close.title }}</button>
+  </div>
+  <div class="col-sm-10 b-right">
+    <b-grid-controller name="table"/>
+  </div>
+</div>
+<div class="b-content"><form name="form">
+  <div class="d-flex align-items-start" id="formRow">
+    <div class="tableDiv ui-trade81" style="width: 100%; position: relative;">
+      <style>
+        .ui-trade81 .tbl .tbl-body {
+          margin-bottom: {{ q.grid_margin_bottom }};
+        }
+
+        /* Styles for a dropdown menu with vertical scroll and a maximum height of 70% of the viewport height. */
+        .dropdown-menu {
+          overflow-y:auto;
+          max-height:70vh;
+        }
+      </style>
+      <b-grid name="table"
+              id="trade81-b_grid-table"
+              required="deal_id, status, person_id, person_name, room_id, modified_id, base_status, editable, sent_faktura, signed_faktura, sent_waybill, signed_waybill, currency_id, c_total_weight_brutto, c_total_weight_netto, total_amount, currency_name, status_color, source_table, currency_amount1, currency_amount2, currency_amount3,
+              currency_amount4, currency_amount5, total_deal_amount1, total_deal_amount2, total_deal_amount3, total_deal_amount4, total_deal_amount5, full_weight_brutto, full_weight_netto, c_total_litr, full_litr, all_count, with_marking, self_shipment, self_shipment_name, payment_kind, has_equipment, has_archived_exchange,
+              sent_ss_faktura, signed_ss_faktura, sent_ss_waybill, signed_ss_waybill"
+              on-dblclick="onDblclick(row)"
+              on-check="onCheck(checked)"
+              search="person_name, owner_person_name"
+              searchable="deal_id, room_name, sales_manager_name, payment_type_name, address, short_name, robot_name, tin, contract_name"
+              sort="-deal_time"
+              extra-columns="deal_id, external_id, person_id, subfilial_name, sales_manager_name, booked_date, created_on, modified_on, owner_person_name, expeditor_name, van_name, cash_register_name, contract_name, created_by_name, modified_by_name, price_type_names, nearest_visit_date, product_names, sent_virtual_cashbox_name,
+              mobile_notes, note, sent_faktura_name, signed_faktura_name, faktura_error_message, sent_waybill_name, signed_waybill_name, waybill_error_message, tin, weight_netto_name, weight_brutto_name, region_name, van_code, barcode, deal_time, person_code, has_action_name, has_visit_name, has_return, with_marking_name, self_shipment_name, comment_names, warehouse_names,
+              person_phone, payment_type_name, return_reason_name, document_source_name, has_margin_name, has_gift_name, address, short_name, consignment_date, source_id, delivery_number, invoice_number, manager_name, expeditor_id, lap_code, marking_attaching_method_name, producer_names, delivery_address_short, delivery_address_full,
+              sent_ss_faktura_name, signed_ss_faktura_name, sent_ss_waybill_name, signed_ss_waybill_name, sent_wms_name">
+        <b-row>
+          <b-col name="room_name" size=4/>
+          <b-col name="person_name" size=4/>
+          <b-col name="robot_name" size=3/>
+          <b-col name="deal_time" size=3/>
+          <b-col name="delivery_date" size=2/>
+          <b-col name="currency_name" size=3/>
+          <b-col name="total_amount" format="amount" align="right" size=2/>
+          <b-col name="status_name" as-html="status_html" size=2/>
+        </b-row>
+
+        <b-extra-columns>
+          <b-col name="consignment_amount" format="amount" align="right"/>
+          <b-col name="total_person_base_balance" format="amount" align="right"/>
+          <b-col name="c_total_litr" format="amount" align="right"/>
+          <b-col name="person_balance1" as-html="person_balance_html1" align="right"/>
+          <b-col name="person_balance2" as-html="person_balance_html2" align="right"/>
+          <b-col name="person_balance3" as-html="person_balance_html3" align="right"/>
+          <b-col name="person_balance4" as-html="person_balance_html4" align="right"/>
+          <b-col name="person_balance5" as-html="person_balance_html5" align="right"/>
+          <b-col name="total_amount_without_margin" format="amount" align="right"/>
+        </b-extra-columns>
+
+        <b-action>
+          <button type="button" class="btn btn-default" ng-click="selectOne(row)" ng-if="page.isDialog()"><t>select</t></button>
+          <div class="btn-group" ng-if="q.btn_group_view.length">
+            <button type="button" class="btn btn-default" id="trade81-button-view" ng-click="q.btn_group_view.firstFunc(row)" ng-if="q.btn_group_view.first">{{ q.btn_group_view.first.title }}</button>
+            <button type="button" class="btn btn-default dropdown-toggle" ng-if="q.btn_group_view.length > 1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+            <div class="dropdown-menu" ng-if="q.btn_group_view.length > 1">
+              <a href class="dropdown-item" ng-repeat="acc in q.btn_group_view.acc | limitTo: (1 - q.btn_group_view.length)" ng-click="acc.func(row)" ng-if="acc.grant">{{ acc.grant.title }}</a>
+            </div>
+          </div>
+          <div class="btn-group" ng-if="checkBtnGroupEdit(row)">
+            <button type="button" class="btn btn-default" id="trade81-button-edit" ng-click="q.btn_group_edit.firstFunc(row)" ng-if="q.btn_group_edit.first">{{ q.btn_group_edit.first.title }}</button>
+            <button type="button" class="btn btn-default dropdown-toggle" ng-if="q.btn_group_edit.length > 1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+            <div class="dropdown-menu" ng-if="q.btn_group_edit.length > 1">
+              <a href class="dropdown-item" ng-repeat="acc in q.btn_group_edit.acc | limitTo: (1 - q.btn_group_edit.length)" ng-click="acc.func(row)" ng-if="acc.grant">{{ acc.grant.title }}</a>
+            </div>
+          </div>
+          <button type="button" class="btn btn-default" ng-if="fi.edit_beta" ng-click="editBeta(row)" ng-show="fi.edit_beta && checkActionGrant(row, 'edit_beta')">{{ fi.edit_beta.title }}</button>
+          <div class="btn-group" ng-if="row.editable == 'Y' && q.statuses.length && fi.change_status">
+            <button type="button" class="btn btn-default dropdown-toggle" id="trade81-button-change_status_one" data-toggle="dropdown">
+              <t>change status</t>
+            </button>
+            <div class="dropdown-menu">
+              <a href class="dropdown-item" ng-repeat="s in q.statuses" ng-click="changeStatusOne(row, s)" ng-if="changeStatusCheck(row.status, s.status, row.has_equipment)">{{ s.status_name }}</a>
+            </div>
+          </div>
+          <div class="btn-group" ng-if="fi.report && row.deal_id">
+            <button type="button" class="btn btn-default dropdown-toggle" id="trade81-button-report_one" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <t>report</t>
+              <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+              <li ng-repeat="r in q.reports">
+                <a class="dropdown-item">
+                  <button type="button" class="btn btn-xs btn-default btn-icon" ng-show="fi.report_setting" ng-disabled="!r.uri_setting || !fi.report_setting"
+                    ng-click="$event.stopPropagation(); reportSetting(r.uri_setting)">
+                    <i class="fa fa-cog"/>
+                  </button>
+                  <button type="button" class="btn btn-xs btn-default btn-icon ml-1" ng-click="$event.stopPropagation(); reportOne(row, r, 'xlsx')">
+                    <i class="far fa-file-excel"/>
+                  </button>&nbsp;
+                  <span ng-click="$event.stopPropagation(); reportOne(row, r, 'html')">{{ r.name }}</span>
+                </a>
+              </li>
+
+              <li ng-if="fi.margin_invoice && q.has_invoice_margin == 'Y'" ng-click="margin_invoice(row, 'html')">
+                <a class="dropdown-item">
+                  <button type="button" class="btn btn-xs btn-default btn-icon" ng-show="fi.report_setting" ng-disabled="!q.margin_invoice_url || !fi.report_setting"
+                          ng-click="$event.stopPropagation(); reportSetting(q.margin_invoice_url);">
+                    <i class="fa fa-cog"/>
+                  </button>
+                  <button type="button" class="btn btn-xs btn-default btn-icon ml-1" ng-click="$event.stopPropagation(); margin_invoice(row, 'xlsx');">
+                    <i class="far fa-file-excel"/>
+                  </button>&nbsp;
+                  <t ng-click="$event.stopPropagation(); margin_invoice(row, 'html');">invoice with margin</t>
+                </a>
+              </li>
+
+              <li ng-repeat="r in q.cheques">
+                <a class="dropdown-item">
+                  <button type="button" class="btn btn-xs btn-default btn-icon" ng-show="fi.cheque_setting" ng-disabled="!r.uri_setting || !fi.cheque_setting"
+                    ng-click="$event.stopPropagation(); chequeSetting(r.uri_setting)">
+                    <i class="fa fa-cog"/>
+                  </button>
+                  <span ng-click="$event.stopPropagation(); chequeOne(row, r)">{{ r.name }}</span>
+                </a>
+              </li>
+              <li><a class="dropdown-item" ng-click="exportOrderOne(row)"><span><t>export order</t></span></a></li>
+            </ul>
+          </div>
+          <div class="btn-group" ng-if="q.invoices.length > 0">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <t>invoices</t>
+              <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+              <li ng-repeat="r in q.invoices">
+                <a class="dropdown-item" ng-click="invoiceOne(r, row, q.ivk_onlyoffice)">
+                  <button type="button" class="btn btn-xs btn-default btn-icon" ng-show="r.uri_setting" ng-click="$event.stopPropagation(); invoiceSetting(r)">
+                    <i class="fa fa-cog"/>
+                  </button>&nbsp;
+                  <button type="button" class="btn btn-xs btn-default btn-icon ml-1" ng-click="$event.stopPropagation(); invoiceOne(r, row, q.ivk_excel)">
+                    <i class="far fa-file-excel"/>
+                  </button>&nbsp;
+                  <span>{{ r.name }}</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+          <button type="button" class="btn btn-default" ng-if="fi.attach_marking && row.with_marking == 'Y' && q.use_marking == 'Y'" ng-click="attachMarking(row)">{{ fi.attach_marking.title }}</button>
+          <div class="btn-group" ng-if="fakturaCheckActions(row) || waybillCheckActions(row)">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <t>faktura</t>
+              <span class="caret"></span>
+            </button>
+            <div class="dropdown-menu">
+              <a ng-if="fi.send_to_faktura" ng-show="checkActionGrant(row, 'send_to_faktura')" class="dropdown-item cursor-pointer" ng-click="sendToFakturaOne(row)">
+                {{ fi.send_to_faktura.title }}
+              </a>
+              <a ng-if="fi.send_to_faktura" ng-show="checkActionGrant(row, 'update_faktura')" class="dropdown-item cursor-pointer" ng-click="updateFaktura(row)">
+                <t>update faktura</t>
+              </a>
+              <a ng-if="fi.sign_faktura" ng-show="checkActionGrant(row, 'sign_faktura')" class="dropdown-item cursor-pointer" ng-click="signFakturaOne(row)">
+                  {{ fi.sign_faktura.title }}
+              </a>
+              <a ng-if="fi.send_to_faktura && fi.sign_faktura" ng-show="checkActionGrant(row, 'send_to_faktura')" class="dropdown-item cursor-pointer" ng-click="sendToFakturaAndSignOne(row)">
+                <t>send and faktura and sign</t>
+              </a>
+              <a ng-if="fi.clear_faktura" ng-show="row.sent_faktura == 'Y'" class="dropdown-item cursor-pointer" ng-click="clearFakturaOne(row)">
+                {{ fi.clear_faktura.title }}
+              </a>
+              <div class="separator separator-solid my-6" ng-if="fakturaCheckActions(row) && waybillCheckActions(row)"></div>
+              <a ng-if="fi.send_waybill_to_faktura" ng-show="checkActionGrant(row, 'send_waybill_to_faktura')" class="dropdown-item cursor-pointer" ng-click="sendWaybillOne(row)">
+                <t>send waybill to faktura</t>
+              </a>
+              <a ng-if="fi.send_waybill_to_faktura && fi.sign_faktura" ng-show="checkActionGrant(row, 'send_waybill_to_faktura')" class="dropdown-item cursor-pointer" ng-click="sendAndSignWaybillOne(row)">
+                <t>send and sign waybill</t>
+              </a>
+              <a ng-if="fi.clear_waybill" ng-show="row.sent_waybill == 'Y'" class="dropdown-item cursor-pointer" ng-click="clearWaybillOne(row)">
+                {{ fi.clear_waybill.title }}
+              </a>
+            </div>
+          </div>
+          <div class="btn-group" ng-if="soliqFakturaCheckActions(row) || soliqWaybillCheckActions(row)">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <t>soliq service</t>
+              <span class="caret"></span>
+            </button>
+            <div class="dropdown-menu">
+              <a ng-if="fi.send_ss_faktura" ng-show="checkActionGrant(row, 'send_ss_faktura')" class="dropdown-item cursor-pointer" ng-click="sendSSFaktura(row)">
+                {{ fi.send_ss_faktura.title }}
+              </a>
+              <a ng-if="fi.send_ss_faktura && fi.sign_ss_faktura" ng-show="checkActionGrant(row, 'send_ss_faktura')" class="dropdown-item cursor-pointer" ng-click="sendAndSignSSFactura(row)">
+                <t>send and sign faktura</t>
+              </a>
+              <a ng-if="fi.sign_ss_faktura" ng-show="checkActionGrant(row, 'sign_ss_faktura')" class="dropdown-item cursor-pointer" ng-click="signSSFactura(row)">
+                <t>sign faktura document</t>
+              </a>
+              <a ng-if="fi.send_ss_faktura" ng-show="checkActionGrant(row, 'update_ss_faktura')" class="dropdown-item cursor-pointer" ng-click="updateSSFaktura(row)">
+                <t>update faktura in soliqservis.uz</t>
+              </a>
+              <a ng-if="fi.update_ss_faktura_status" ng-show="checkActionGrant(row, 'update_ss_faktura_status')" class="dropdown-item cursor-pointer" ng-click="updateSSFakturaStatus(row, 'F')">
+                <t>update faktura status from soliqservis.uz</t>
+              </a>
+              <a ng-if="fi.cancel_ss_document" ng-show="checkActionGrant(row, 'cancel_ss_document') && row.sent_ss_faktura == 'Y' && row.signed_ss_faktura == 'N'" class="dropdown-item cursor-pointer" ng-click="cancelSSDocument(row, 'F')">
+                <t>delete faktura from soliqservis.uz</t>
+              </a>
+              <div class="separator separator-solid my-6" ng-show="soliqFakturaCheckActions(row) && soliqWaybillCheckActions(row)"></div>
+              <a ng-if="fi.send_ss_waybill" ng-show="checkActionGrant(row, 'send_ss_waybill')" class="dropdown-item cursor-pointer" ng-click="sendSSWaybill(row)">
+                {{ fi.send_ss_waybill.title }}
+              </a>
+              <a ng-if="fi.send_ss_waybill" ng-show="checkActionGrant(row, 'update_ss_waybill')" class="dropdown-item cursor-pointer" ng-click="updateSSWaybill(row)">
+                <t>update waybill in soliqservis.uz</t>
+              </a>
+              <a ng-if="fi.update_ss_waybill_status" ng-show="checkActionGrant(row, 'update_ss_waybill_status')" class="dropdown-item cursor-pointer" ng-click="updateSSWaybillStatus(row, 'W')">
+                <t>update waybill status from soliqservis.uz</t>
+              </a>
+              <a ng-if="fi.cancel_ss_document" ng-show="checkActionGrant(row, 'cancel_ss_document') && row.sent_ss_waybill == 'Y' && row.signed_ss_waybill == 'N'" class="dropdown-item cursor-pointer" ng-click="cancelSSDocument(row, 'W')">
+                <t>delete waybill from soliqservis.uz</t>
+              </a>
+              <a ng-if="fi.send_to_soliq_service" ng-show="checkActionGrant(row, 'update_soliq_service')" class="dropdown-item cursor-pointer" ng-click="updateSoliqService(row)">
+                <t>update faktura in soliqservis.uz</t>
+              </a>
+              <a ng-if="fi.upadte_ss_faktura_status" ng-show="checkActionGrant(row, 'upadte_ss_faktura_status')" class="dropdown-item cursor-pointer" ng-click="upadteSSFakturaStatus(row)">
+                <t>upadte faktura status from soliqservis.uz</t>
+              </a>
+              <a ng-if="fi.cancel_ss_faktura" ng-show="checkActionGrant(row, 'cancel_ss_faktura')" class="dropdown-item cursor-pointer" ng-click="cancelSSFaktura(row)">
+                <t>delete faktura from soliqservis.uz</t>
+              </a>
+            </div>
+          </div>
+          <button type="button" class="btn btn-default" ng-if="fi.send_to_fiscal" ng-show="checkActionGrant(row, 'send_to_fiscal')" ng-click="sendToFiscalOne(row)">{{ fi.send_to_fiscal.title }}</button>
+          <button type="button" class="btn btn-default" ng-if="fi.clear_markings && q.use_marking == 'Y'" ng-show="checkActionGrant(row, 'clear_markings')" ng-click="clearMarkingsOne(row)">{{ fi.clear_markings.title }}</button>
+          <button type="button" class="btn btn-default" id="trade81-button-show_copy_modal" ng-if="fi.copy" ng-click="showCopyModal(row)" >{{ fi.copy.title }}</button>
+          <button type="button" class="btn btn-default" id="trade81-button-open_chat" ng-click="openChat(row.deal_id)"><i class="fa fa-comment-alt"></i><t>open chat</t></button>
+          <button type="button" class="btn btn-default" ng-click="sendToWms(row.deal_id)" ng-show="checkActionGrant(row, 'send_to_wms')" ng-if="fi.send_to_wms">{{ fi.send_to_wms.title }}</button>
+        </b-action>
+
+        <b-filter name="deal_id" directive="equal" extra/>
+        <b-filter name="room_id" decorate-with="room_name"/>
+        <b-filter name="robot_id" decorate-with="robot_name"/>
+        <b-filter name="sales_manager_id" decorate-with="sales_manager_name"/>
+        <b-filter name="manager_id" decorate-with="manager_name"/>
+        <b-filter name="person_id" decorate-with="person_name"/>
+        <b-filter name="person_id2" decorate-with="short_name" extra/>
+        <b-filter name="person_id3" directive="equal" extra/>
+        <b-filter name="owner_person_id" decorate-with="owner_person_name" extra/>
+        <b-filter name="deal_time"/>
+        <b-filter name="delivery_date"/>
+        <b-filter name="consignment_date" extra/>
+        <b-filter name="currency_id" decorate-with="currency_name"/>
+        <b-filter name="price_type_ids" decorate-with="price_type_names"/>
+        <b-filter name="comment_ids" decorate-with="comment_names"/>
+        <b-filter name="total_amount"/>
+        <b-filter name="subfilial_id" decorate-with="subfilial_name" extra/>
+        <b-filter name="status" decorate-with="status_name"/>
+        <b-filter name="source_table" decorate-with="document_source_name"/>
+        <b-filter name="tin" extra/>
+        <b-filter name="warehouse_ids" decorate-with="warehouse_names" extra/>
+        <b-filter name="payment_type_id" decorate-with="payment_type_name" extra/>
+        <b-filter name="sent_virtual_cashbox" decorate-with="sent_virtual_cashbox_name" extra/>
+        <b-filter name="region_id" decorate-with="region_name" extra/>
+        <b-filter name="product_ids" decorate-with="product_names" extra/>
+        <b-filter name="expeditor_id" decorate-with="expeditor_name" extra/>
+        <b-filter name="van_id" decorate-with="van_name" extra/>
+        <b-filter name="cash_register_id" decorate-with="cash_register_name" extra/>
+        <b-filter name="c_has_action" decorate-with="has_action_name" extra/>
+        <b-filter name="c_has_margin" decorate-with="has_margin_name" extra/>
+        <b-filter name="c_has_gift" decorate-with="has_gift_name" extra/>
+        <b-filter name="c_has_return" decorate-with="has_return" extra/>
+        <b-filter name="with_marking" decorate-with="with_marking_name" extra/>
+        <b-filter name="self_shipment" decorate-with="self_shipment_name" extra/>
+        <b-filter name="c_has_visit" decorate-with="has_visit_name" extra/>
+        <b-filter name="marking_attaching_method" decorate-with="marking_attaching_method_name" extra/>
+        <b-filter name="person_code" extra/>
+        <b-filter name="external_id" extra/>
+        <b-filter name="return_reason_id" decorate-with="return_reason_name" extra/>
+        <b-filter name="nearest_visit_date" extra/>
+        <b-filter name="delivery_number" extra/>
+        <b-filter name="invoice_number" extra/>
+        <b-filter name="lap_code" extra/>
+        <b-filter name="producer_ids" decorate-with="producer_names" extra/>
+        <b-filter name="sent_wms" decorate-with="sent_wms_name" extra/>
+        <b-filter name="created_by" decorate-with="created_by_name" extra/>
+        <b-filter name="modified_by" decorate-with="modified_by_name" extra/>
+        <b-filter name="created_on" extra/>
+        <b-filter name="modified_on" extra/>
+      </b-grid>
+      <div class="sg bg-white shadow-sm totalInfoDiv" id="trade81-sg_header-info" style="position: absolute;bottom: 0;" ng-show="q.currencies.length > 0">
+        <div class="sg-header">
+          <div class="sg-row">
+            <div class="sg-sub-row" ng-repeat="fa in q.currencies">
+              <div class="sg-cell col-sm-4" ng-show="$index == 0"><t>orders count</t>: {{ getNumStr(q.all_count) | bNumber }}</div>
+              <div class="sg-cell col-sm-4" ng-show="$index > 0"> </div>
+              <div class="sg-cell col-sm-5"><t ng-show="$index == 0">full amount</t>{{ fa.name }}: {{ getNumStr(q.total_amounts[fa.index]) | bNumber }}</div>
+              <div class="sg-cell col-sm-5" ng-if="q.checked.rows.length">
+                <t ng-show="$index == 0">checked total amount</t>{{ fa.name }}: {{ getNumStr(q.checked_amount[fa.index]) | bNumber }}
+              </div>
+              <div class="sg-cell col-sm-3" ng-show="$index == 0">
+                <t>full weight brutto</t>: {{ q.full_weight_name_brutto }}
+              </div>
+              <div class="sg-cell col-sm-3" ng-show="$index == 0">
+                <t>full weight netto</t>: {{ q.full_weight_name_netto }}
+              </div>
+              <div class="sg-cell col-sm-3" ng-show="$index == 0">
+                <t>full litr</t>: {{ q.full_litr | bNumber }} {{ q.litr_name }}
+              </div>
+              <div class="sg-cell col-sm-3" ng-show="$index == 1 && q.checked.rows.length">
+                <t>checked total weight(brutto)</t>: {{ getNumStr(q.checked_weight_brutto) | bNumber }} {{ q.checked_weight_brutto_measure }}
+              </div>
+              <div class="sg-cell col-sm-3" ng-show="$index == 1 && q.checked.rows.length">
+                <t>checked total weight(netto)</t>: {{ getNumStr(q.checked_weight_netto) | bNumber }} {{ q.checked_weight_netto_measure }}
+              </div>
+              <div class="sg-cell col-sm-3" ng-show="$index == 1 && q.checked.rows.length">
+                <t>checked total litr</t>: {{ getNumStr(q.checked_litr) | bNumber }} {{ q.litr_name }}
+              </div>
+            </div>
+          </div>
+          <div class="sg-sub-row" ng-show="q.currencies.length == 1 && q.checked.rows.length">
+            <div class="sg-cell col-sm-14"> </div>
+            <div class="sg-cell col-sm-5"><t>checked total weight(brutto)</t>: {{ getNumStr(q.checked_weight_brutto) | bNumber }} {{ q.checked_weight_brutto_measure }}</div>
+            <div class="sg-cell col-sm-5"><t>checked total weight(netto)</t>: {{ getNumStr(q.checked_weight_netto) | bNumber }} {{ q.checked_weight_netto_measure }}</div>
+            <div class="sg-cell col-sm-5"><t>checked total litr</t>: {{ getNumStr(q.checked_litr) | bNumber }} {{ q.litr_name }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="chatDiv ml-1" style="width: 20%;" ng-if="q.is_chat_open">
+      <style>
+        .resizer {
+          position: absolute;
+          z-index: 2;
+          width: 5px;
+          height: 100%;
+          cursor: col-resize;
+          background-color: transparent;
+          transform: translateX(-2px);
+        }
+        .btn-sm {
+          padding: 0.25rem 0.5rem;
+          font-size: 0.875rem;
+        }
+
+        ul {
+          align-items: center;
+        }
+      </style>
+      <div class="resizer" id="resizer"></div>
+      <div class="card card-custom card-stretch bg-white">
+        <div class="card-header card-header-tabs-line p-0">
+          <div class="card-toolbar col-24">
+            <div class="col-22">
+              <ul class="nav nav-tabs nav-tabs-line">
+                <li class="nav-item" ng-repeat="i in q.chats" b-toggle="tooltip" title="{{ i.chat_name }}">
+                  <a class="nav-link ml-0 d-inline-block text-truncate text-center" ng-class="{ 'active': $first }" data-toggle="tab" style="width: 60px;" ng-click="loadChat(i.chat_id)">{{ i.chat_name || q.tChat + ' ' + ($index + 1) }}
+                  </a>
+                </li>
+                <li class="nav-item" b-toggle="tooltip" title="{{ q.tAddChat }}" ng-if="fi.add_chat && q.chats.length > 0">
+                  <button type="button" class="btn btn-outline-primary btn-icon btn-sm" b-toggle data-title="{{ q.tRemoveItems }}" ng-click="addChat()">
+                    <span class="fas fa-plus"></span>
+                  </button>
+                </li>
+              </ul>
+            </div>
+            <div class="col-2 text-right">
+              <button type="button" class="close" aria-label="Close" ng-click="closeChat()">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="card-body m-0 p-0" ng-show="q.is_chat_exists">
+          <b-subpage name="deal_chat"/>
+        </div>
+        <div class="card-body align-items-center text-center" ng-show="!q.is_chat_exists">
+          <h5><t>chat not added to the deal</t></h5>
+          <button  type="button" class="btn btn-primary" ng-click="addChat()" ng-if="fi.add_chat"><i class="fa fa-comment-alt"></i>{{ q.tAddChat }}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal fade marginInvoiceModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group row">
+            <label class="control-label col-sm-10"><t>margin</t><r/></label>
+            <div class="col-sm-10 input-group">
+              <input class="form-control" b-number="signed" ng-keyup="$event.keyCode === 13 && drawInvoice()" ng-model="q.invoice_margin.margin" ng-change="changeMargin()"/>
+              <div class="input-group-append"><span class="input-group-text">%</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" ng-click="drawInvoice()"><t>ok</t></button>
+          <button type="button" class="btn btn-default" data-dismiss="modal"><t>close</t></button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal fade orderSettingsModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title"><t>settings</t></h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label><t>draft order after days</t></label><br/>
+            <input class="form-control col-sm-12" b-number scale="0" ng-model="d.draft_order_after_days"/>
+          </div>
+          <div class="form-group" ng-if="d.draft_order_after_days">
+            <label><t>draft order ignore legal person group name</t></label><br/>
+            <b-input name="person_groups"
+                     model="d.ignore_legal_person_group_name | name"
+                     model-key="d.ignore_legal_person_group_id | person_group_id"
+                     on-change="changePersonGroup('L', query, value)"
+                     on-delete="deletePersonGroup('L')">
+               {{ row.name }}
+            </b-input>
+          </div>
+          <div class="form-group" ng-if="d.draft_order_after_days">
+            <label><t>draft order ignore legal person types</t></label><br/>
+            <b-input name="person_types"
+                     multiple
+                     model="d.ignore_legal_person_types"
+                     label="name"
+                     sort="order_no"
+                     model-key="person_type_id"
+                     on-change="changePersonType(d.ignore_legal_person_group_id, query, value)"
+                     readonly="!d.ignore_legal_person_group_id">
+              {{ row.name }}
+            </b-input>
+          </div>
+          <div class="form-group" ng-if="d.draft_order_after_days">
+            <label><t>draft order ignore natural person group name</t></label><br/>
+            <b-input name="person_groups"
+                     model="d.ignore_natural_person_group_name | name"
+                     model-key="d.ignore_natural_person_group_id | person_group_id"
+                     on-change="changePersonGroup('N', query, value)"
+                     on-delete="deletePersonGroup('N')">
+               {{ row.name }}
+            </b-input>
+          </div>
+          <div class="form-group" ng-if="d.draft_order_after_days">
+            <label><t>draft order ignore natural person types</t></label><br/>
+            <b-input name="person_types"
+                     multiple
+                     model="d.ignore_natural_person_types"
+                     label="name"
+                     model-key="person_type_id"
+                     sort="order_no"
+                     on-change="changePersonType(d.ignore_natural_person_group_id, query, value)"
+                     readonly="!d.ignore_natural_person_group_id">
+              {{ row.name }}
+            </b-input>
+          </div>
+          <div class="form-group">
+            <label><t>allow use different person addresses</t></label><br>
+             <label class="switch">
+              <input type="checkbox" ng-true-value="'Y'" ng-false-value="'N'" ng-model="d.allow_person_delivery_addresses" />
+              <span>
+                <t ng-if="d.allow_person_delivery_addresses=='Y'">yes</t>
+                <t ng-if="d.allow_person_delivery_addresses=='N'">no</t>
+              </span>
+            </label>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <div class="d-flex align-items-center justify-content-between w-100">
+            <div class="form-group">
+              <span class="text-muted"><t>orders in draft status that exceed 90 days will be automatically canceled</t></span>
+            </div>
+            <div class="form-group d-flex flex-nowrap gap-2">
+              <button type="button" class="btn btn-primary" ng-click="saveOrderSettings()"><t>save</t></button>
+              <button type="button" class="btn btn-default ml-2" data-dismiss="modal"><t>close</t></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+<!-- E-Imzo errors -->
+<form name="modal-e-imzo-errors">
+  <div class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-md" style="max-width: 1000px;">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title"><t>sign failed documents</t></h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="form-group col-sm-10 offset-sm-14">
+              <b-pg-controller name="eimzo_errors"/>
+            </div>
+          </div>
+          <b-pg-grid name="eimzo_errors" local-data="q.fakuraSignErrors" iterator="item" sort="uniqueId, error, reason, exception">
+            <b-pg-row>
+              <b-pg-col name="uniqueId" size="4"/>
+              <b-pg-col name="error" size="8"/>
+              <b-pg-col name="reason" size="4"/>
+              <b-pg-col name="exception" size="8"/>
+            </b-pg-row>
+          </b-pg-grid>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="hideModal()">{{ page.close.title }}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+<!-- E-Imzo -->
+<form name="modal-e-imzo">
+  <div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" role="dialog">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-body">
+          <div class="form-group">
+            <div class="m-4"></div>
+            <div class="user-keys"></div>
+          </div>
+          <div class="form-group" style="display: none;" id="notinstalled">
+            <div class="m-5"></div>
+            <div class="p-3 col-sm-24" style="background-color: #e8c139;">
+              <div>
+                <p class="h4">
+                  <span style="display: block; line-height: 26px">Для корректной работы системы необходимо установить модуль <i>E-IMZO</i> <sup> (30 Мегабайт)</sup> или <i>Браузер E-IMZO</i> <sup> (60 Мегабайт)</sup></span>
+                  <a style="background-color: rgba(253, 255, 255, 0.7); margin: 5px 0;" class="btn btn-default btn-xs" href="https://e-imzo.uz/main/downloads/" role="button">
+                    <i class="fa fa-download"></i>Скачать ПО E-IMZO
+                  </a> <br>
+                  <strong>
+                    <font size="-1">ВНИМАНИЕ ! Установите модуль E-IMZO от имени Администратора.</font>
+                  </strong>
+                </p>
+                <p>Ознакомится с инструкцией по установке модуля Е-IMZO можно <a href="https://esi.uz/index/help" style="text-decoration: underline">здесь</a>.</p>
+                <p></p>
+              </div>
+            </div>
+          </div>
+          <button type="button" class="btn btn-default float-right" ng-click="hideEImzoModal()">close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+<!-- Order Copy -->
+<form name="modal-order-copy">
+  <div class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title"><t>copy order</t></h4>
+        </div>
+        <div class="modal-body">
+          <b-input name="persons"
+                   multiple
+                   model="q.copyOrderPersons"
+                   label="name"
+                   model-key="person_id"
+                   on-change="onChangePerson(query, value)">
+            {{ row.name }}
+          </b-input>
+        </div>
+        <div class="modal-footer">
+          <div class="d-flex align-items-center justify-content-between w-100">
+            <div class="form-group">
+              <span class="text-muted"><t>action and overload in the order are not transferred to the copied order!</t></span>
+            </div>
+            <div class="form-group d-flex flex-nowrap gap-2">
+              <button type="button" class="btn btn-success" ng-click="copy()" data-dismiss="modal"><t>copy</t></button>
+              <button type="button" class="btn btn-default ml-2" ng-click="hideCopyModal()" data-dismiss="modal"><t>close</t></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</form></div>

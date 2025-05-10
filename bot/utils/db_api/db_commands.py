@@ -77,7 +77,7 @@ class Database:
         parameters = tuple(int(param) if param == 'user_id' else param for param in parameters)
 
         return await self.execute(sql, *parameters, fetch=True)
-    async def add_user(self, name, username, user_id, is_blocked=False):
+    async def add_user(self, name, username, user_id, is_blocked=False, yiguvchi=False):
         uzbekistan_tz = pytz.timezone('Asia/Tashkent')
 
         current_time = datetime.now(uzbekistan_tz)
@@ -87,13 +87,13 @@ class Database:
 
         sql = """
             INSERT INTO users_user (
-                name, username, user_id, is_blocked, created_date, updated_date
+                name, username, user_id, is_blocked, yiguvchi, created_date, updated_date
             )
-            VALUES ($1, $2, $3, $4, $5, $6)
+            VALUES ($1, $2, $3, $4, $5, $6, $7)
             RETURNING *
         """
         # Ma'lumotlarni bazaga qo‘shish
-        return await self.execute(sql, name, username, user_id, is_blocked, current_time, current_time, fetchrow=True)
+        return await self.execute(sql, name, username, user_id, is_blocked, yiguvchi, current_time, current_time, fetchrow=True)
 
     async def update_saler_id(self, saler_id, user_id):
         sql = "UPDATE users_user SET saler_id = $1 WHERE user_id = $2"

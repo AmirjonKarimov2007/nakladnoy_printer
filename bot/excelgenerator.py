@@ -24,9 +24,6 @@ def set_default_printer(printer_name="Canon MF3010"):
         print(f"Default printer set to: {printer_name}")
     except Exception as e:
         print(f"Error: {e}")
-
-
-
 def kill_task():
     task_name = 'EXCEL.EXE'
     for proc in psutil.process_iter(['pid', 'name']):
@@ -37,7 +34,6 @@ def kill_task():
                 pass
             except psutil.AccessDenied:
                 pass
-
 def print_excel_file_sync(file_path):
     
     try:
@@ -73,7 +69,6 @@ def print_excel_file_sync(file_path):
     finally:
         # Har holatda Excel ilovasini yopishni ta'minlash
         kill_task()
-
 async def print_excel_file(file_path):
     try:
         loop = asyncio.get_event_loop()
@@ -85,9 +80,6 @@ async def print_excel_file(file_path):
     except Exception as e:
         print(f"Asinxron xatolik yuz berdi: {e}")
         return False
-
-
-
 def get_box_details(quantity, box_quant):
     if not isinstance(box_quant, int):
         return f"{quantity} шт."
@@ -108,14 +100,11 @@ def format_barcode(barcode):
     if '|' in barcode:
         return barcode.replace('|', '\n')
     return barcode
-
 def format_product_name(name, max_length=45):
     formatted_name = ' '.join(name.split())
     if len(formatted_name) > max_length:
         formatted_name = '\n'.join([formatted_name[i:i+max_length] for i in range(0, len(formatted_name), max_length)])
     return formatted_name
-
-
 def set_column_width(ws, col_idx, start_row, end_row):
     max_length = 0
     for row in range(start_row, end_row + 1):
@@ -127,7 +116,6 @@ def set_column_width(ws, col_idx, start_row, end_row):
             pass
     adjusted_width = (max_length + 2)
     ws.column_dimensions[get_column_letter(col_idx)].width = adjusted_width
-
 async def process_order(deal_id, output_path, moment,moneytype = "usd"):
     try:
         if moment == 'today':
@@ -272,9 +260,15 @@ async def process_order(deal_id, output_path, moment,moneytype = "usd"):
         else:
             print(f"Xatolik yuz beribdi: {e}")
             return False
-
 async def main():
     await process_order(deal_id="120462256",output_path="1",moment='today')
-
-if __name__ == '__main__':
-    asyncio.run(main())
+def update_excel_with_products(file_path: str, products_data: list, output_path: str = "tahrirlangan_rasxod.xlsx"):
+    wb = load_workbook(file_path)
+    ws = wb.active
+    start_row = 2
+    for index, product in enumerate(products_data, start=start_row):
+        ws.cell(row=index, column=1, value=product.get("product_code", ""))
+        ws.cell(row=index, column=2, value=product.get("order_quant", 0))
+        ws.cell(row=index, column=3, value="Y")
+    wb.save(output_path)
+    return output_path

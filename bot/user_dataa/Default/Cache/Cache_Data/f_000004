@@ -1,0 +1,1669 @@
+@font-face {
+  font-family: "Source Code Pro";
+  src: local("SourceCodePro-Bold"), local("Source Code Pro Bold"), url("../assets/fonts/SourceCodePro-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-stretch: normal
+}
+
+@font-face {
+  font-family: "Source Code Pro";
+  src: local("SourceCodePro-BoldIt"), local("Source Code Pro Bold Italic"), url("../assets/fonts/SourceCodePro-BoldItalic.woff2") format("woff2");
+  font-weight: 700;
+  font-style: italic;
+  font-stretch: normal
+}
+
+@font-face {
+  font-family: "Source Code Pro";
+  src: local("SourceCodePro-It"), local("Source Code Pro Italic"), url("../assets/fonts/SourceCodePro-Italic.woff2") format("woff2");
+  font-weight: 400;
+  font-style: italic;
+  font-stretch: normal
+}
+
+@font-face {
+  font-family: "Source Code Pro";
+  src: local("SourceCodePro-Regular"), local("Source Code Pro"), url("../assets/fonts/SourceCodePro.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-stretch: normal
+}
+
+.color--red--50 {
+  color: #FFEBEE !important
+}
+
+.background--red--50 {
+  background-color: #FFEBEE !important
+}
+
+.color--red--100 {
+  color: #FFD9DF !important
+}
+
+.background--red--100 {
+  background-color: #FFD9DF !important
+}
+
+.color--red--200 {
+  color: #FFB2BF !important
+}
+
+.background--red--200 {
+  background-color: #FFB2BF !important
+}
+
+.color--red--300 {
+  color: #FF8FA2 !important
+}
+
+.background--red--300 {
+  background-color: #FF8FA2 !important
+}
+
+.color--red--400 {
+  color: #FF6982 !important
+}
+
+.background--red--400 {
+  background-color: #FF6982 !important
+}
+
+.color--red--500 {
+  color: #FF4564 !important
+}
+
+.background--red--500 {
+  background-color: #FF4564 !important
+}
+
+.color--red--600 {
+  color: #CC3750 !important
+}
+
+.background--red--600 {
+  background-color: #CC3750 !important
+}
+
+.color--red--700 {
+  color: #CF0A45 !important
+}
+
+.background--red--700 {
+  background-color: #CF0A45 !important
+}
+
+.color--red--800 {
+  color: #631B31 !important
+}
+
+.background--red--800 {
+  background-color: #631B31 !important
+}
+
+.color--red--900 {
+  color: #330E19 !important
+}
+
+.background--red--900 {
+  background-color: #330E19 !important
+}
+
+.color--pink--50 {
+  color: #FFE8F9 !important
+}
+
+.background--pink--50 {
+  background-color: #FFE8F9 !important
+}
+
+.color--pink--100 {
+  color: #FFD6F4 !important
+}
+
+.background--pink--100 {
+  background-color: #FFD6F4 !important
+}
+
+.color--pink--200 {
+  color: #FFABE9 !important
+}
+
+.background--pink--200 {
+  background-color: #FFABE9 !important
+}
+
+.color--pink--300 {
+  color: #E595D0 !important
+}
+
+.background--pink--300 {
+  background-color: #E595D0 !important
+}
+
+.color--pink--400 {
+  color: #E06EC2 !important
+}
+
+.background--pink--400 {
+  background-color: #E06EC2 !important
+}
+
+.color--pink--500 {
+  color: #CE50AC !important
+}
+
+.background--pink--500 {
+  background-color: #CE50AC !important
+}
+
+.color--pink--600 {
+  color: #A6408B !important
+}
+
+.background--pink--600 {
+  background-color: #A6408B !important
+}
+
+.color--pink--700 {
+  color: #7A3066 !important
+}
+
+.background--pink--700 {
+  background-color: #7A3066 !important
+}
+
+.color--pink--800 {
+  color: #522044 !important
+}
+
+.background--pink--800 {
+  background-color: #522044 !important
+}
+
+.color--pink--900 {
+  color: #291022 !important
+}
+
+.background--pink--900 {
+  background-color: #291022 !important
+}
+
+.color--purple--50 {
+  color: #F2F0FF !important
+}
+
+.background--purple--50 {
+  background-color: #F2F0FF !important
+}
+
+.color--purple--100 {
+  color: #E6E0FF !important
+}
+
+.background--purple--100 {
+  background-color: #E6E0FF !important
+}
+
+.color--purple--200 {
+  color: #CDC2FF !important
+}
+
+.background--purple--200 {
+  background-color: #CDC2FF !important
+}
+
+.color--purple--300 {
+  color: #B3A5F2 !important
+}
+
+.background--purple--300 {
+  background-color: #B3A5F2 !important
+}
+
+.color--purple--400 {
+  color: #9A8AE5 !important
+}
+
+.background--purple--400 {
+  background-color: #9A8AE5 !important
+}
+
+.color--purple--500 {
+  color: #8272CA !important
+}
+
+.background--purple--500 {
+  background-color: #8272CA !important
+}
+
+.color--purple--600 {
+  color: #675BA1 !important
+}
+
+.background--purple--600 {
+  background-color: #675BA1 !important
+}
+
+.color--purple--700 {
+  color: #4D4478 !important
+}
+
+.background--purple--700 {
+  background-color: #4D4478 !important
+}
+
+.color--purple--800 {
+  color: #352E52 !important
+}
+
+.background--purple--800 {
+  background-color: #352E52 !important
+}
+
+.color--purple--900 {
+  color: #191626 !important
+}
+
+.background--purple--900 {
+  background-color: #191626 !important
+}
+
+.color--blue--50 {
+  color: #E5F5FF !important
+}
+
+.background--blue--50 {
+  background-color: #E5F5FF !important
+}
+
+.color--blue--100 {
+  color: #D5EBFA !important
+}
+
+.background--blue--100 {
+  background-color: #D5EBFA !important
+}
+
+.color--blue--200 {
+  color: #A8D7F5 !important
+}
+
+.background--blue--200 {
+  background-color: #A8D7F5 !important
+}
+
+.color--blue--300 {
+  color: #7BC3F2 !important
+}
+
+.background--blue--300 {
+  background-color: #7BC3F2 !important
+}
+
+.color--blue--400 {
+  color: #50AFEC !important
+}
+
+.background--blue--400 {
+  background-color: #50AFEC !important
+}
+
+.color--blue--500 {
+  color: #239AE7 !important
+}
+
+.background--blue--500 {
+  background-color: #239AE7 !important
+}
+
+.color--blue--600 {
+  color: #1C7AB8 !important
+}
+
+.background--blue--600 {
+  background-color: #1C7AB8 !important
+}
+
+.color--blue--700 {
+  color: #155D8C !important
+}
+
+.background--blue--700 {
+  background-color: #155D8C !important
+}
+
+.color--blue--800 {
+  color: #0E3D5C !important
+}
+
+.background--blue--800 {
+  background-color: #0E3D5C !important
+}
+
+.color--blue--900 {
+  color: #072030 !important
+}
+
+.background--blue--900 {
+  background-color: #072030 !important
+}
+
+.color--green--50 {
+  color: #F0F8E3 !important
+}
+
+.background--green--50 {
+  background-color: #F0F8E3 !important
+}
+
+.color--green--100 {
+  color: #DEEFC2 !important
+}
+
+.background--green--100 {
+  background-color: #DEEFC2 !important
+}
+
+.color--green--200 {
+  color: #BDE085 !important
+}
+
+.background--green--200 {
+  background-color: #BDE085 !important
+}
+
+.color--green--300 {
+  color: #9CD049 !important
+}
+
+.background--green--300 {
+  background-color: #9CD049 !important
+}
+
+.color--green--400 {
+  color: #83B62F !important
+}
+
+.background--green--400 {
+  background-color: #83B62F !important
+}
+
+.color--green--500 {
+  color: #6E9A28 !important
+}
+
+.background--green--500 {
+  background-color: #6E9A28 !important
+}
+
+.color--green--600 {
+  color: #577A1F !important
+}
+
+.background--green--600 {
+  background-color: #577A1F !important
+}
+
+.color--green--700 {
+  color: #405C14 !important
+}
+
+.background--green--700 {
+  background-color: #405C14 !important
+}
+
+.color--green--800 {
+  color: #2C3F0E !important
+}
+
+.background--green--800 {
+  background-color: #2C3F0E !important
+}
+
+.color--green--900 {
+  color: #151E06 !important
+}
+
+.background--green--900 {
+  background-color: #151E06 !important
+}
+
+.color--yellow--50 {
+  color: #FDF3D3 !important
+}
+
+.background--yellow--50 {
+  background-color: #FDF3D3 !important
+}
+
+.color--yellow--100 {
+  color: #FBE6A2 !important
+}
+
+.background--yellow--100 {
+  background-color: #FBE6A2 !important
+}
+
+.color--yellow--200 {
+  color: #F7CE4B !important
+}
+
+.background--yellow--200 {
+  background-color: #F7CE4B !important
+}
+
+.color--yellow--300 {
+  color: #EAB60B !important
+}
+
+.background--yellow--300 {
+  background-color: #EAB60B !important
+}
+
+.color--yellow--400 {
+  color: #C89B09 !important
+}
+
+.background--yellow--400 {
+  background-color: #C89B09 !important
+}
+
+.color--yellow--500 {
+  color: #A68108 !important
+}
+
+.background--yellow--500 {
+  background-color: #A68108 !important
+}
+
+.color--yellow--600 {
+  color: #846706 !important
+}
+
+.background--yellow--600 {
+  background-color: #846706 !important
+}
+
+.color--yellow--700 {
+  color: #644D02 !important
+}
+
+.background--yellow--700 {
+  background-color: #644D02 !important
+}
+
+.color--yellow--800 {
+  color: #423300 !important
+}
+
+.background--yellow--800 {
+  background-color: #423300 !important
+}
+
+.color--yellow--900 {
+  color: #231B00 !important
+}
+
+.background--yellow--900 {
+  background-color: #231B00 !important
+}
+
+.color--orange--50 {
+  color: #FDEEDD !important
+}
+
+.background--orange--50 {
+  background-color: #FDEEDD !important
+}
+
+.color--orange--100 {
+  color: #FCE1C5 !important
+}
+
+.background--orange--100 {
+  background-color: #FCE1C5 !important
+}
+
+.color--orange--200 {
+  color: #F9C185 !important
+}
+
+.background--orange--200 {
+  background-color: #F9C185 !important
+}
+
+.color--orange--300 {
+  color: #F6A34B !important
+}
+
+.background--orange--300 {
+  background-color: #F6A34B !important
+}
+
+.color--orange--400 {
+  color: #F3830C !important
+}
+
+.background--orange--400 {
+  background-color: #F3830C !important
+}
+
+.color--orange--500 {
+  color: #CC6E0A !important
+}
+
+.background--orange--500 {
+  background-color: #CC6E0A !important
+}
+
+.color--orange--600 {
+  color: #A55908 !important
+}
+
+.background--orange--600 {
+  background-color: #A55908 !important
+}
+
+.color--orange--700 {
+  color: #7A4206 !important
+}
+
+.background--orange--700 {
+  background-color: #7A4206 !important
+}
+
+.color--orange--800 {
+  color: #532D04 !important
+}
+
+.background--orange--800 {
+  background-color: #532D04 !important
+}
+
+.color--orange--900 {
+  color: #291500 !important
+}
+
+.background--orange--900 {
+  background-color: #291500 !important
+}
+
+.color--gray--50 {
+  color: #F2F2F2 !important
+}
+
+.background--gray--50 {
+  background-color: #F2F2F2 !important
+}
+
+.color--gray--100 {
+  color: #E5E5E5 !important
+}
+
+.background--gray--100 {
+  background-color: #E5E5E5 !important
+}
+
+.color--gray--200 {
+  color: #CCCCCC !important
+}
+
+.background--gray--200 {
+  background-color: #CCCCCC !important
+}
+
+.color--gray--300 {
+  color: #B2B2B2 !important
+}
+
+.background--gray--300 {
+  background-color: #B2B2B2 !important
+}
+
+.color--gray--400 {
+  color: #999999 !important
+}
+
+.background--gray--400 {
+  background-color: #999999 !important
+}
+
+.color--gray--500 {
+  color: #808080 !important
+}
+
+.background--gray--500 {
+  background-color: #808080 !important
+}
+
+.color--gray--600 {
+  color: #666666 !important
+}
+
+.background--gray--600 {
+  background-color: #666666 !important
+}
+
+.color--gray--700 {
+  color: #4C4C4C !important
+}
+
+.background--gray--700 {
+  background-color: #4C4C4C !important
+}
+
+.color--gray--800 {
+  color: #333333 !important
+}
+
+.background--gray--800 {
+  background-color: #333333 !important
+}
+
+.color--gray--900 {
+  color: #191919 !important
+}
+
+.background--gray--900 {
+  background-color: #191919 !important
+}
+
+.text--color--black--regular {
+  color: rgba(0, 0, 0, 0.9) !important
+}
+
+.text--color--black--light {
+  color: rgba(0, 0, 0, 0.65) !important
+}
+
+.text--color--black--faded {
+  color: rgba(0, 0, 0, 0.51) !important
+}
+
+.text--color--black--disabled {
+  color: rgba(0, 0, 0, 0.32) !important
+}
+
+.text--color--white--regular {
+  color: rgba(255, 255, 255, 0.9) !important
+}
+
+.text--color--white--light {
+  color: rgba(255, 255, 255, 0.65) !important
+}
+
+.text--color--white--faded {
+  color: rgba(255, 255, 255, 0.51) !important
+}
+
+.text--color--white--disabled {
+  color: rgba(255, 255, 255, 0.32) !important
+}
+
+.border--color--black--regular {
+  border-color: rgba(0, 0, 0, 0.25) !important
+}
+
+.border--color--black--light {
+  border-color: rgba(0, 0, 0, 0.18) !important
+}
+
+.border--color--black--faded {
+  border-color: rgba(0, 0, 0, 0.1) !important
+}
+
+.border--white--regular {
+  border-color: rgba(255, 255, 255, 0.25) !important
+}
+
+.border--white--light {
+  border-color: rgba(255, 255, 255, 0.18) !important
+}
+
+.border--white--faded {
+  border-color: rgba(255, 255, 255, 0.1) !important
+}
+
+.background--surface {
+  background-color: #FCFEFF !important
+}
+
+.background--regular {
+  background-color: #F0F1F2 !important
+}
+
+html {
+  font-family: "Ubuntu", sans-serif;
+  font-size: 13px;
+  font-weight: 300;
+  color: rgba(0, 0, 0, 0.9)
+}
+
+body {
+  font-family: "Ubuntu", sans-serif;
+  font-size: 13px;
+  font-weight: 300;
+  color: rgba(0, 0, 0, 0.9)
+}
+
+p {
+  font-size: 1rem;
+  margin-bottom: 0.75em
+}
+
+.text--size--big {
+  font-size: 1.2rem
+}
+
+.text--size--small {
+  font-size: 0.833rem
+}
+
+h6 {
+  font-size: 1rem
+}
+
+.h6 {
+  font-size: 1rem
+}
+
+h5 {
+  font-size: 1.2rem
+}
+
+.h5 {
+  font-size: 1.2rem
+}
+
+h4 {
+  font-size: 1.44rem
+}
+
+.h4 {
+  font-size: 1.44rem
+}
+
+h3 {
+  font-size: 1.728rem
+}
+
+.h3 {
+  font-size: 1.728rem
+}
+
+h2 {
+  font-size: 2.0736rem
+}
+
+.h2 {
+  font-size: 2.0736rem
+}
+
+h1 {
+  font-size: 2.48832rem
+}
+
+.h1 {
+  font-size: 2.48832rem
+}
+
+.h1,
+h1 {
+  font-style: normal;
+  font-weight: 300;
+  line-height: 110%;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  margin-bottom: 1em
+}
+
+.h2,
+h2 {
+  font-style: normal;
+  font-weight: normal;
+  line-height: 110%;
+  letter-spacing: 0.02em;
+  margin-bottom: 1em
+}
+
+.h3,
+h3 {
+  font-style: normal;
+  font-weight: 300;
+  font-size: 22.464px;
+  line-height: 110%;
+  letter-spacing: 0.02em;
+  margin-bottom: 1em
+}
+
+.h4,
+h4 {
+  font-style: normal;
+  font-weight: 300;
+  line-height: 120%;
+  letter-spacing: 0.02em;
+  margin-bottom: 0.75em
+}
+
+.h5,
+h5 {
+  font-style: normal;
+  font-weight: 500;
+  line-height: 135%;
+  letter-spacing: 0.02em;
+  margin-bottom: 0.75em
+}
+
+.h6,
+h6 {
+  font-style: normal;
+  font-weight: 500;
+  line-height: 130%;
+  letter-spacing: 0.02em;
+  margin-bottom: 0.75em
+}
+
+a {
+  color: #155D8C;
+  text-decoration: underline
+}
+
+a:hover {
+  color: #F3830C
+}
+
+body {
+  background-color: #F0F1F2;
+  padding: 0;
+  margin: 0
+}
+
+.tbl {
+  width: 100%;
+  margin-top: 20px;
+  max-height: 95vh;
+  overflow-x: auto;
+  overflow-y: auto;
+  border-radius: 2px;
+  box-shadow: 0px 5px 10px rgba(20, 23, 26, 0.3);
+  background-color: #FCFEFF
+}
+
+.tbl__table {
+  width: 100%;
+  table-layout: fixed;
+  background-color: #FCFEFF;
+  font-family: "Source Code Pro", monospace;
+  font-size: 12px;
+  line-height: 125%;
+  font-style: normal;
+  font-weight: normal;
+  color: rgba(0, 0, 0, 0.65)
+}
+
+.tbl thead {
+  font-family: "Ubuntu", sans-serif;
+  font-size: 1em;
+  line-height: 120%;
+  font-weight: 500;
+  position: sticky;
+  top: 0;
+  left: 0
+}
+
+.tbl th {
+  padding: 1.6666666667em 1.6666666667em;
+  background: linear-gradient(to top, rgba(252, 254, 255, 0.9), rgba(240, 240, 240, 0.9))
+}
+
+.tbl tr {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1)
+}
+
+.tbl td {
+  padding: 0.8333333333em 1.6666666667em;
+  vertical-align: middle
+}
+
+.dtbl {
+  width: 100%;
+  min-width: 10px;
+  margin-top: 20px;
+  max-height: 95vh;
+  overflow-x: auto;
+  overflow-y: auto;
+  border-radius: 2px;
+  box-shadow: 0px 5px 10px rgba(20, 23, 26, 0.3);
+  background-color: #FCFEFF;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+  font-family: "Source Code Pro", monospace;
+  font-size: 12px;
+  line-height: 1em;
+  color: rgba(0, 0, 0, 0.65)
+}
+
+.dtbl__column--fill {
+  flex-grow: 1;
+  width: 0px
+}
+
+.dtbl__column--fill .dtbl__c,
+.dtbl__column--fill .dtbl__head-cell {
+  padding: 0
+}
+
+.dtbl__head {
+  width: 100%;
+  position: sticky;
+  left: 0;
+  top: 0;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-start;
+  align-items: stretch
+}
+
+.dtbl__head-cell {
+  height: 4em;
+  padding: 10px 20px;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-start;
+  align-items: center;
+  position: sticky;
+  left: 0;
+  top: 0;
+  background-color: #FCFEFF;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  font-family: "Ubuntu", sans-serif;
+  font-size: 1.0833333333em;
+  font-weight: 500;
+  line-height: 125%;
+  color: rgba(0, 0, 0, 0.65)
+}
+
+.dtbl__head-cell span {
+  width: 100%
+}
+
+.dtbl__r {
+  width: 100%;
+  min-width: 10px;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-start;
+  align-items: stretch;
+  padding: 10px 20px
+}
+
+.dtbl .dtbl__column>div,
+.dtbl__c {
+  padding-top: 0.95em;
+  padding-bottom: 1.05em;
+  padding-left: 1.6666666667em;
+  padding-right: 1.6666666667em;
+  height: 3em;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  font-size: 1em
+}
+
+.dtbl .dtbl__column>div input[type=checkbox],
+.dtbl__c input[type=checkbox] {
+  width: 1em;
+  height: 1em
+}
+
+.hdtbl {
+  width: 100%;
+  min-width: 10px;
+  margin-top: 20px;
+  max-height: 95vh;
+  overflow-x: auto;
+  overflow-y: auto;
+  border-radius: 2px;
+  box-shadow: 0px 5px 10px rgba(20, 23, 26, 0.3);
+  background-color: #FCFEFF;
+  font-family: "Source Code Pro", monospace;
+  font-size: 12px;
+  line-height: 1em;
+  color: rgba(0, 0, 0, 0.65)
+}
+
+.hdtbl input[type=checkbox] {
+  width: 1em;
+  height: 1em
+}
+
+.hdtbl__wrapper {
+  position: relative;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: flex-start;
+  align-items: start
+}
+
+.hdtbl__head {
+  min-width: 100%;
+  position: sticky;
+  left: 0;
+  top: 0;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-start;
+  align-items: stretch;
+  background-color: #FCFEFF;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1)
+}
+
+.hdtbl__head-cell {
+  width: 150px;
+  height: 4em;
+  padding-top: 0.95em;
+  padding-bottom: 1.05em;
+  padding-left: 2em;
+  padding-right: 2em;
+  flex-shrink: 0;
+  left: 0;
+  top: 0;
+  font-family: "Ubuntu", sans-serif;
+  font-size: 1em;
+  font-weight: 500;
+  line-height: 125%;
+  color: rgba(0, 0, 0, 0.65)
+}
+
+.hdtbl__head-cell span {
+  width: 100%
+}
+
+.hdtbl__r {
+  min-width: 100%;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: stretch;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1)
+}
+
+.hdtbl .hdtbl__r>div,
+.hdtbl__c {
+  width: 150px;
+  padding-top: 0.95em;
+  padding-bottom: 1.05em;
+  padding-left: 2em;
+  padding-right: 2em;
+  overflow: hidden;
+  font-size: 1em;
+  flex-shrink: 0
+}
+
+.login-page__top {
+  width: 100%;
+  min-width: 260px;
+  max-width: 460px;
+  height: 48px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 30px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center
+}
+
+@media (min-width:992px) {
+  .login-page__top {
+    max-width: 100%
+  }
+}
+
+.login-page__top a {
+  color: rgba(0, 0, 0, 0.65);
+  transition: color 0.3s ease-out
+}
+
+.login-page__top a:hover {
+  color: rgba(0, 0, 0, 0.9)
+}
+
+.login-page__top .login-page-admin {
+  margin-left: 0;
+  margin-right: auto
+}
+
+.login-page__container {
+  width: 100%;
+  min-width: 260px;
+  max-width: 460px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 30px;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: space-evenly
+}
+
+@media (min-height:510px) {
+  .login-page__container {
+    height: calc(100vh - 48px - 2px);
+    min-height: 436px
+  }
+}
+
+.login-page__container>.loginbox {
+  margin-top: 0;
+  margin-bottom: auto
+}
+
+@media (min-height:660px) {
+  .login-page__container>.loginbox {
+    margin-top: 22px
+  }
+}
+
+@media (min-height:720px) {
+  .login-page__container>.loginbox {
+    margin-top: 45px
+  }
+}
+
+@media (min-height:850px) {
+  .login-page__container>.loginbox {
+    margin-top: 90px
+  }
+}
+
+.login-page__container>:last-child {
+  margin-top: auto;
+  margin-bottom: 0
+}
+
+.login-page__footer {
+  height: 56px;
+  text-align: center;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  flex-shrink: 0
+}
+
+@media (min-height:600px) {
+  .login-page__footer {
+    height: 72px
+  }
+}
+
+.login-page__footer p {
+  margin-bottom: 0
+}
+
+.login-page-menu {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  align-items: center;
+  visibility: hidden;
+}
+
+.login-page-menu__list {
+  padding-left: 0;
+  margin-bottom: 0;
+  list-style: none;
+  text-align: center
+}
+
+.login-page-menu__item {
+  color: rgba(255, 255, 255, 0.65);
+  margin: 16px 0
+}
+
+.login-page-menu__link {
+  color: rgba(255, 255, 255, 0.65);
+  transition: color 0.3s ease-out
+}
+
+.login-page-menu__link:hover {
+  color: rgba(255, 255, 255, 0.9)
+}
+
+.login-page-language {
+  float: right;
+  position: relative;
+}
+
+.login-page-language__title {
+  color: rgba(255, 255, 255, 0.51);
+  margin-right: 5px
+}
+
+.login-page-language__button {
+  padding: 0;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.9);
+  text-transform: uppercase
+}
+
+.login-page-language__button .login-page-language__caret-down {
+  margin-left: 5px
+}
+
+.login-page-lang-options {
+  display: none;
+  position: absolute;
+  margin-top: 5px;
+  right: 0;
+  background: #fcfeff;
+  color: #072030;
+  border-radius: 4px;
+}
+
+.login-page-lang-options > li {
+  list-style: none;
+  cursor: pointer;
+  padding: 5px 10px;
+}
+
+.login-page-admin__icon,
+a.login-page-admin__icon {
+  margin-right: 5px
+}
+
+.loginbox {
+  background-color: #FCFEFF;
+  color: rgba(0, 0, 0, 0.9);
+  padding: 15px;
+  border-radius: 4px;
+  box-shadow: 0px 30px 40px rgba(0, 0, 0, 0.15)
+}
+
+@media (min-width:1200px) and (min-height:720px) {
+  .loginbox {
+    padding: 30px
+  }
+}
+
+@media (min-width:1200px) and (min-height:850px) {
+  .loginbox {
+    padding: 60px
+  }
+}
+
+.loginbox__icon {
+  font-size: 48px;
+  margin-bottom: 0.1875em;
+  color: rgba(0, 0, 0, 0.51)
+}
+
+.loginbox__logo {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: center;
+  margin: 2rem 0;
+  padding: 0.5rem;
+  margin-bottom: 40px;
+  height: auto;
+  max-height: clamp(40px, 6vh, 80px);
+  transition: all 0.3s ease;
+}
+
+.loginbox__logo object {
+  width: auto;
+  max-width: 250px;
+  max-height: 100%;
+  height: auto;
+}
+
+@media (min-width:1200px) and (min-height:720px) {
+  .loginbox__buttons-container {
+    margin-top: 15px
+  }
+}
+
+.grecaptcha-badge {
+  visibility: hidden;
+}
+
+.loginbox__button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #155D8C;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1rem;
+  border: none;
+  height: 40px;
+  width: 100%;
+  border-radius: 3px;
+  border: 1px solid rgba(0, 0, 0, 0);
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.2);
+  text-transform: uppercase;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  text-decoration: none;
+  text-align: center;
+  margin-top: 10px;
+  transition: all 0.3s ease-out
+}
+
+.loginbox__button:hover {
+  background: #1c7ab8;
+  text-decoration: none
+}
+
+.loginbox__button:focus {
+  outline: none
+}
+
+@media (max-height:510px) {
+  .loginbox__button {
+    height: 40px
+  }
+}
+
+.loginbox__button--transparent {
+  background-color: transparent;
+  color: rgba(0, 0, 0, 0.65);
+  box-shadow: none
+}
+
+.loginbox__button--transparent:hover {
+  background-color: transparent;
+  color: #50AFEC;
+  border: 1px solid #50AFEC
+}
+
+.loginbox__button--one-id {
+  background: #072030
+}
+
+.loginbox__button--one-id:hover {
+  background: #010203
+}
+
+.loginbox__button--company {
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  background-color: #efefef;
+  color: #212121;
+  font-size: 1rem;
+  border: none;
+  height: 40px;
+  width: 100%;
+  border-radius: 3px;
+  border: 1px solid rgba(0, 0, 0, 0);
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.2);
+  text-transform: uppercase;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  text-decoration: none;
+  text-align: left;
+  padding: 10px 15px;
+  margin-top: 5px;
+  transition: all 0.3s ease-out
+}
+
+.loginbox__button--company:hover {
+  background-color: #fcfcfc!important;
+  text-decoration: none;
+}
+
+.loginbox__button--company:focus {
+  outline: none
+}
+
+@media (max-height:510px) {
+  .loginbox__button--company {
+    height: 40px
+  }
+}
+
+#register-container {
+  display: none;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+
+.register__title {
+  display: block;
+  text-align: center;
+  font-size: 12px;
+  width: 50%;
+}
+
+.register__button {
+  background-color: transparent;  
+  color: #18181b;
+  text-decoration: none;
+  text-align: center;
+  font-weight: 400;
+  outline: none;
+  border: 1.2px solid #ececec;
+  box-shadow: 1px 1px 4px #ffffff;
+  border-radius: 6.5px;
+  padding: 8.5px;
+  width: 50%;
+  transition: all 0.2s;
+}
+
+.register__button:hover {
+  background-color: #f4f4f5;
+  color: #18181b;
+}
+
+.custom-checkbox .custom-control-input:checked~.custom-control-label::before{
+  background-color:#155D8C;
+}
+
+.loginbox__input {
+  margin-bottom: 10px;
+  height: 50px;
+  position: relative
+}
+
+@media (max-height:510px) {
+  .loginbox__input {
+    height: 40px
+  }
+}
+
+.loginbox__input input {
+  width: 100%;
+  height: 100%;
+  padding: 0 15px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  border: none;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.18);
+  border-radius: 0;
+  font-size: 1.2rem;
+  color: rgba(0, 0, 0, 0.9);
+  transition: border 0.3s ease-out
+}
+
+.loginbox__input input:focus {
+  color: #239AE7;
+  outline: none;
+  border-bottom: 1px solid #239AE7
+}
+
+.loginbox__input input:focus+.loginbox__input-icon:not(.loginbox__input-icon--button) {
+  color: #239AE7
+}
+
+.loginbox__input input:focus::placeholder {
+  color: rgba(0, 0, 0, 0.51)
+}
+
+.loginbox__input input::placeholder {
+  color: rgba(0, 0, 0, 0.51)
+}
+
+@media (max-height:510px) {
+  .loginbox__input input {
+    height: 40px
+  }
+}
+
+.loginbox__input--icon input {
+  padding-right: 42px
+}
+
+.loginbox__input-icon {
+  width: 24px;
+  height: 24px;
+  position: absolute;
+  right: 10px;
+  z-index: 1;
+  top: calc(50% - 12px);
+  color: rgba(0, 0, 0, 0.32);
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: center;
+  font-size: 16px;
+  transition: color 0.3s ease-out
+}
+
+.loginbox__input-icon--button {
+  cursor: pointer;
+  color: #239AE7;
+  transition: color 0.3s ease-out
+}
+
+.loginbox__input-icon--button:hover {
+  color: #155D8C
+}
+
+.login-with-password {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.loginbox__footer {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.login-with-opt, .register, .login-as_admin {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.login-with-opt.try_other_phone {
+  display: none;
+}
+
+.forgot-password {
+  width: 100%;
+  display: flex;
+  justify-content: right;
+}
+
+#otp-input-div {
+  display: none;
+}
+
+#get_otp {
+  display: none;
+}
+
+.phone-country {
+  position: absolute;
+  z-index: 1;
+  font-size: 1.2rem;
+  transform: translateY(15px);
+  margin-left: 14px;
+}
+
+/* btn-shine */
+:root {
+  --btn-border: 1px solid rgba(255, 255, 255, 0.2);
+  --btn-border-hover: 1px solid rgba(255, 255, 255, 0.3);
+  /* --btn-bg: transparent; */
+  --btn-bg: rgba(255, 255, 255, .1);
+  --btn-bg-hover: rgba(255, 255, 255, .2);
+  --btn-shadow: 1px 1px 25px 10px rgba(255, 255, 255, 0.05);
+  --btn-text-color: #f4f4f4;
+  --shine-degree: 120deg;
+  --shine-color: rgba(255, 255, 255, 0.3);
+  --shine-effect: linear-gradient(var(--shine-degree), transparent, var(--shine-color), transparent);
+  --shine-transition: all 0.65s ease-in-out;
+}
+
+.btn-shine {
+  position: relative;
+  overflow: hidden;
+  text-wrap: nowrap;
+  font-size: 1.1rem;
+  text-decoration: none;
+  border: var(--btn-border);
+  color: var(--btn-text-color);
+  background: var(--btn-bg);
+}
+
+.btn-shine::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--shine-effect);
+}
+
+.btn-shine::before {
+  left: -100%;
+  transition: var(--shine-transition);
+}
+
+.btn-shine:hover {
+  border: var(--btn-border-hover) !important;
+  color: var(--btn-text-color) !important;
+  background: var(--btn-bg-hover) !important;
+  box-shadow: var(--btn-shadow) !important;
+}
+
+.btn-shine:hover::before {
+  left: 100%;
+}
+
+.btn-shine::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--shine-effect);
+}
+
+.btn-shine::after {
+  animation: shine 6s ease-in-out infinite;
+}
+
+.btn-shine:hover::after {
+  animation: none;
+}
+
+@keyframes shine {
+  0%, 50% {
+    left: -100%;
+    transition-property: left;
+ }
+
+  62%, 100% {
+    left: 100%;
+    transition-property: left;
+ }
+}

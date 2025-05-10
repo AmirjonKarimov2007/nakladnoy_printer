@@ -51,6 +51,9 @@ def get_info_for_product():
         return True
     else:
         return False
+
+
+
 def get_price_for_product():
     url = "https://smartup.online/b/anor/mxs/mkf/product_price$export"
 
@@ -435,7 +438,42 @@ async def get_order_info_by_deal_id(deal_id_to_find):
     
     return None  
 
+async def get_selected_orders(deal_id):
+    url = "https://smartup.online/b/trade/txs/tdeal/order$export"
+    
+    auth = aiohttp.BasicAuth('jamshidbek@falcon', '571++632')
 
+    headers = { 
+        'filial_id': '5012602',
+        'project_code': 'trade',
+    }
 
+    data = {
+        "filial_codes": [{"filial_code": "5012602"}],
+        "deal_id": deal_id,
+        "statuses":[],
+        "begin_deal_date": today,
+        "end_deal_date": today,
+        }
+
+    ssl_context = ssl.create_default_context()
+    ssl_context.check_hostname = False
+    ssl_context.verify_mode = ssl.CERT_NONE  
+
+    async with aiohttp.ClientSession(auth=auth) as session:
+        async with session.post(url, json=data, headers=headers, ssl=ssl_context) as response:
+            text = await response.text() 
+            
+            
+            if response.status == 200:
+                try:
+                    json_data = json.loads(text)  
+                    print(json_data)
+                    return json_data
+
+                except json.JSONDecodeError:
+                    return False
+            else:
+                return False  
 
 
