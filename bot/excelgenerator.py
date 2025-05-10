@@ -35,7 +35,6 @@ def kill_task():
             except psutil.AccessDenied:
                 pass
 def print_excel_file_sync(file_path):
-    
     try:
         set_default_printer()
         pythoncom.CoInitialize()
@@ -45,9 +44,6 @@ def print_excel_file_sync(file_path):
         wb = excel.Workbooks.Open(abs_path)  
         ws = wb.ActiveSheet
 
-        # AutoFit qilish
-        # ws.Columns.AutoFit()
-
         # Chop etish sozlamalari
         ws.PageSetup.Zoom = False
         ws.PageSetup.FitToPagesWide = 1
@@ -55,7 +51,8 @@ def print_excel_file_sync(file_path):
         ws.PageSetup.PaperSize = 9  # A4 qog'oz o'lchami
         ws.PageSetup.Orientation = 1  # Portret rejimi
 
-        # Chop etish
+        # Chop etish (faqat qora-oq rejimda)
+        # ws.PageSetup.PrintInBlackAndWhite = True  # <-- Qora-oq rejim
         wb.PrintOut()
         
         # Faylni yopish va Excel ilovasini to'xtatish
@@ -67,8 +64,8 @@ def print_excel_file_sync(file_path):
         print(f"Xatolik yuz berdi: {e}")
         return False 
     finally:
-        # Har holatda Excel ilovasini yopishni ta'minlash
         kill_task()
+
 async def print_excel_file(file_path):
     try:
         loop = asyncio.get_event_loop()
@@ -80,6 +77,12 @@ async def print_excel_file(file_path):
     except Exception as e:
         print(f"Asinxron xatolik yuz berdi: {e}")
         return False
+    
+
+
+
+
+
 def get_box_details(quantity, box_quant):
     if not isinstance(box_quant, int):
         return f"{quantity} шт."
