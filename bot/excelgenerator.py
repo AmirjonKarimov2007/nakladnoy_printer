@@ -5,12 +5,10 @@ from openpyxl.styles import PatternFill, Alignment, Border, Side, Font
 from openpyxl.utils import get_column_letter
 import os
 from functions import *
-import pythoncom
 import psutil
 import os
 import asyncio
 import psutil
-import pythoncom
 from data.config import USD
 from loader import db
 
