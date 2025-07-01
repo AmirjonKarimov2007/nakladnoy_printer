@@ -7,7 +7,7 @@ from keyboards.inline.main_menu_super_admin import dates_markup
 from loader import *
 from filters.admins import *
 from functions import *
-from excelgenerator import print_excel_file,process_order
+from excelgenerator import process_order
 from data.config import ADMINS
 
 @dp.message_handler(IsAdmin(),text="📄Profil Spiskalari",state='*')
