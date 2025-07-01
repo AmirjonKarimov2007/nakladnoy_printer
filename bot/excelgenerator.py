@@ -1,11 +1,9 @@
-import win32com.client
 import os
 import asyncio
 from openpyxl import load_workbook
 from openpyxl.styles import PatternFill, Alignment, Border, Side, Font
 from openpyxl.utils import get_column_letter
 import os
-import win32com.client
 from functions import *
 import pythoncom
 import psutil
@@ -13,17 +11,10 @@ import os
 import asyncio
 import psutil
 import pythoncom
-import win32com.client
 from data.config import USD
 from loader import db
-import win32print
 
-def set_default_printer(printer_name="Canon MF3010"):
-    try:
-        win32print.SetDefaultPrinter(printer_name)
-        print(f"Default printer set to: {printer_name}")
-    except Exception as e:
-        print(f"Error: {e}")
+
 def kill_task():
     task_name = 'EXCEL.EXE'
     for proc in psutil.process_iter(['pid', 'name']):
@@ -34,49 +25,8 @@ def kill_task():
                 pass
             except psutil.AccessDenied:
                 pass
-def print_excel_file_sync(file_path):
-    try:
-        set_default_printer()
-        pythoncom.CoInitialize()
-        abs_path = os.path.abspath(file_path)  
-        excel = win32com.client.Dispatch("Excel.Application")
-        excel.Visible = False 
-        wb = excel.Workbooks.Open(abs_path)  
-        ws = wb.ActiveSheet
 
-        # Chop etish sozlamalari
-        ws.PageSetup.Zoom = False
-        ws.PageSetup.FitToPagesWide = 1
-        ws.PageSetup.FitToPagesTall = False 
-        ws.PageSetup.PaperSize = 9  # A4 qog'oz o'lchami
-        ws.PageSetup.Orientation = 1  # Portret rejimi
 
-        # Chop etish (faqat qora-oq rejimda)
-        # ws.PageSetup.PrintInBlackAndWhite = True  # <-- Qora-oq rejim
-        wb.PrintOut()
-        
-        # Faylni yopish va Excel ilovasini to'xtatish
-        wb.Close(SaveChanges=False)
-        excel.Quit()
-        pythoncom.CoUninitialize()
-        return True
-    except Exception as e:
-        print(f"Xatolik yuz berdi: {e}")
-        return False 
-    finally:
-        kill_task()
-
-async def print_excel_file(file_path):
-    try:
-        loop = asyncio.get_event_loop()
-        result = await loop.run_in_executor(None, print_excel_file_sync, file_path)
-        if result:
-            return True
-        else:
-            return False
-    except Exception as e:
-        print(f"Asinxron xatolik yuz berdi: {e}")
-        return False
 
 import httpx
 import asyncio
@@ -91,7 +41,7 @@ async def send_print_request(payload: dict, url: str = "https://myprinter123.loc
             print("❌ HTTP xatolik:", e)
             return None
 
-    
+
 def get_box_details(quantity, box_quant):
     if not isinstance(box_quant, int):
         return f"{quantity} шт."
