@@ -5,7 +5,7 @@ from loader import dp
 admin_orders_keyboard = ReplyKeyboardMarkup(
     keyboard=[
         [
-        KeyboardButton(text="📃Barcha Spiskalar"),
+            KeyboardButton(text="📃Barcha Spiskalar"),
         ],
         [
         KeyboardButton(text="📄Profil Spiskalari")

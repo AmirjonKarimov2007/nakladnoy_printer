@@ -59,7 +59,7 @@ async def show_orders(message: types.Message, user_id: int, page: int, call=None
                 callback_data=f"create_consumption:{deal_id}:{person_name[:10]}:{total_amount}"
             )
         )
-
+    
     buttons = []
     if page > 0:
         buttons.append(InlineKeyboardButton(text="⬅️", callback_data=f"consumption_prev_page:{page}"))
@@ -75,11 +75,15 @@ async def show_orders(message: types.Message, user_id: int, page: int, call=None
     else:
         await message.answer(text, reply_markup=markup)
 
+
+
+
+
 @dp.callback_query_handler(IsAdmin(), lambda c: c.data.startswith("create_consumption:"))
 async def toggle_order_selection(call: types.CallbackQuery):
     _, deal_id, person_name, total_amount = call.data.split(":")
 
-    user_id = call.from_user.id
+    user_id = call.from_user.id 
     selected = selected_orders.setdefault(user_id, set())
 
     if deal_id in selected:
@@ -99,6 +103,8 @@ async def change_page(callback_query: types.CallbackQuery):
 
     new_page = current_page - 1 if action == "consumption_prev_page" else current_page + 1
     await show_orders(callback_query.message, user_id, new_page, call=callback_query)
+
+
 import openpyxl
 from openpyxl.styles import Font
 from io import BytesIO

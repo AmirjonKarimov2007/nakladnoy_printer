@@ -12,6 +12,18 @@ class IsSuperAdmin(BoundFilter):
             return True
         else:
             return False
+        
+class isYiguvchi(BoundFilter):
+    async def check(self, message: types.Message):
+        user_id = message.from_user.id
+        user = await db.select_user(user_id=user_id)
+        tekshirish = user[0]['yiguvchi']
+
+        if tekshirish:
+            return True
+        else:
+            return False
+        
 class IsAdmin(BoundFilter):
     async def check(self, message: types.Message):
         user_id = int(message.from_user.id)

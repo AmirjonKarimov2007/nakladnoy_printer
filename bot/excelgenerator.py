@@ -77,12 +77,21 @@ async def print_excel_file(file_path):
     except Exception as e:
         print(f"Asinxron xatolik yuz berdi: {e}")
         return False
+
+import httpx
+import asyncio
+async def send_print_request(payload: dict, url: str = "https://myprinter123.loca.lt/print"):
+    async with httpx.AsyncClient() as client:
+        try:
+            response = await client.post(url, json=payload)
+            print("✅ Status:", response.status_code)
+            print("📨 Response:", response.json())
+            return response
+        except httpx.HTTPError as e:
+            print("❌ HTTP xatolik:", e)
+            return None
+
     
-
-
-
-
-
 def get_box_details(quantity, box_quant):
     if not isinstance(box_quant, int):
         return f"{quantity} шт."
@@ -127,135 +136,13 @@ async def process_order(deal_id, output_path, moment,moneytype = "usd"):
             order_info = await get_lastday_order_info_by_deal_id(deal_id)
         else:
             order_info = await get_order_info_by_deal_id(deal_id)
-
-        products = order_info['order_products']
-        currency_code = order_info['currency_code']
-        all_price = order_info['total_amount']
-        date = order_info['booked_date']
-        saler_id = order_info['sales_manager_id']
-        time = order_info['deal_time']
-        name = order_info['sales_manager_name']
-        room_name = order_info['room_name']
+        process = await send_print_request(payload=order_info)
         
-        client_name = order_info['person_name']
-
-        wb = load_workbook("shablon.xlsx")
-        ws = wb.active
-        user = await db.select_user(saler_id=int(saler_id))
-        if user:
-            phone_number = user[0]['phone_number']
+        if process:
+            return True
         else:
-            phone_number = " "
-        ws['A4'] = f"Дата отгрузки: {date}"  
-        ws['A8'] = f"Время заказа: {time}" 
-        ws['D2'] = f"Торговый представитель: {name}" 
+            return False
         
-        ws['D4'] = f"Контрагент: {client_name}" 
-        ws['D3'] = f"Телефон торгового представителя: +{phone_number}" 
-
-        border_style = Border(
-            left=Side(border_style="thin", color="000000"),
-            right=Side(border_style="thin", color="000000"),
-            top=Side(border_style="thin", color="000000"),
-            bottom=Side(border_style="thin", color="000000")
-        )
-
-        total_count = 0
-        row = 11
-        E_qator = 0
-        warehouse = 0
-        for i, product in enumerate(products, start=1):
-            ws[f'A{row}'] = i
-            barcode = format_barcode(product['product_barcode'])
-            ws[f'B{row}'] = barcode
-            product_name = format_product_name(product['product_name'])
-            ws[f'C{row}'] = product_name
-            ws[f'D{row}'] = f"{product['order_quant']}"
-            box_quant = get_box_details(quantity=product['order_quant'], box_quant=product['box_quant'])
-            warehouse = product['warehouse_code']
-            ws[f'E{row}'] = box_quant
-            product_price = float(product['product_price'])
-          
-            if product_price.is_integer():
-                ws[f'F{row}'] = f"{int(product_price):,}"
-            else:
-                ws[f'F{row}'] = f"{product_price:,.2f}"
-            
-            sold_amount = float(product['sold_amount'])
-            if sold_amount.is_integer():
-                ws[f'G{row}'] = f"{int(sold_amount):,}"
-            else:
-                ws[f'G{row}'] = f"{sold_amount:,.2f}"
-
-            ws.row_dimensions[row].auto_size = True 
-            total_count += int(product['order_quant'])
-            box_quant_length = len(str(box_quant))
-            if box_quant_length > E_qator:
-                E_qator = box_quant_length
-
-            for col in range(1, 8):
-                cell = ws.cell(row=row, column=col)
-                cell.border = border_style
-                cell.font = Font(size=12) 
-                if col in [4, 5, 6, 7]:
-                    cell.alignment = Alignment(horizontal='right', vertical='top', wrap_text=True)
-                else:
-                    cell.alignment = Alignment(horizontal='left', vertical='top', wrap_text=True)
-
-            row += 1
-
-        ws.row_dimensions[row].auto_size = True 
-
-        for col in range(1, 8):
-            if col == 3:
-                ws.column_dimensions[get_column_letter(col)].width = 50
-            else:
-                set_column_width(ws, col, start_row=12, end_row=row-1)
-
-        ws.column_dimensions['B'].width = 16
-        black_row = row
-        black_fill = PatternFill(start_color="D5D5D5", end_color="D5D5D5", fill_type="solid")
-
-        for col in range(1, 8):
-            ws.cell(row=black_row, column=col).fill = black_fill
-            cell = ws.cell(row=black_row, column=col)
-            cell.border = border_style
-
-        ws.merge_cells(f'A{black_row}:G{black_row}')
-
-        if currency_code == "840":
-            uzs = f"UZS: {float(all_price) * USD:,.2f}"
-            ws[f'A{black_row}'] = f"Итого: {all_price}$|->{uzs}"
-        else:
-            ws[f'A{black_row}'] = f"Итого: {all_price}"
-        if warehouse=="111":
-            ws['C10'] = "Meta-falcon chinni bozor"
-        elif warehouse=="11":
-            ws['C10'] = "Chinni bozor"
-
-        ws[f'A{black_row}'].alignment = Alignment(horizontal='right', vertical='center', wrap_text=True)
-        ws[f'A{black_row}'].font = Font(bold=True)
-        ws[f'A{black_row}'].border = border_style
-
-        ws['D10'] = total_count
-        ws['D10'].alignment = Alignment(horizontal='center', vertical='center')
-        ws['D10'].font = Font(bold=True)
-
-        ws['G10'] = all_price
-        ws['G10'].alignment = Alignment(horizontal='center', vertical='center')
-        ws['G10'].font = Font(bold=True)
-
-        ws.column_dimensions['A'].width = 5
-        ws.column_dimensions['D'].width = 9
-        ws.column_dimensions['E'].width = E_qator + 3
-        ws.column_dimensions['F'].width = 11
-        ws.column_dimensions['G'].width = 12
-
-        # Faylni saqlash
-        if not os.path.exists('orders'):
-            os.makedirs('orders')
-        wb.save(f"orders/{output_path}.xlsx")
-        return True
     except Exception as e:
         if "Permission denied" in str(e):
             kill_task()

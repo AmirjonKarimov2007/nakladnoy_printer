@@ -64,12 +64,14 @@ async def get_order(call: CallbackQuery):
     text += f"🪪 Client ID: <code>{client_id}</code>\n"
     text += f"💸Buyurtma Narx: <code>{total_amount}</code>\n"
     markup = InlineKeyboardMarkup(row_width=2)
-    markup.insert(InlineKeyboardButton(text=f"🖨Chiqarish",callback_data=f"print_order:{deal_id}:today"))
     user = await db.select_user(user_id=call.from_user.id)
     user = user[0]
     if user['yiguvchi']:
         markup.add(InlineKeyboardButton(text=f"⚙️Tayyorlash",callback_data=f"preparation:{deal_id}:today"))
-    markup.insert(InlineKeyboardButton(text=f"📥Yuklash",callback_data=f"download:{deal_id}:{client_id}:today"))
+    else:
+        markup.insert(InlineKeyboardButton(text=f"🖨Chiqarish",callback_data=f"print_order:{deal_id}:today"))
+        markup.add(InlineKeyboardButton(text=f"⚙️Tayyorlash",callback_data=f"preparation:{deal_id}:today"))
+        markup.insert(InlineKeyboardButton(text=f"📥Yuklash",callback_data=f"download:{deal_id}:{client_id}:today"))
 
     try:
         await call.message.edit_text(text=f"<b>{text}</b>",reply_markup=markup)
@@ -104,12 +106,14 @@ async def get_order(call: CallbackQuery):
     client_id = button_title.rsplit(":")[1]
     text += f"🪪 Client ID: <code>{client_id}</code>\n"
     markup = InlineKeyboardMarkup(row_width=2)
-    markup.insert(InlineKeyboardButton(text=f"🖨Chiqarish",callback_data=f"print_order:{deal_id}:yesterday"))
     user = await db.select_user(user_id=call.from_user.id)
     user = user[0]
     if user['yiguvchi']:
-        markup.add(InlineKeyboardButton(text=f"⚙️Tayyorlash",callback_data=f"preparation:{deal_id}:today"))
-    markup.insert(InlineKeyboardButton(text=f"📥Yuklash",callback_data=f"download:{deal_id}:{client_id}:yesterday"))
+        markup.add(InlineKeyboardButton(text=f"⚙️Tayyorlash",callback_data=f"preparation:{deal_id}:yesterday"))
+    else:
+        markup.insert(InlineKeyboardButton(text=f"🖨Chiqarish",callback_data=f"print_order:{deal_id}:yesterday"))
+        markup.add(InlineKeyboardButton(text=f"⚙️Tayyorlash",callback_data=f"preparation:{deal_id}:tyesterdayoday"))
+        markup.insert(InlineKeyboardButton(text=f"📥Yuklash",callback_data=f"download:{deal_id}:{client_id}:tyesterdayoday"))
     await call.message.edit_text(text=f"<b>{text}</b>",reply_markup=markup)
 
 @dp.callback_query_handler(IsAdmin(),text_contains=f"print_order:",state='*')
@@ -119,23 +123,13 @@ async def prin_order(call: CallbackQuery):
     if date=='today':
         order = await process_order(deal_id=deal_id,output_path=deal_id,moment='today')
         if order:
-            pechat = await print_excel_file(file_path=f"orders/{deal_id}.xlsx")
-            if pechat:
-                await call.answer("✅Chiqarish muvaffaqiyatli boshlandi",show_alert=True)
-            else:
-                await call.answer("❌Printerdan chiqmadi boshqattan urining.Printer yoniq ekaniga ishonch hosil qiling.",show_alert=True)
-                
-
+            await call.answer("✅Chiqarish muvaffaqiyatli boshlandi",show_alert=True)
         else:
             await call.answer("❌Buyurtma Printerdan Chiqarish Amalga oshmadi",show_alert=True)
     if date=='yesterday':
         order = await process_order(deal_id=deal_id,output_path=deal_id,moment='yesterday')
         if order:
-            pechat = await print_excel_file(file_path=f"orders/{deal_id}.xlsx")
-            if pechat:
-                await call.answer("✅Chiqarish muvaffaqiyatli boshlandi",show_alert=True)
-            else:
-                await call.answer("❌Printerdan chiqmadi boshqattan urining.Printer yoniq ekaniga ishonch hosil qiling.",show_alert=True)
+            await call.answer("✅Chiqarish muvaffaqiyatli boshlandi",show_alert=True)
         else:
             await call.answer("Buyurma bugungi kunda mavjud emas.")
 
@@ -143,6 +137,7 @@ PER_PAGE = 10
 users_pages = {}  
 
 @dp.message_handler(IsSuperAdmin(), text="📃Barcha Spiskalar", state="*")
+@dp.message_handler(isYiguvchi(), text="📃Barcha Spiskalar", state="*")
 async def spiskalar(message: types.Message):
     xabar = await message.answer(text='⏳')
     await get_today_orders()
@@ -270,8 +265,10 @@ async def send_order(call: CallbackQuery):
 
 @dp.message_handler(IsAdmin())
 async def echo(message: Message):
+    user = await db.select_user(user_id=message.from_user.id)
+    user = user[0]
 
-    if str(message.from_user.id) in ADMINS:
+    if str(message.from_user.id) in ADMINS or user['yiguvchi']:
         await message.answer(text="Funksiyalarni Tanlang.",reply_markup=admin_orders_keyboard)
     else:
         await message.answer(text="Funksiyalarni Tanlang.",reply_markup=boglanish)

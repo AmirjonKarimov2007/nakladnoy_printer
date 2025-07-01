@@ -332,12 +332,8 @@ async def yerterday_all_orders():
 
 async def get_today_order_info_by_deal_id(deal_id_to_find):
     file_path = 'today_orders.json' 
-
-    # JSON faylini ochish va ma'lumotlarni o'qish
     with open(file_path, 'r', encoding='utf-8') as f:
         orders_data = json.load(f)
-    
-    # Zakazni topish
     for order in orders_data['order']:
         if order['deal_id'] == deal_id_to_find:
             return {

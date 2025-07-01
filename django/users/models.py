@@ -7,6 +7,7 @@ class User(models.Model):
     phone_number = models.BigIntegerField(verbose_name='Telefon raqami',blank=True,null=True)
     saler_id = models.BigIntegerField(verbose_name='Saler ID',blank=True,null=True)
     client_id = models.BigIntegerField(verbose_name='Client ID',blank=True,null=True)
+    yiguvchi = models.BooleanField(default=False,verbose_name="Tayyorlovchi")
     is_blocked = models.BooleanField(default=False,verbose_name="Bloklash")
     created_date = models.DateTimeField(auto_now_add=True, verbose_name="Yaratilgan sana")
     updated_date = models.DateTimeField(auto_now=True, verbose_name="O'zgartirilgan sana")
