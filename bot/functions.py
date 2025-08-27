@@ -22,7 +22,7 @@ today = datetime.now(uzbekistan_tz).strftime('%d.%m.%Y')
 def get_info_for_product():
     url = "https://smartup.online/b/anor/mxsx/mr/inventory$export"
 
-    auth = HTTPBasicAuth('jamshidbek@falcon', '571++632')
+    auth = HTTPBasicAuth('ramazon14@falcon', '111222')
 
     headers = {
         'filial_id': '5012602',
@@ -57,7 +57,7 @@ def get_info_for_product():
 def get_price_for_product():
     url = "https://smartup.online/b/anor/mxs/mkf/product_price$export"
 
-    auth = HTTPBasicAuth('jamshidbek@falcon', '571++632')
+    auth = HTTPBasicAuth('ramazon14@falcon', '111222')
 
     headers = {
         'filial_id': '5012602',
@@ -115,7 +115,7 @@ def do_all():
 async def get_today_orders():
     url = "https://smartup.online/b/trade/txs/tdeal/order$export"
     
-    auth = aiohttp.BasicAuth('jamshidbek@falcon', '571++632')
+    auth = aiohttp.BasicAuth('ramazon14@falcon', '111222')
 
     headers = { 
         'filial_id': '5012602',
@@ -157,7 +157,7 @@ async def get_lastday_orders():
     yesterday = (datetime.now(uzbekistan_tz) - timedelta(days=1)).strftime('%d.%m.%Y')
 
     url = "https://smartup.online/b/trade/txs/tdeal/order$export"
-    auth = aiohttp.BasicAuth('jamshidbek@falcon', '571++632')
+    auth = aiohttp.BasicAuth('ramazon14@falcon', '111222')
 
     headers = { 
         'filial_id': '5012602',
@@ -194,7 +194,7 @@ async def get_lastday_orders():
                 return False
 async def get_orders():
     url = "https://smartup.online/b/trade/txs/tdeal/order$export"
-    auth = aiohttp.BasicAuth('jamshidbek@falcon', '571++632')
+    auth = aiohttp.BasicAuth('ramazon14@falcon', '111222')
 
     headers = { 
         'filial_id': '5012602',
@@ -437,7 +437,7 @@ async def get_order_info_by_deal_id(deal_id_to_find):
 async def get_selected_orders(deal_id):
     url = "https://smartup.online/b/trade/txs/tdeal/order$export"
     
-    auth = aiohttp.BasicAuth('jamshidbek@falcon', '571++632')
+    auth = aiohttp.BasicAuth('ramazon14@falcon', '111222')
 
     headers = { 
         'filial_id': '5012602',

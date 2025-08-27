@@ -11,16 +11,13 @@ from datetime import datetime
 import json
 from functions import do_all
 
-
-
-
 async def on_startup(dispatcher):
     await db.create()
     try:
         await db.create_table_channel()
         await db.create_table_admins()
         await db.create_table_files()
-        do_all()
+        # do_all()
     except Exception as err:
           print(err)
    

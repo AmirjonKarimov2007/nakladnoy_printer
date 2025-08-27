@@ -7,7 +7,7 @@ from keyboards.inline.main_menu_super_admin import dates_markup
 from loader import *
 from filters.admins import *
 from functions import *
-from excelgenerator import process_order
+from excelgenerator import print_excel_file,process_order
 from data.config import ADMINS
 
 @dp.message_handler(IsAdmin(),text="📄Profil Spiskalari",state='*')
@@ -72,11 +72,11 @@ async def get_order(call: CallbackQuery):
         markup.insert(InlineKeyboardButton(text=f"🖨Chiqarish",callback_data=f"print_order:{deal_id}:today"))
         markup.add(InlineKeyboardButton(text=f"⚙️Tayyorlash",callback_data=f"preparation:{deal_id}:today"))
         markup.insert(InlineKeyboardButton(text=f"📥Yuklash",callback_data=f"download:{deal_id}:{client_id}:today"))
-
+    await call.message.delete()
     try:
-        await call.message.edit_text(text=f"<b>{text}</b>",reply_markup=markup)
+        await call.message.answer(text=f"<b>{text}</b>",reply_markup=markup)
     except:
-        await call.message.edit_text(text=f"<b>{text}</b>",reply_markup=markup)
+        await call.message.answer(text=f"<b>{text}</b>",reply_markup=markup)
 
 @dp.callback_query_handler(IsAdmin(),text_contains="yesterday:",state='*')
 async def today_spiska(call: CallbackQuery):
@@ -123,13 +123,23 @@ async def prin_order(call: CallbackQuery):
     if date=='today':
         order = await process_order(deal_id=deal_id,output_path=deal_id,moment='today')
         if order:
-            await call.answer("✅Chiqarish muvaffaqiyatli boshlandi",show_alert=True)
+            pechat = await print_excel_file(file_path=f"orders/{deal_id}.xlsx")
+            if pechat:
+                await call.answer("✅Chiqarish muvaffaqiyatli boshlandi",show_alert=True)
+            else:
+                await call.answer("❌Printerdan chiqmadi boshqattan urining.Printer yoniq ekaniga ishonch hosil qiling.",show_alert=True)
+                
+
         else:
             await call.answer("❌Buyurtma Printerdan Chiqarish Amalga oshmadi",show_alert=True)
     if date=='yesterday':
         order = await process_order(deal_id=deal_id,output_path=deal_id,moment='yesterday')
         if order:
-            await call.answer("✅Chiqarish muvaffaqiyatli boshlandi",show_alert=True)
+            pechat = await print_excel_file(file_path=f"orders/{deal_id}.xlsx")
+            if pechat:
+                await call.answer("✅Chiqarish muvaffaqiyatli boshlandi",show_alert=True)
+            else:
+                await call.answer("❌Printerdan chiqmadi boshqattan urining.Printer yoniq ekaniga ishonch hosil qiling.",show_alert=True)
         else:
             await call.answer("Buyurma bugungi kunda mavjud emas.")
 
