@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Buyurtma ma'lumotlari</title>
+
+  <!-- SheetJS (Excel) va jsPDF + html2canvas (PDF) - deferred loading for performance -->
+  <script defer src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+
+  <style>
+    :root {
+      --bg: #f8f9fa;
+      --card: #ffffff;
+      --text: #222;
+      --muted: #666;
+      --border: #e5e7eb;
+      --thead: #f1f1f1;
+      --accent: #0d6efd;
+      --overlay: rgba(0,0,0,0.7);
+      --shadow: 0 2px 10px rgba(0,0,0,0.08);
+      --input-bg: #fff;
+      --input-border: #ced4da;
+      --btn-hover: #0a58ca;
+      --transition: all 0.3s ease;
+      --table-text: #333333; /* Light rejim uchun qora rangga yaqin, o'qish oson */
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0f1115;
+        --card: #161a22;
+        --text: #f1f5f9;
+        --muted: #9aa4b2;
+        --border: #242a33;
+        --thead: #1c2230;
+        --overlay: rgba(0,0,0,0.85);
+        --shadow: 0 2px 10px rgba(0,0,0,0.25);
+        --input-bg: #242a33;
+        --input-border: #3b4250;
+        --btn-hover: #1a7aff;
+        --table-text: #e0e0e0; /* Dark rejim uchun oq rangga yaqin */
+      }
+    }
+    body.dark {
+      --bg: #0f1115;
+      --card: #161a22;
+      --text: #f1f5f9;
+      --muted: #9aa4b2;
+      --border: #242a33;
+      --thead: #1c2230;
+      --overlay: rgba(0,0,0,0.85);
+      --shadow: 0 2px 10px rgba(0,0,0,0.25);
+      --input-bg: #242a33;
+      --input-border: #3b4250;
+      --btn-hover: #1a7aff;
+      --table-text: #e0e0e0; /* Dark rejim uchun oq rangga yaqin */
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.45;
+      transition: var(--transition);
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    /* Header + actions - improved layout for responsiveness */
+    .header {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .topbar {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 8px;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+    .title {
+      font-size: 20px;
+      font-weight: 700;
+      margin: 0;
+    }
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 16px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+    .chip {
+      background: var(--card);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      padding: 6px 10px;
+      border-radius: 999px;
+      transition: var(--transition);
+    }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+    .btn {
+      appearance: none;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--text);
+      padding: 8px 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+      transition: transform .06s ease, border-color .2s, background .2s;
+      font-weight: 600;
+    }
+    .btn:hover { transform: translateY(-1px); border-color: var(--accent); background: var(--btn-hover); color: #fff; }
+    .btn.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .btn.ghost { background: transparent; }
+
+    .search {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-top: 4px;
+      flex-grow: 1; /* Enlarge search area */
+    }
+    .search input {
+      width: 100%; /* Full width for better usability */
+      max-width: 500px; /* Increased max-width */
+      padding: 12px 16px; /* Slightly larger padding for ease */
+      border-radius: 10px;
+      border: 1px solid var(--input-border);
+      background: var(--input-bg);
+      color: var(--text);
+      box-shadow: var(--shadow);
+      outline: none;
+      transition: var(--transition);
+      font-size: 15px; /* Larger font for readability */
+    }
+    .search input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(13,110,253,0.25);
+    }
+
+    /* Stats cards - improved grid for responsiveness */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+      margin: 12px 0 16px;
+    }
+    .stat {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+      box-shadow: var(--shadow);
+      min-height: 78px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 4px;
+      transition: var(--transition);
+    }
+    .stat .label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+    .stat .value { font-size: 18px; font-weight: 700; }
+
+    /* Table wrapper */
+    .table-wrap {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      overflow: auto;
+      -webkit-overflow-scrolling: touch;
+      position: relative;
+      transition: var(--transition);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 900px;
+    }
+    thead th {
+      position: sticky;
+      top: 0;
+      background: var(--thead);
+      color: var(--table-text); /* Jadval sarlavhalari uchun maxsus rang */
+      z-index: 1;
+      transition: var(--transition);
+    }
+    th, td {
+      padding: 12px 10px;
+      border-bottom: 1px solid var(--border);
+      text-align: center;
+      vertical-align: middle;
+      white-space: nowrap;
+      color: var(--table-text); /* Jadval yozuvlari uchun maxsus rang */
+      transition: var(--transition);
+    }
+    th.sortable {
+      cursor: pointer;
+      user-select: none;
+    }
+    th.sortable::after {
+      content: " ⇅";
+      color: var(--muted);
+      font-weight: 400;
+    }
+    tr:hover td { background: rgba(0,0,0,0.02); transition: var(--transition); }
+
+    img.thumb {
+      width: 70px; height: 70px; object-fit: contain;
+      border-radius: 8px; cursor: pointer; transition: transform .15s ease, box-shadow .15s;
+      background: transparent;
+    }
+    img.thumb:hover { transform: scale(1.06); box-shadow: var(--shadow); }
+
+    /* Modal / Lightbox - improved accessibility */
+    .modal {
+      display: none;
+      position: fixed; inset: 0; z-index: 1000;
+      background: var(--overlay);
+      align-items: center; justify-content: center;
+      padding: 24px;
+      transition: opacity 0.3s ease;
+    }
+    .modal.open { display: flex; opacity: 1; }
+    .modal-inner {
+      position: relative; max-width: 92vw; max-height: 86vh;
+    }
+    .modal img {
+      max-width: 92vw; max-height: 86vh;
+      border-radius: 12px; box-shadow: var(--shadow);
+      transition: var(--transition);
+    }
+    .modal .close {
+      position: absolute; top: -10px; right: -10px;
+      background: rgba(0,0,0,0.7); color: #fff;
+      width: 36px; height: 36px; border-radius: 50%;
+      display: grid; place-items: center; font-size: 22px;
+      cursor: pointer; border: 1px solid rgba(255,255,255,0.2);
+      backdrop-filter: blur(2px);
+      transition: background 0.2s;
+    }
+    .modal .close:hover { background: rgba(0,0,0,0.9); }
+    .modal .caption {
+      margin-top: 10px; color: #fff; text-align: center; font-size: 14px;
+    }
+
+    /* Spinner - improved animation */
+    .spinner {
+      position: fixed; inset: 0; display: none; place-items: center;
+      background: rgba(0,0,0,0.06);
+      z-index: 999;
+    }
+    .spinner.show { display: grid; }
+    .spinner .dot {
+      width: 12px; height: 12px; margin: 4px; border-radius: 50%;
+      background: var(--accent); display: inline-block; animation: bounce 0.9s infinite alternate;
+    }
+    .spinner .dot:nth-child(2){ animation-delay: .15s }
+    .spinner .dot:nth-child(3){ animation-delay: .3s }
+    @keyframes bounce { to { transform: translateY(-8px); opacity: .6; } }
+
+    /* Enhanced Responsiveness */
+    @media (max-width: 900px){
+      .stats { grid-template-columns: repeat(2, 1fr); }
+      .topbar { flex-direction: column; align-items: stretch; gap: 12px; }
+      .actions { justify-content: flex-start; flex-direction: column; align-items: stretch; }
+      .search { margin-top: 0; }
+      .search input { max-width: none; }
+      table { min-width: 100%; }
+      th, td { padding: 10px 8px; font-size: 14px; }
+      img.thumb { width: 50px; height: 50px; }
+    }
+    @media (max-width: 540px){
+      .stats { grid-template-columns: 1fr; }
+      .title { font-size: 18px; }
+      .meta { gap: 8px 12px; font-size: 13px; }
+      .btn { padding: 10px; font-size: 14px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    {% if order %}
+      <div class="header">
+        <div class="topbar">
+          <div>
+            <h1 class="title">Buyurtma ID: {{ order.deal_id }}</h1>
+            <div class="meta">
+              <span class="chip">Filial: <b>{{ order.filial_code }}</b></span>
+              <span class="chip">Sana: <b>{{ order.deal_time }}</b></span>
+              <span class="chip">Jami: <b id="totalAmountTop">{{ order.total_amount }}</b></span>
+            </div>
+          </div>
+          <div class="actions">
+            <button class="btn" id="themeBtn">🌞 / 🌙</button>
+            <div class="search">
+              <input id="searchInput" type="text" placeholder="Qidiruv (nomi yoki barcode bo'yicha)" />
+            </div>
+            <button class="btn" id="excelBtn">📥 Excel</button>
+            <button class="btn" id="pdfBtn">📄 PDF</button>
+          </div>
+        </div>
+
+        <div class="stats" id="stats">
+          <div class="stat">
+            <div class="label">Qatorlar</div>
+            <div class="value" id="rowCount">0</div>
+          </div>
+          <div class="stat">
+            <div class="label">Jami soni</div>
+            <div class="value" id="totalQty">0</div>
+          </div>
+          <div class="stat">
+            <div class="label">Umumiy summa</div>
+            <div class="value" id="totalAmount">0</div>
+          </div>
+          <div class="stat">
+            <div class="label">Top mahsulot</div>
+            <div class="value" id="topProduct">—</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-wrap" id="tableWrap">
+        <table id="productsTable">
+          <thead>
+            <tr>
+              <th class="sortable" data-key="index">#</th>
+              <th class="sortable" data-key="barcode">Barcode</th>
+              <th>Rasm</th>
+              <th class="sortable" data-key="name">Nomi</th>
+              <th class="sortable" data-key="qty">Soni</th>
+              <th class="sortable" data-key="price">Narxi</th>
+              <th class="sortable" data-key="total">Jami</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for product in order.order_products %}
+            <tr>
+              <td data-index="{{ loop.index }}">{{ loop.index }}</td>
+              <td data-barcode="{{ product.product_barcode }}">{{ product.product_barcode }}</td>
+              <td>
+                <img class="thumb"
+                     loading="lazy"
+                     src="https://raw.githubusercontent.com/AmirjonKarimov2007/narx_chiqarbot/main/bot/rasmlar/{{ product.product_id }}.jpg"
+                     alt="{{ product.product_name }}"
+                     onclick="openModal(this)"
+                     onerror="imgFallback(this)">
+              </td>
+              <td data-name="{{ product.product_name }}">{{ product.product_name }}</td>
+              <td data-qty="{{ product.sold_quant }}">{{ product.sold_quant }}</td>
+              <td data-price="{{ product.product_price }}">{{ product.product_price }}</td>
+              <td data-total="{{ product.sold_amount }}">{{ product.sold_amount }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div style="text-align:center; padding:40px; background:var(--card); border:1px solid var(--border); border-radius:12px; box-shadow:var(--shadow);">
+        <h2 style="margin:0 0 10px;">❌ Buyurtma topilmadi</h2>
+        <div style="color:var(--muted)">Berilgan order_id bo‘yicha ma’lumot topilmadi.</div>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Image Modal -->
+  <div class="modal" id="imgModal" onclick="modalBackdropClick(event)">
+    <div class="modal-inner">
+      <button class="close" aria-label="Yopish" onclick="closeModal()">×</button>
+      <img id="modalImage" alt="Product Image">
+      <div class="caption" id="modalCaption"></div>
+    </div>
+  </div>
+
+  <!-- Spinner -->
+  <div class="spinner" id="spinner"><div><span class="dot"></span><span class="dot"></span><span class="dot"></span></div></div>
+
+  <script>
+    // ---- Theme (system + toggle) - improved with smooth transition ----
+    const themeBtn = document.getElementById('themeBtn');
+    const saved = localStorage.getItem('theme');
+    const isDark = saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    if (isDark) document.body.classList.add('dark');
+    themeBtn?.addEventListener('click', () => {
+      document.body.classList.toggle('dark');
+      localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+    });
+
+    // ---- Image fallback ----
+    const NO_IMAGE = 'data:image/svg+xml;utf8,' + encodeURIComponent(`
+      <svg xmlns="http://www.w3.org/2000/svg" width="180" height="180">
+        <rect width="100%" height="100%" fill="#e5e7eb"/>
+        <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle"
+          font-family="Arial" font-size="14" fill="#6b7280">No Image</text>
+      </svg>
+    `);
+    function imgFallback(img) { img.onerror = null; img.src = NO_IMAGE; }
+
+    // ---- Modal - added keyboard accessibility ----
+    const modal = document.getElementById('imgModal');
+    const modalImg = document.getElementById('modalImage');
+    const modalCaption = document.getElementById('modalCaption');
+    function openModal(imgEl) {
+      modalImg.src = imgEl.src;
+      const tr = imgEl.closest('tr');
+      const name = tr?.querySelector('[data-name]')?.dataset.name || '';
+      const barcode = tr?.querySelector('[data-barcode]')?.dataset.barcode || '';
+      modalCaption.textContent = `${name}${barcode ? ' • ' + barcode : ''}`;
+      modal.classList.add('open');
+      modal.focus(); // For accessibility
+    }
+    function closeModal() { modal.classList.remove('open'); }
+    function modalBackdropClick(e) { if (e.target === modal) closeModal(); }
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+
+    // ---- Search (live filter) - added debounce for performance ----
+    const searchInput = document.getElementById('searchInput');
+    let searchTimeout;
+    searchInput?.addEventListener('input', () => {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => {
+        const q = searchInput.value.trim().toLowerCase();
+        const rows = [...document.querySelectorAll('#productsTable tbody tr')];
+        rows.forEach(r => {
+          const name = r.querySelector('[data-name]')?.dataset.name?.toLowerCase() || '';
+          const barcode = r.querySelector('[data-barcode]')?.dataset.barcode?.toLowerCase() || '';
+          r.style.display = (name.includes(q) || barcode.includes(q)) ? '' : 'none';
+        });
+        updateStats();
+      }, 300); // Debounce 300ms
+    });
+
+    // ---- Sort ----
+    const ths = document.querySelectorAll('th.sortable');
+    let sortState = { key: 'index', dir: 1 };
+    ths.forEach(th => {
+      th.addEventListener('click', () => {
+        const key = th.dataset.key;
+        sortState.dir = (sortState.key === key) ? -sortState.dir : 1;
+        sortState.key = key;
+        sortTable(key, sortState.dir);
+      });
+    });
+    function sortTable(key, dir) {
+      const tbody = document.querySelector('#productsTable tbody');
+      const rows = [...tbody.querySelectorAll('tr')];
+      const getVal = (r) => {
+        if (key === 'index') return parseInt(r.querySelector('[data-index]')?.dataset.index || '0');
+        if (key === 'barcode') return (r.querySelector('[data-barcode]')?.dataset.barcode || '').toLowerCase();
+        if (key === 'name') return (r.querySelector('[data-name]')?.dataset.name || '').toLowerCase();
+        if (key === 'qty') return parseFloat(r.querySelector('[data-qty]')?.dataset.qty || '0');
+        if (key === 'price') return parseFloat(r.querySelector('[data-price]')?.dataset.price || '0');
+        if (key === 'total') return parseFloat(r.querySelector('[data-total]')?.dataset.total || '0');
+        return 0;
+      };
+      rows.sort((a,b) => {
+        const va = getVal(a), vb = getVal(b);
+        if (typeof va === 'number' && typeof vb === 'number') return (va - vb) * dir;
+        return va.localeCompare(vb) * dir;
+      });
+      rows.forEach((r, i) => { r.querySelector('[data-index]').textContent = i + 1; });
+      rows.forEach(r => tbody.appendChild(r));
+    }
+
+    // ---- Stats ----
+    function updateStats() {
+      const rows = [...document.querySelectorAll('#productsTable tbody tr')].filter(r => r.style.display !== 'none');
+      const rowCount = rows.length;
+      let totalQty = 0, totalAmount = 0;
+      let topByQty = {name: '', qty: -1};
+
+      rows.forEach(r => {
+        const qty = parseFloat(r.querySelector('[data-qty]')?.dataset.qty || '0');
+        const amount = parseFloat(r.querySelector('[data-total]')?.dataset.total || '0');
+        const name = r.querySelector('[data-name]')?.dataset.name || '';
+        totalQty += qty;
+        totalAmount += amount;
+        if (qty > topByQty.qty) topByQty = {name, qty};
+      });
+
+      document.getElementById('rowCount').textContent = rowCount;
+      document.getElementById('totalQty').textContent = formatNumber(totalQty);
+      document.getElementById('totalAmount').textContent = formatCurrency(totalAmount);
+      const topName = topByQty.qty > 0 ? `${topByQty.name}` : '—';
+      document.getElementById('topProduct').textContent = topName;
+
+      const topAmtEl = document.getElementById('totalAmountTop');
+      if (topAmtEl) topAmtEl.textContent = formatCurrency(totalAmount);
+    }
+    function formatNumber(n){ return (Math.round(n*100)/100).toLocaleString(); }
+    function formatCurrency(n){ return formatNumber(n); }
+
+    // ---- Export Excel ----
+    document.getElementById('excelBtn')?.addEventListener('click', () => {
+      const wb = XLSX.utils.book_new();
+      const data = [["#", "Barcode", "Nomi", "Soni", "Narxi", "Jami"]];
+      const rows = [...document.querySelectorAll('#productsTable tbody tr')].filter(r => r.style.display !== 'none');
+      rows.forEach((r,i) => {
+        const index = i+1;
+        const barcode = r.querySelector('[data-barcode]')?.dataset.barcode || '';
+        const name = r.querySelector('[data-name]')?.dataset.name || '';
+        const qty = r.querySelector('[data-qty]')?.dataset.qty || '0';
+        const price = r.querySelector('[data-price]')?.dataset.price || '0';
+        const total = r.querySelector('[data-total]')?.dataset.total || '0';
+        data.push([index, barcode, name, qty, price, total]);
+      });
+      const ws = XLSX.utils.aoa_to_sheet(data);
+      XLSX.utils.book_append_sheet(wb, ws, "Order");
+      const fileName = `order_{{ order.deal_id if order else 'export' }}.xlsx`;
+      XLSX.writeFile(wb, fileName);
+    });
+
+    // ---- Export PDF ----
+    document.getElementById('pdfBtn')?.addEventListener('click', async () => {
+      const spinner = document.getElementById('spinner');
+      spinner.classList.add('show');
+      try {
+        const { jsPDF } = window.jspdf;
+        const wrap = document.getElementById('tableWrap');
+        const prevBg = wrap.style.background;
+        wrap.style.background = '#ffffff';
+        const canvas = await html2canvas(wrap, { scale: 2, backgroundColor: '#ffffff' });
+        wrap.style.background = prevBg;
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF({ orientation: 'l', unit: 'pt', format: 'a4' });
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const pageHeight = pdf.internal.pageSize.getHeight();
+        const imgWidth = pageWidth - 40;
+        const imgHeight = canvas.height * (imgWidth / canvas.width);
+        let y = 20;
+        pdf.text(`Buyurtma ID: {{ order.deal_id if order else '' }}`, 20, y);
+        y += 10;
+        pdf.addImage(imgData, 'PNG', 20, y+10, imgWidth, imgHeight);
+        pdf.save(`order_{{ order.deal_id if order else 'export' }}.pdf`);
+      } catch (e) {
+        alert('PDF yaratishda xatolik yuz berdi.');
+        console.error(e);
+      } finally {
+        spinner.classList.remove('show');
+      }
+    });
+
+    // ---- Init ----
+    window.addEventListener('load', () => {
+      updateStats();
+    });
+  </script>
+</body>
+</html>
