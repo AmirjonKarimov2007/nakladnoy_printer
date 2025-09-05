@@ -1,0 +1,746 @@
+{
+ "send deal to wms?": {
+  "translate": "Отправить заказ в WMS?",
+  "generated": "N"
+ },
+ "action and overload in the order are not transferred to the copied order!": {
+  "translate": "Акция и нагрузка в заказе не переносятся в скопированный заказ!",
+  "generated": "N"
+ },
+ "add chat": {
+  "translate": "Создать чат",
+  "generated": "N"
+ },
+ "allow use different person addresses": {
+  "translate": "Разрешить использовать разные адреса доставки",
+  "generated": "N"
+ },
+ "attach_data $1": {
+  "translate": "Прикрепить $1",
+  "generated": "N"
+ },
+ "change status": {
+  "translate": "Изменить статус",
+  "generated": "N"
+ },
+ "change status to $1 for $2 deal(s)?": {
+  "translate": "Изменить статус на $1 для заказов в количестве $2?",
+  "generated": "N"
+ },
+ "change to $1?": {
+  "translate": "Изменить на $1?",
+  "generated": "N"
+ },
+ "change_price_type $1": {
+  "translate": "Изменить тип $1 цены",
+  "generated": "N"
+ },
+ "chat": {
+  "translate": "Чат",
+  "generated": "N"
+ },
+ "chat not added to the deal": {
+  "translate": "Чат не добавлен к заказу",
+  "generated": "N"
+ },
+ "checked total amount": {
+  "translate": "Сумма выбранных",
+  "generated": "N"
+ },
+ "checked total litr": {
+  "translate": "Литраж выбранных",
+  "generated": "N"
+ },
+ "checked total weight(brutto)": {
+  "translate": "Вес (брутто) выбранных",
+  "generated": "N"
+ },
+ "checked total weight(netto)": {
+  "translate": "Вес (нетто) выбранных",
+  "generated": "N"
+ },
+ "clear $1 deal(s) faktura?": {
+  "translate": "Удалить счет-фактуры в количестве $1?",
+  "generated": "N"
+ },
+ "clear $1 deal(s) markings?": {
+  "translate": "Вы действительно хотите удалить <b>$1</b> маркировку (ок)?",
+  "generated": "N"
+ },
+ "clear $1 deal(s) waybill(s)?": {
+  "translate": "Удалить ТТН для заказов $1?",
+  "generated": "N"
+ },
+ "clear deal to faktura?": {
+  "translate": "Удалить счет-фактуру?",
+  "generated": "N"
+ },
+ "clear deal to markings?": {
+  "translate": "Вы действительно хотите удалить маркировки?",
+  "generated": "N"
+ },
+ "clear deal to waybill?": {
+  "translate": "Удалить ТТН для заказа?",
+  "generated": "N"
+ },
+ "clear faktura $1": {
+  "translate": "Удалить счет-фактуру $1",
+  "generated": "N"
+ },
+ "clear markings $1": {
+  "translate": "Удалить маркировку $1",
+  "generated": "N"
+ },
+ "clear waybill $1": {
+  "translate": "Удалить ТТН $1",
+  "generated": "N"
+ },
+ "close": {
+  "translate": "Закрыть",
+  "generated": "N"
+ },
+ "copy": {
+  "translate": "Копировать",
+  "generated": "N"
+ },
+ "copy order": {
+  "translate": "Копировать заказ",
+  "generated": "N"
+ },
+ "deal_id:$1": {
+  "translate": "Заказ: $1",
+  "generated": "N"
+ },
+ "delete faktura document from soliqservis.uz?": {
+  "translate": "Удалить фактуру из soliqservis?",
+  "generated": "N"
+ },
+ "delete faktura from soliqservis.uz": {
+  "translate": "Удалить фактуру",
+  "generated": "N"
+ },
+ "delete waybill from soliqservis.uz": {
+  "translate": "Удалить ТТН",
+  "generated": "N"
+ },
+ "draft order after days": {
+  "translate": "Перевод статусов заказов в Черновик по истечению дней",
+  "generated": "N"
+ },
+ "draft order ignore legal person group name": {
+  "translate": "Исключения по характеристике юридических лиц",
+  "generated": "N"
+ },
+ "draft order ignore legal person types": {
+  "translate": "Исключения по подтипам характеристик юридических лиц",
+  "generated": "N"
+ },
+ "draft order ignore natural person group name": {
+  "translate": "Исключения по характеристике физических лиц",
+  "generated": "N"
+ },
+ "draft order ignore natural person types": {
+  "translate": "Исключения по подтипам характеристик физических лиц",
+  "generated": "N"
+ },
+ "error occured while sign with e-imzo": {
+  "translate": "Возникла ошибка при подписи с помощью E-imzo",
+  "generated": "N"
+ },
+ "export order": {
+  "translate": "Экспортировать заказ",
+  "generated": "N"
+ },
+ "export order $1": {
+  "translate": "Экспортировать заказы в количестве $1",
+  "generated": "N"
+ },
+ "faktura": {
+  "translate": "faktura",
+  "generated": "N"
+ },
+ "full amount": {
+  "translate": "Общая сумма",
+  "generated": "N"
+ },
+ "full litr": {
+  "translate": "Общий литраж",
+  "generated": "N"
+ },
+ "full weight brutto": {
+  "translate": "Общий вес брутто",
+  "generated": "N"
+ },
+ "full weight netto": {
+  "translate": "Общий вес нетто",
+  "generated": "N"
+ },
+ "invoice $1": {
+  "translate": "Счет-фактура $1",
+  "generated": "N"
+ },
+ "invoice with margin": {
+  "translate": "Счет-фактура с наценкой",
+  "generated": "N"
+ },
+ "invoices": {
+  "translate": "Счет-фактуры",
+  "generated": "N"
+ },
+ "kg": {
+  "translate": "кг.",
+  "generated": "N"
+ },
+ "litr": {
+  "translate": "Литр",
+  "generated": "N"
+ },
+ "margin": {
+  "translate": "Скидка/наценка",
+  "generated": "N"
+ },
+ "no": {
+  "translate": "нет",
+  "generated": "N"
+ },
+ "ok": {
+  "translate": "Применить",
+  "generated": "N"
+ },
+ "open chat": {
+  "translate": "Чат",
+  "generated": "N"
+ },
+ "orders count": {
+  "translate": "Кол-во сделок",
+  "generated": "N"
+ },
+ "orders in draft status that exceed 90 days will be automatically canceled": {
+  "translate": "Заказы, которые находятся в статусе \"Черновик\" более 90 дней, будут автоматически переведены в статус \"Отменен\"!",
+  "generated": "N"
+ },
+ "pg.eimzo_errors.error": {
+  "translate": "Ошибка",
+  "generated": "N"
+ },
+ "pg.eimzo_errors.exception": {
+  "translate": "Исключение",
+  "generated": "N"
+ },
+ "pg.eimzo_errors.reason": {
+  "translate": "Причина",
+  "generated": "N"
+ },
+ "pg.eimzo_errors.uniqueId": {
+  "translate": "Unique ID",
+  "generated": "N"
+ },
+ "report": {
+  "translate": "Накладные",
+  "generated": "N"
+ },
+ "report $1": {
+  "translate": "Накладные $1",
+  "generated": "N"
+ },
+ "save": {
+  "translate": "Сохранить",
+  "generated": "N"
+ },
+ "select": {
+  "translate": "Выбрать",
+  "generated": "N"
+ },
+ "send $1 waybill(s) to faktura?": {
+  "translate": "Отправить $1 ТТН в faktura?",
+  "generated": "N"
+ },
+ "send and faktura and sign": {
+  "translate": "Отправить в faktura и подписать",
+  "generated": "N"
+ },
+ "send and sign $1 waybill(s)?": {
+  "translate": "Отправить и подписать $1 ТТН?",
+  "generated": "N"
+ },
+ "send and sign faktura": {
+  "translate": "Отправить и подписать фактуру",
+  "generated": "N"
+ },
+ "send and sign faktura document in soliqservis.uz?": {
+  "translate": "Отправить и подписать фактуру в soliqservis?",
+  "generated": "N"
+ },
+ "send and sign waybill": {
+  "translate": "Отправить и подписать ТТН",
+  "generated": "N"
+ },
+ "send and sign waybill?": {
+  "translate": "Отправить и подписать ТТН?",
+  "generated": "N"
+ },
+ "send deal to faktura and sign?": {
+  "translate": "Отправить заказ в faktura и подписать?",
+  "generated": "N"
+ },
+ "send deal to faktura?": {
+  "translate": "Создать счет-фактуру?",
+  "generated": "N"
+ },
+ "send deal to fiscal?": {
+  "translate": "Вы хотите отправить заказ в фискальный?",
+  "generated": "N"
+ },
+ "send faktura to soliq service?": {
+  "translate": "Отправить фактуру в soliqservis?",
+  "generated": "N"
+ },
+ "send to $1 deal(s) faktura and sign?": {
+  "translate": "Отправить $1 заказ(ов) в faktura и подписать?",
+  "generated": "N"
+ },
+ "send to $1 deal(s) faktura?": {
+  "translate": "Создать счет-фактуры в количестве $1?",
+  "generated": "N"
+ },
+ "send to $1 deal(s) fiscal?": {
+  "translate": "Вы хотите отправить $1 заказов в фискальный?",
+  "generated": "N"
+ },
+ "send to faktura $1": {
+  "translate": "Создать счет-фактуру $1",
+  "generated": "N"
+ },
+ "send to faktura and sign $1": {
+  "translate": "Отправить в faktura и подписать $1",
+  "generated": "N"
+ },
+ "send to fiscal $1": {
+  "translate": "Отправить $1 в фискальный",
+  "generated": "N"
+ },
+ "send waybill to faktura": {
+  "translate": "Отправить ТТН в faktura",
+  "generated": "N"
+ },
+ "send waybill to faktura $1": {
+  "translate": "Отправить ТТН в faktura $1",
+  "generated": "N"
+ },
+ "send waybill to faktura and sign $1": {
+  "translate": "Отправить и подписать ТТН $1",
+  "generated": "N"
+ },
+ "send waybill to faktura?": {
+  "translate": "Отправить ТТН в faktura?",
+  "generated": "N"
+ },
+ "send waybill to soliq service?": {
+  "translate": "Отправить ТТН в soliqservis?",
+  "generated": "N"
+ },
+ "settings": {
+  "translate": "Настройки",
+  "generated": "N"
+ },
+ "sign $1 deal(s) in faktura?": {
+  "translate": "Подписать $1 заказ(ов) в faktura?",
+  "generated": "N"
+ },
+ "sign deal in faktura?": {
+  "translate": "Подписать заказ в faktura?",
+  "generated": "N"
+ },
+ "sign failed documents": {
+  "translate": "Подписать документы с ошибками",
+  "generated": "N"
+ },
+ "sign faktura $1": {
+  "translate": "Подписать faktura $1",
+  "generated": "N"
+ },
+ "sign faktura document": {
+  "translate": "Подписать фактуру",
+  "generated": "N"
+ },
+ "sign faktura document in soliqservis.uz?": {
+  "translate": "Подписать фактуру в soliqservis?",
+  "generated": "N"
+ },
+ "soliq service": {
+  "translate": "Soliq Servis",
+  "generated": "N"
+ },
+ "table.address": {
+  "translate": "Адрес",
+  "generated": "N"
+ },
+ "table.barcode": {
+  "translate": "Штрих-код",
+  "generated": "N"
+ },
+ "table.booked_date": {
+  "translate": "Дата брони",
+  "generated": "N"
+ },
+ "table.c_total_litr": {
+  "translate": "Литр/Дециметр куб.",
+  "generated": "N"
+ },
+ "table.cash_register_name": {
+  "translate": "Касса",
+  "generated": "N"
+ },
+ "table.comment_names": {
+  "translate": "Коментарии",
+  "generated": "N"
+ },
+ "table.consignment_amount": {
+  "translate": "Сумма консигнации",
+  "generated": "N"
+ },
+ "table.consignment_date": {
+  "translate": "Дата консигнации",
+  "generated": "N"
+ },
+ "table.contract_name": {
+  "translate": "Договор",
+  "generated": "N"
+ },
+ "table.created_by_name": {
+  "translate": "Создал",
+  "generated": "N"
+ },
+ "table.created_on": {
+  "translate": "Дата создания",
+  "generated": "N"
+ },
+ "table.currency_name": {
+  "translate": "Валюта",
+  "generated": "N"
+ },
+ "table.deal_id": {
+  "translate": "ИД заказа",
+  "generated": "N"
+ },
+ "table.deal_time": {
+  "translate": "Время заказа",
+  "generated": "N"
+ },
+ "table.delivery_address_full": {
+  "translate": "Полный адрес доставки",
+  "generated": "N"
+ },
+ "table.delivery_address_short": {
+  "translate": "Короткий адрес доставки",
+  "generated": "N"
+ },
+ "table.delivery_date": {
+  "translate": "Дата доставки",
+  "generated": "N"
+ },
+ "table.delivery_number": {
+  "translate": "Номер товарно-транспортной накладной",
+  "generated": "N"
+ },
+ "table.document_source_name": {
+  "translate": "Источник",
+  "generated": "N"
+ },
+ "table.expeditor_id": {
+  "translate": "ИД экспедитора",
+  "generated": "N"
+ },
+ "table.expeditor_name": {
+  "translate": "Экспедитор",
+  "generated": "N"
+ },
+ "table.external_id": {
+  "translate": "Внешний ИД",
+  "generated": "N"
+ },
+ "table.faktura_error_message": {
+  "translate": "Сообщение об ошибке",
+  "generated": "N"
+ },
+ "table.has_action_name": {
+  "translate": "Наличие акции",
+  "generated": "N"
+ },
+ "table.has_gift_name": {
+  "translate": "Наличие промо",
+  "generated": "N"
+ },
+ "table.has_margin_name": {
+  "translate": "Наличие скидки/наценки",
+  "generated": "N"
+ },
+ "table.has_return": {
+  "translate": "Наличие возврата",
+  "generated": "N"
+ },
+ "table.has_visit_name": {
+  "translate": "Наличие визита",
+  "generated": "N"
+ },
+ "table.invoice_number": {
+  "translate": "Номер счет-фактуры",
+  "generated": "N"
+ },
+ "table.lap_code": {
+  "translate": "Код рейса",
+  "generated": "N"
+ },
+ "table.manager_name": {
+  "translate": "Руководитель",
+  "generated": "N"
+ },
+ "table.marking_attaching_method_name": {
+  "translate": "Метод прикрепления кодов маркировки",
+  "generated": "N"
+ },
+ "table.mobile_notes": {
+  "translate": "Примечания ТП",
+  "generated": "N"
+ },
+ "table.modified_by_name": {
+  "translate": "Изменил",
+  "generated": "N"
+ },
+ "table.modified_on": {
+  "translate": "Дата последнего изменения",
+  "generated": "N"
+ },
+ "table.nearest_visit_date": {
+  "translate": "Ближайшая дата визита",
+  "generated": "N"
+ },
+ "table.note": {
+  "translate": "Примечание",
+  "generated": "N"
+ },
+ "table.owner_person_name": {
+  "translate": "Собственник",
+  "generated": "N"
+ },
+ "table.payment_type_name": {
+  "translate": "Тип оплаты",
+  "generated": "N"
+ },
+ "table.person_code": {
+  "translate": "Код клиента",
+  "generated": "N"
+ },
+ "table.person_id": {
+  "translate": "ИД клиента",
+  "generated": "N"
+ },
+ "table.person_id3": {
+  "translate": "ИД клиента",
+  "generated": "N"
+ },
+ "table.person_name": {
+  "translate": "Клиент",
+  "generated": "N"
+ },
+ "table.person_phone": {
+  "translate": "Номер телефона",
+  "generated": "N"
+ },
+ "table.price_type_names": {
+  "translate": "Тип цены",
+  "generated": "N"
+ },
+ "table.producer_names": {
+  "translate": "Производитель",
+  "generated": "N"
+ },
+ "table.product_names": {
+  "translate": "ТМЦ",
+  "generated": "N"
+ },
+ "table.region_name": {
+  "translate": "Район",
+  "generated": "N"
+ },
+ "table.return_reason_name": {
+  "translate": "Причина возврата",
+  "generated": "N"
+ },
+ "table.robot_name": {
+  "translate": "Штат",
+  "generated": "N"
+ },
+ "table.room_name": {
+  "translate": "Рабочая зона",
+  "generated": "N"
+ },
+ "table.sales_manager_name": {
+  "translate": "Торговый представитель",
+  "generated": "N"
+ },
+ "table.self_shipment_name": {
+  "translate": "Самовывоз",
+  "generated": "N"
+ },
+ "table.sent_faktura_name": {
+  "translate": "Счет-фактура отправлена",
+  "generated": "N"
+ },
+ "table.sent_ss_faktura_name": {
+  "translate": "Фактура отправлена в soliqservis",
+  "generated": "N"
+ },
+ "table.sent_ss_waybill_name": {
+  "translate": "ТТН отправлена в soliqservis",
+  "generated": "N"
+ },
+ "table.sent_virtual_cashbox_name": {
+  "translate": "Отправлено в виртуальную кассу",
+  "generated": "N"
+ },
+ "table.sent_waybill_name": {
+  "translate": "ТТН отправлена",
+  "generated": "N"
+ },
+ "table.sent_wms_name": {
+  "translate": "Отправлено в WMS",
+  "generated": "N"
+ },
+ "table.short_name": {
+  "translate": "Альтернативное название",
+  "generated": "N"
+ },
+ "table.signed_faktura_name": {
+  "translate": "Подписанные в faktura",
+  "generated": "N"
+ },
+ "table.signed_ss_faktura_name": {
+  "translate": "Фактура подписана в soliqservis",
+  "generated": "N"
+ },
+ "table.signed_ss_waybill_name": {
+  "translate": "ТТН подписан в soliqservis",
+  "generated": "N"
+ },
+ "table.signed_waybill_name": {
+  "translate": "Подписанные ТТН",
+  "generated": "N"
+ },
+ "table.source_id": {
+  "translate": "ИД источника",
+  "generated": "N"
+ },
+ "table.status_name": {
+  "translate": "Статус",
+  "generated": "N"
+ },
+ "table.subfilial_name": {
+  "translate": "Проект",
+  "generated": "N"
+ },
+ "table.tin": {
+  "translate": "ИНН",
+  "generated": "N"
+ },
+ "table.total_amount": {
+  "translate": "Сумма",
+  "generated": "N"
+ },
+ "table.total_amount_without_margin": {
+  "translate": "Сумма до переоценки",
+  "generated": "N"
+ },
+ "table.total_person_base_balance": {
+  "translate": "ВСЕГО остатков в базовой валюте",
+  "generated": "N"
+ },
+ "table.van_code": {
+  "translate": "Код автотранспорта",
+  "generated": "N"
+ },
+ "table.van_name": {
+  "translate": "Автотранспорт",
+  "generated": "N"
+ },
+ "table.warehouse_names": {
+  "translate": "Склад",
+  "generated": "N"
+ },
+ "table.waybill_error_message": {
+  "translate": "Сообщение об ошибке ТТН",
+  "generated": "N"
+ },
+ "table.weight_brutto_name": {
+  "translate": "Вес брутто",
+  "generated": "N"
+ },
+ "table.weight_netto_name": {
+  "translate": "Вес нетто",
+  "generated": "N"
+ },
+ "table.with_marking_name": {
+  "translate": "Имеется маркировка",
+  "generated": "N"
+ },
+ "The browser does not support WebSocket technology. Install the latest version of the browser": {
+  "translate": "Ваш браузер не поддерживает технологию WebSocket. Установите последнюю версию браузера",
+  "generated": "N"
+ },
+ "The version of the e-imzo plugin is not suitable for this operation. Please update the plugin": {
+  "translate": "Версия плагина E-imzo не подходит для текущей операции. Обновите плагин",
+  "generated": "N"
+ },
+ "tonns": {
+  "translate": "т.",
+  "generated": "N"
+ },
+ "upadte faktura status from soliqservis.uz": {
+  "translate": "Обновить статус фактуры из soliqservis",
+  "generated": "N"
+ },
+ "update faktura": {
+  "translate": "Обновить счёт-фактуры в faktura.uz",
+  "generated": "N"
+ },
+ "update faktura document in soliqservis.uz?": {
+  "translate": "Обновить фактуру из soliqservis?",
+  "generated": "N"
+ },
+ "update faktura document status from soliqservis.uz?": {
+  "translate": "Обновить статус документа фактуры из soliqservis?",
+  "generated": "N"
+ },
+ "update faktura in soliqservis.uz": {
+  "translate": "Обновить фактуру",
+  "generated": "N"
+ },
+ "update faktura status from soliqservis.uz": {
+  "translate": "Обновить статус фактуры",
+  "generated": "N"
+ },
+ "update faktura?": {
+  "translate": "Обновить счёт-фактуры в faktura.uz?",
+  "generated": "N"
+ },
+ "update waybill document in soliqservis.uz?": {
+  "translate": "Обновить документ ТТН из soliqservis?",
+  "generated": "N"
+ },
+ "update waybill document status from soliqservis.uz?": {
+  "translate": "Обновить статус документа ТТН из soliqservis?",
+  "generated": "N"
+ },
+ "update waybill in soliqservis.uz": {
+  "translate": "Обновить ТТН",
+  "generated": "N"
+ },
+ "update waybill status from soliqservis.uz": {
+  "translate": "Обновить статус ТТН",
+  "generated": "N"
+ },
+ "yes": {
+  "translate": "да",
+  "generated": "N"
+ }
+}
