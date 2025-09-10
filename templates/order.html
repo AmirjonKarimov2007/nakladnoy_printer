@@ -74,6 +74,57 @@
       padding: 20px;
     }
 
+    /* Enhanced Founder Section */
+    .founder {
+      text-align: center;
+      font-size: var(--font-size-heading);
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 24px;
+      padding: 15px;
+      background: linear-gradient(135deg, #3182ce, #4dabf7); /* Gradient background */
+      border-radius: 15px;
+      box-shadow: 0 6px 15px rgba(49, 130, 206, 0.3);
+      animation: fadeIn 1s ease-in-out;
+      position: relative;
+      overflow: hidden;
+    }
+    .founder::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 70%);
+      animation: rotate 10s linear infinite;
+      z-index: 0;
+    }
+    .founder > * {
+      position: relative;
+      z-index: 1;
+    }
+    .founder a {
+      color: #ffffff;
+      text-decoration: none;
+      font-weight: 600;
+      padding: 0 5px;
+      transition: transform 0.3s ease, color 0.3s ease;
+    }
+    .founder a:hover {
+      text-decoration: underline;
+      color: #f0f0f0;
+      transform: scale(1.1);
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes rotate {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
     /* Header */
     .header {
       margin-bottom: 24px;
@@ -199,6 +250,7 @@
       border-bottom: 1px solid var(--border);
       text-align: left;
       font-size: var(--font-size-base);
+      color: var(--text);
     }
     th {
       background: var(--thead);
@@ -244,19 +296,23 @@
       box-shadow: var(--shadow);
       display: grid;
       gap: 12px;
+      grid-template-columns: 1fr auto;
     }
     .card img {
       width: 100%;
-      max-width: 120px;
       height: auto;
+      max-width: 120px;
       border-radius: 8px;
+      justify-self: start;
     }
     .card .info {
       display: grid;
       gap: 8px;
+      margin-left: 12px;
     }
     .card .info div {
       font-size: var(--font-size-base);
+      color: var(--text);
     }
     .card .info .label {
       color: var(--muted);
@@ -389,6 +445,16 @@
       .meta { font-size: var(--font-size-small); }
       .modal .nav-btn.prev { left: 10px; }
       .modal .nav-btn.next { right: 10px; }
+      .card {
+        grid-template-columns: 1fr;
+      }
+      .card img {
+        max-width: 100%;
+        margin-bottom: 12px;
+      }
+      .card .info {
+        margin-left: 0;
+      }
     }
     @media (max-width: 480px) {
       .container { padding: 12px; }
@@ -401,6 +467,7 @@
 </head>
 <body>
   <div class="container">
+    <div class="founder">Asoschi: <b>Amirjon Karimov</b> | Telegram: <a href="https://t.me/Amirjon_Karimov_Blog" target="_blank">@Amirjon_Karimov_Blog</a></div>
     {% if order %}
       <div class="header">
         <div class="topbar">
@@ -566,18 +633,14 @@
       const parent = imgEl.closest('tr') || imgEl.closest('.card');
       let name = parent?.dataset.name || '';
       let qty = parent?.dataset.qty || '0';
-      // Fallback: Retrieve name and quantity from DOM if dataset is not reliable
       if (!name) {
         const nameEl = parent?.querySelector('[data-name]') || parent?.querySelector('.info div:nth-child(3)');
         name = nameEl?.textContent.replace('Nomi: ', '') || 'Unknown';
-        console.log('Name fallback used:', name, 'from element:', nameEl);
       }
       if (qty === '0' || !qty) {
         const qtyEl = parent?.querySelector('[data-qty]') || parent?.querySelector('.info div:nth-child(4)');
         qty = qtyEl?.textContent.replace('Soni: ', '') || '0';
-        console.log('Quantity fallback used:', qty, 'from element:', qtyEl);
       }
-      console.log('Modal data:', { name, qty, parentDataset: parent?.dataset });
       modalCaption.textContent = `Nomi: ${name} • Soni: ${qty}`;
     }
 
@@ -602,7 +665,6 @@
       if (e.key === 'ArrowRight') navigateImage(1);
     });
 
-    // Swipe Gestures for Mobile
     let touchStartX = 0;
     modal.addEventListener('touchstart', (e) => {
       touchStartX = e.touches[0].clientX;
@@ -616,7 +678,6 @@
       }
     });
 
-    // Search
     const searchInput = document.getElementById('searchInput');
     let searchTimeout;
     searchInput.addEventListener('input', () => {
@@ -636,13 +697,11 @@
           c.style.display = (name.includes(q) || barcode.includes(q)) ? '' : 'none';
         });
         updateStats();
-        // Update images list after search
         images = [...document.querySelectorAll('#productsTable img.thumb, #cards img.thumb')]
           .filter(img => img.closest('tr')?.style.display !== 'none' && img.closest('.card')?.style.display !== 'none');
       }, 300);
     });
 
-    // Sort
     const ths = document.querySelectorAll('th.sortable');
     let sortState = { key: 'index', dir: 1 };
     ths.forEach(th => {
@@ -685,12 +744,10 @@
         c.dataset.index = i + 1;
         cardsContainer.appendChild(c);
       });
-      // Update images list after sort
       images = [...document.querySelectorAll('#productsTable img.thumb, #cards img.thumb')]
         .filter(img => img.closest('tr')?.style.display !== 'none' && img.closest('.card')?.style.display !== 'none');
     }
 
-    // Stats
     function updateStats() {
       const rows = [...document.querySelectorAll('#productsTable tbody tr')].filter(r => r.style.display !== 'none');
       const rowCount = rows.length;
@@ -714,47 +771,139 @@
     function formatNumber(n) { return (Math.round(n * 100) / 100).toLocaleString('uz-UZ'); }
     function formatCurrency(n) { return formatNumber(n) + ' so‘m'; }
 
-    // Export Excel
-    document.getElementById('excelBtn').addEventListener('click', () => {
-      const wb = XLSX.utils.book_new();
-      const data = [["#", "Barcode", "Nomi", "Soni", "Narxi", "Jami"]];
-      const rows = [...document.querySelectorAll('#productsTable tbody tr')].filter(r => r.style.display !== 'none');
-      rows.forEach((r, i) => {
-        data.push([
-          i + 1,
-          r.dataset.barcode || '',
-          r.dataset.name || '',
-          r.dataset.qty || '0',
-          r.dataset.price || '0',
-          r.dataset.total || '0'
-        ]);
+    async function getBase64Image(url) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          canvas.width = img.width;
+          canvas.height = img.height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0);
+          resolve(canvas.toDataURL('image/jpeg'));
+        };
+        img.onerror = () => resolve(NO_IMAGE);
+        img.src = url;
       });
-      const ws = XLSX.utils.aoa_to_sheet(data);
-      XLSX.utils.book_append_sheet(wb, ws, "Order");
-      XLSX.writeFile(wb, `order_{{ order.deal_id if order else 'export' }}.xlsx`);
+    }
+
+    document.getElementById('excelBtn').addEventListener('click', async () => {
+      const spinner = document.getElementById('spinner');
+      spinner.classList.add('show');
+      try {
+        const wb = XLSX.utils.book_new();
+        const wsData = [["#", "Barcode", "Rasm URL", "Nomi", "Soni", "Narxi", "Jami"]];
+        const rows = [...document.querySelectorAll('#productsTable tbody tr')].filter(r => r.style.display !== 'none');
+
+        for (const [i, row] of rows.entries()) {
+          const img = row.querySelector('img.thumb');
+          const imgUrl = img ? img.src : NO_IMAGE;
+          wsData.push([
+            i + 1,
+            row.dataset.barcode || '',
+            imgUrl,
+            row.dataset.name || '',
+            row.dataset.qty || '0',
+            row.dataset.price || '0',
+            row.dataset.total || '0'
+          ]);
+        }
+
+        const ws = XLSX.utils.aoa_to_sheet(wsData);
+        wsData.slice(1).forEach((row, idx) => {
+          const addr = XLSX.utils.encode_cell({ r: idx + 1, c: 2 });
+          if (row[2]) {
+            ws[addr].l = { Target: row[2], Tooltip: "Rasmni ko'rish" };
+            ws[addr].t = 's';
+            ws[addr].v = 'Rasm';
+          }
+        });
+
+        XLSX.utils.book_append_sheet(wb, ws, "Order");
+        XLSX.writeFile(wb, `order_{{ order.deal_id if order else 'export' }}_${new Date().toISOString().split('T')[0]}.xlsx`);
+      } catch (e) {
+        alert('Excel faylini yaratishda xatolik yuz berdi.');
+        console.error(e);
+      } finally {
+        spinner.classList.remove('show');
+      }
     });
 
-    // Export PDF
     document.getElementById('pdfBtn').addEventListener('click', async () => {
       const spinner = document.getElementById('spinner');
       spinner.classList.add('show');
       try {
         const { jsPDF } = window.jspdf;
         const wrap = document.getElementById('tableWrap');
-        const prevBg = wrap.style.background;
-        wrap.style.background = '#ffffff';
-        const canvas = await html2canvas(wrap, { scale: 2, backgroundColor: '#ffffff' });
-        wrap.style.background = prevBg;
-        const imgData = canvas.toDataURL('image/png');
+        const rows = [...wrap.querySelectorAll('tr')]; // Include all rows, not just visible
+        const base64Images = await Promise.all(rows.map(async row => {
+          const img = row.querySelector('img.thumb');
+          return img ? await getBase64Image(img.src) : NO_IMAGE;
+        }));
+
+        // Create a temporary div to style the table for PDF
+        const tempDiv = document.createElement('div');
+        tempDiv.style.backgroundColor = '#ffffff';
+        tempDiv.style.padding = '20px';
+        tempDiv.innerHTML = wrap.innerHTML;
+        tempDiv.querySelectorAll('img.thumb').forEach((img, i) => {
+          img.src = base64Images[i]; // Replace with base64
+        });
+        tempDiv.querySelectorAll('#productsTable tbody td').forEach(td => {
+          td.style.color = '#000000'; // Solid black for product data
+        });
+        document.body.appendChild(tempDiv);
+
+        const canvas = await html2canvas(tempDiv, {
+          scale: 1, // Reduced scale for speed
+          backgroundColor: '#ffffff',
+          useCORS: true,
+          width: tempDiv.scrollWidth, // Ensure full width
+          height: tempDiv.scrollHeight // Ensure full height
+        });
+        document.body.removeChild(tempDiv);
+
         const pdf = new jsPDF({ orientation: 'l', unit: 'pt', format: 'a4' });
         const pageWidth = pdf.internal.pageSize.getWidth();
         const pageHeight = pdf.internal.pageSize.getHeight();
         const imgWidth = pageWidth - 40;
         const imgHeight = canvas.height * (imgWidth / canvas.width);
         let y = 20;
-        pdf.text(`Buyurtma ID: {{ order.deal_id if order else '' }}`, 20, y);
-        pdf.addImage(imgData, 'PNG', 20, y + 10, imgWidth, imgHeight);
-        pdf.save(`order_{{ order.deal_id if order else 'export' }}.pdf`);
+
+        // Add header
+        pdf.setFillColor(49, 130, 206); // Accent blue
+        pdf.rect(0, 0, pageWidth, 50, 'F');
+        pdf.setTextColor(255, 255, 255); // White text
+        pdf.setFontSize(18);
+        pdf.text(`Buyurtma ID: {{ order.deal_id if order else '' }}`, 20, 35);
+        pdf.setTextColor(0, 0, 0); // Black text for body
+        pdf.setFontSize(12);
+
+        // Add table image with pagination
+        if (imgHeight > pageHeight - 70) {
+          const pages = Math.ceil(imgHeight / (pageHeight - 70));
+          for (let i = 0; i < pages; i++) {
+            if (i > 0) pdf.addPage();
+            const pageY = 50;
+            const height = Math.min(pageHeight - 70, imgHeight - i * (pageHeight - 70));
+            pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 20, pageY, imgWidth, height);
+            // Add footer
+            pdf.setFillColor(240, 240, 240); // Light gray
+            pdf.rect(0, pageHeight - 20, pageWidth, 20, 'F');
+            pdf.setTextColor(0, 0, 0);
+            pdf.text(`Sahifa ${i + 1} / ${pages} | Asoschi: Amirjon Karimov | Vaqt: ${new Date().toLocaleString('uz-UZ', { timeZone: 'Asia/Tashkent' })}`, 20, pageHeight - 5);
+          }
+        } else {
+          pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 20, 50, imgWidth, imgHeight);
+          // Add footer
+          pdf.setFillColor(240, 240, 240);
+          pdf.rect(0, pageHeight - 20, pageWidth, 20, 'F');
+          pdf.setTextColor(0, 0, 0);
+          pdf.text(`Sahifa 1 / 1 | Asoschi: Amirjon Karimov | Vaqt: ${new Date().toLocaleString('uz-UZ', { timeZone: 'Asia/Tashkent' })}`, 20, pageHeight - 5);
+        }
+
+        pdf.save(`order_{{ order.deal_id if order else 'export' }}_${new Date().toISOString().split('T')[0]}.pdf`);
       } catch (e) {
         alert('PDF yaratishda xatolik yuz berdi.');
         console.error(e);
@@ -763,7 +912,6 @@
       }
     });
 
-    // Init
     window.addEventListener('load', updateStats);
   </script>
 </body>
