@@ -144,9 +144,6 @@ from openpyxl.utils.units import pixels_to_EMU
 from openpyxl.drawing.spreadsheet_drawing import XDRPositiveSize2D
 
 def add_qrcode_centered(ws, qrcode_path, cell_address='C2'):
-    """
-    QR-kodni berilgan katak (masalan, 'C3') gorizontal markaziga joylashtiradi
-    """
     img = Image(qrcode_path)
     img.width = 130  # px
     img.height = 130
@@ -180,7 +177,8 @@ def add_qrcode_centered(ws, qrcode_path, cell_address='C2'):
     ws.add_image(img)
     return cell_address
 
-
+from loader import bot
+from data.config import ADMINS
 async def process_order(deal_id, output_path, moment,moneytype = "usd"):
     try:
         if moment == 'today':
@@ -321,6 +319,31 @@ async def process_order(deal_id, output_path, moment,moneytype = "usd"):
         if not os.path.exists('orders'):
             os.makedirs('orders')
         wb.save(f"orders/{output_path}.xlsx")
+        total_price = order_info['total_amount']
+        if total_price== "840":
+            for admin in ADMINS:
+                await bot.send_message(
+                    admin,
+                    text=(
+                        f"📝 <b>Buyurtma printerdan chiqarildi</b>\n\n"
+                        f"👤 Menejer: <b>{order_info['sales_manager_name']}</b>\n"
+                        f"📦 Buyurtma Summasi : <b>{order_info['total_amount']} so'm</b>\n"
+                        f"🆔 Buyurtma ID: <b>{order_info['deal_id']}</b>\n"
+                        f"⏰ Vaqt: <b>{order_info['deal_time']}</b>"
+                    )
+                )
+        else:
+            for admin in ADMINS:
+                await bot.send_message(
+                    admin,
+                    text=(
+                        f"📝 <b>Buyurtma printerdan chiqarildi</b>\n\n"
+                        f"👤 Menejer: <b>{order_info['sales_manager_name']}</b>\n"
+                        f"📦 Buyurtma Summasi : <b>{order_info['total_amount']} $</b>\n"
+                        f"🆔 Buyurtma ID: <b>{order_info['deal_id']}</b>\n"
+                        f"⏰ Vaqt: <b>{order_info['deal_time']}</b>"
+                    )
+                )
         return True
     except Exception as e:
         if "Permission denied" in str(e):

@@ -123,6 +123,7 @@ async def prin_order(call: CallbackQuery):
     if date=='today':
         order = await process_order(deal_id=deal_id,output_path=deal_id,moment='today')
         if order:
+
             pechat = await print_excel_file(file_path=f"orders/{deal_id}.xlsx")
             if pechat:
                 await call.answer("✅Chiqarish muvaffaqiyatli boshlandi",show_alert=True)
@@ -157,12 +158,12 @@ async def spiskalar(message: types.Message):
 
     await show_orders(message, user_id, page=0)
     await xabar.delete()
-    
 
+SALERS = ['3814008','1862862','8477509']
 async def show_orders(message: types.Message, user_id: int, page: int, call=None):
     
     orders = await today_all_orders()
-    orders = [order for order in orders if order["room_id"] == str(ROOM_ID)]
+    orders = [order for order in orders if order["room_id"] == str(ROOM_ID) and order["sales_manager_id"] in SALERS]
     if not orders:
         if call:
             await call.message.edit_text("Bugunda hech qanday buyurtmalar yo'q.")  

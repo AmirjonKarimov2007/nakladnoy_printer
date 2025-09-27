@@ -5,7 +5,7 @@ from loader import dp
 admin_orders_keyboard = ReplyKeyboardMarkup(
     keyboard=[
         [
-            KeyboardButton(text="📃Barcha Spiskalar"),
+        KeyboardButton(text="📃Barcha Spiskalar"),
         ],
         [
         KeyboardButton(text="📄Profil Spiskalari")
@@ -16,12 +16,16 @@ admin_orders_keyboard = ReplyKeyboardMarkup(
 boglanish = ReplyKeyboardMarkup(
     keyboard=[
         [
-        KeyboardButton(text="📄Profil Spiskalari")
+            KeyboardButton(text="📄Profil Spiskalari"),
+            KeyboardButton(text="💰Balans")
+        ],
+        [
+            KeyboardButton(text="🗓 Otgan oy"),
+            KeyboardButton(text="🔍 Filterlash")
         ]
     ],
     resize_keyboard=True
 )
-
 check = ReplyKeyboardMarkup(
     keyboard=[
         [
