@@ -1,0 +1,6 @@
+2025/04/23-11:57:28.852 1ad0 Creating DB C:\Users\alfatech.uz\Documents\nakladnoy_printer\bot\user_dataa\Default\IndexedDB\https_smartup.online_0.indexeddb.leveldb since it was missing.
+2025/04/23-11:57:28.858 1ad0 Reusing MANIFEST C:\Users\alfatech.uz\Documents\nakladnoy_printer\bot\user_dataa\Default\IndexedDB\https_smartup.online_0.indexeddb.leveldb/MANIFEST-000001
+2025/04/23-11:57:28.874 a98 Level-0 table #5: started
+2025/04/23-11:57:28.886 a98 Level-0 table #5: 1690 bytes OK
+2025/04/23-11:57:28.895 a98 Delete type=0 #3
+2025/04/23-11:57:28.896 1ad0 Manual compaction at level-0 from '\x00\x02\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00\x03\x00\x00\x00' @ 0 : 0; will stop at (end)

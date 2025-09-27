@@ -1,0 +1,22 @@
+from aiogram.dispatcher.filters.state import State, StatesGroup
+
+
+class SuperAdminState(StatesGroup):
+    SUPER_ADMIN_STATE_MAIN = State()
+    SUPER_ADMIN_STATE_GET_ADVERTISEMENT = State()
+    SUPER_ADMIN_SEND_MESSAGE_TO_ADMINS = State()
+    SUPER_ADMIN_ADD_ADMIN = State()
+    SUPER_ADMIN_ADD_FULLNAME = State()
+    SUPER_ADMIN_ADD_CHANNEL = State()
+    SUPER_ADMIN_ADD_POST = State()
+    SUPER_ADMIN_UPDATE_CAPTION = State()
+    SUPER_ADMIN_UPDATE_PHOTO = State()
+
+    SUPER_ADMIN_UPDATE_ADD_KEYBOARD = State()
+    SUPER_ADMIN_UPDATE_GET_KEYBOARD_NAME = State()
+    SUPER_ADMIN_UPDATE_GET_KEYBOARD_URL = State()
+    SUPER_ADMIN_UPDATE_ADD_KEYBOARD = State()
+    SUPER_ADMIN_UPDATE_SEND_CHANNEL = State()
+
+    SUPER_ADMIN_REGISTER_STATE = State()
+

@@ -1,0 +1,1748 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="description" content="Updates and statistics" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <!-- Utility plugins -->
+  <script src="assets/underscore/underscore-min.js?_=20250417T125"></script>
+  <script src="assets/jquery/jquery.min.js?_=20250417T125"></script>
+  <script src="assets/jquery/jquery.resize.js?_=20250417T125"></script>
+  <script src="assets/jquery/jquery-ui.min.js?_=20250417T125"></script>
+  <link href="assets/jquery/jquery-ui.min.css?_=20250417T125" rel="stylesheet" type="text/css" />
+  <script src="assets/jquery/jquery.ui.touch-punch.min.js?_=20250417T125"></script>
+
+  <link href="assets/open-sans/open-sans.css?_=20250417T125" rel="stylesheet" type="text/css" />
+  <link href="assets/fontawesome/css/all.min.css?_=20250417T125" rel="stylesheet" type="text/css" />
+  <!-- Bootstrap 4 CSS is included inside Metronic CSS -->
+  <link href="assets/metronic/css/skins/header/base/dark.css" rel="stylesheet" type="text/css" />
+  <link href="assets/metronic/css/skins/brand/dark.css" rel="stylesheet" type="text/css" />
+  <link href="assets/metronic/css/style.bundle.css" rel="stylesheet" type="text/css" />
+
+  <script src="assets/bootstrap/js/bootstrap.bundle.min.js?_=20250417T125"></script>
+
+  <script src="assets/bootstrap/bootstrap-notify.min.js?_=20250417T125"></script>
+
+  <script src="assets/bootstrap-datetimepicker/moment-with-locales.min.js?_=20250417T125"></script>
+
+  <link href="assets/bootstrap-datetimepicker/bootstrap-datetimepicker.min.css?_=20250417T125" rel="stylesheet" type="text/css" />
+  <script src="assets/bootstrap-datetimepicker/bootstrap-datetimepicker.min.js?_=20250417T125"></script>
+
+  <script src="assets/bootstrap-maxlength/bootstrap-maxlength.min.js?_=20250417T125"></script>
+
+  <script src="assets/angularjs/angular.min.js?_=20250417T125"></script>
+  <script src="assets/angularjs/angular-sanitize.min.js?_=20250417T125"></script>
+
+  <script src="assets/angular-ui-sortable/sortable.min.js?_=20250417T125"></script>
+
+  <link href="assets/ui-select/select.min.css?_=20250417T125" rel="stylesheet" type="text/css" />
+  <script src="assets/ui-select/select.min.js?_=20250417T125"></script>
+
+  <link href="favicon.ico" type="image/x-icon" rel="shortcut icon" />
+
+  <link href="assets/angular-ui-tree/angular-ui-tree.min.css?_=20250417T125" rel="stylesheet" type="text/css" />
+  <script src="assets/angular-ui-tree/angular-ui-tree.min.js?_=20250417T125"></script>
+
+  <link href="assets/angular-block-ui/angular-block-ui.min.css?_=20250417T125" rel="stylesheet" type="text/css" />
+  <script src="assets/angular-block-ui/angular-block-ui.min.js?_=20250417T125"></script>
+
+  <script src="assets/ng-file-upload/ng-file-upload.min.js?_=20250417T125"></script>
+  <script src="assets/ngDraggable.js?_=20250417T125"></script>
+
+  <script src="assets/validate.js?_=20250417T125"></script>
+
+  <link href="assets/angular-gridster/angular-gridster.css?_=20250417T125" rel="stylesheet" type="text/css" />
+  <script src="assets/angular-gridster/angular-gridster.js?_=20250417T125"></script>
+
+  <link href="assets/bootstrap-daterangepicker/daterangepicker.min.css?_=20250417T125" rel="stylesheet" type="text/css" />
+  <script src="assets/bootstrap-daterangepicker/daterangepicker.min.js?_=20250417T125"></script>
+
+  <script src="assets/bignumber/bignumber.min.js?_=20250417T125"></script>
+
+  <link href="assets/h-scroll/h-scroll.min.css?_=20250417T125" rel="stylesheet" type="text/css"/>
+  <script src="assets/h-scroll/h-scroll.js?_=20250417T125"></script>
+
+  <link href="assets/driverjs/driver.css?_=20250417T125" rel="stylesheet" type="text/css"/>
+  <script src="assets/driverjs/driver.js.iife.js?_=20250417T125"></script>
+
+  <script src="assets/crypto/sha1.js?_=20250417T125"></script>
+  <script src="assets/biruni/app-signal.js?_=20250417T125"></script>
+
+  <link href="biruni/main.css?_=20250417T125" rel="stylesheet" type="text/css" />
+
+  <script src="biruni/main.js?_=20250417T125"></script>
+</head>
+
+<body ng-controller="AppCtrl" id="kt_body" class="header-fixed header-mobile-fixed subheader-enabled page-loading">
+  <!--begin::Header Mobile-->
+  <div id="kt_header_mobile" class="header-mobile align-items-center justify-content-between header-mobile-fixed b-session-opened hide">
+    <div class="mobile-logo-wrapper d-flex justify-content-between align-items-center" id="kt_header_mobile_toggle">
+    <!--begin::Header Menu Mobile Toggle-->
+    <button type="button" class="btn p-0 burger-icon mt-2">
+      <span></span>
+    </button>
+    <!--end::Header Menu Mobile Toggle-->
+    <!--begin::Logo-->
+    <div>
+      <a href ng-click="a.openDashboard()">
+        <img src="assets/img/header_logo.svg" alt="smartup">
+      </a>
+    </div>
+    <!--end::Logo-->
+    </div>
+    <!--begin::Toolbar-->
+    <div class="menu-actions-wrapper d-flex align-items-center justify-content-end">
+      <!--begin::Topbar Mobile Toggle-->
+      <button type="button" class="btn btn-hover-text-primary p-0 ml-2" id="kt_header_mobile_topbar_toggle">
+        <i class="fas fa-ellipsis-h"></i>
+      </button>
+      <!--end::Topbar Mobile Toggle-->
+    </div>
+    <!--end::Toolbar-->
+  </div>
+  <!--end::Header Mobile-->
+
+  <!-- begin:: Header -->
+  <div class="d-flex flex-column flex-root b-session-opened hide">
+    <!--begin::Page-->
+    <div class="d-flex flex-row flex-column-fluid page">
+      <!--begin::Wrapper-->
+      <div class="d-flex flex-column flex-row-fluid wrapper" id="kt_wrapper">
+        <!--begin::Header-->
+        <div id="kt_header" class="header header-fixed">
+          <!--begin::Container-->
+          <div class="container-fluid d-flex align-items-stretch justify-content-between">
+            <!--begin::Left-->
+            <div class="d-flex align-items-center mr-3">
+              <!--begin::Header Logo-->
+              <div class="header-logo">
+                <a href ng-click="a.openDashboard()">
+                  <img src="assets/img/header_logo.svg" alt="smartup">
+                </a>
+              </div>
+              <!--end::Header Logo-->
+              <!--begin::Header Menu Wrapper-->
+              <div class="header-menu-wrapper header-menu-wrapper-left" id="kt_header_menu_wrapper">
+                <!-- begin:: Header Menu -->
+                <div id="kt_header_menu" class="header-menu header-menu-mobile header-menu-layout-default">
+                  <!--begin::Header Nav-->
+                  <ul class="menu-nav">
+                    <li class="menu-item menu-item-submenu" data-menu-toggle="click" aria-haspopup="true"
+                      ng-repeat="mg in a.session.si.filial.menus">
+                      <a href class="menu-link menu-toggle" ng-click="a.setMenuPosition($event)">
+                        <span class="menu-text">{{ mg.name }}</span>
+                        <i class="fa fa-chevron-right"></i>
+                      </a>
+                      <div class="menu-submenu menu-submenu-fixed menu-submenu-left"
+                        ng-style="{ width: mg.menus.length * 250 + 'px' }" ng-if="mg.menus.length <= 4">
+                        <div class="menu-subnav">
+                          <ul class="menu-content">
+                            <li class="menu-item" ng-repeat="menu in mg.menus" ng-class="{'menu-item-open': mg.menus.length == 1}">
+                              <h3 class="menu-heading menu-toggle" ng-if="mg.menus.length > 1">
+                                <i class="menu-bullet menu-bullet-dot">
+                                  <span></span>
+                                </i>
+                                <span class="menu-text mb-0">{{ menu.name }}</span>
+                                <i class="fa fa-chevron-right"></i>
+                              </h3>
+                              <div class="ml-3 pl-4" ng-if="mg.menus.length > 1">
+                                <svg width="120" height="1" viewBox="0 0 120 1" fill="none"
+                                  xmlns="http://www.w3.org/2000/svg">
+                                  <rect width="120" height="1" fill="white" fill-opacity="0.24" />
+                                </svg>
+                              </div>
+                              <ul class="menu-inner">
+                                <li class="menu-item" aria-haspopup="true" ng-repeat="form in menu.forms">
+                                  <a href="{{ form.add_form_url }}" class="menu-link menu-link-icon"
+                                    ng-if="form.add_form">
+                                    <span class="svg-icon svg-icon-2x opacity-70">
+                                      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                                        width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+                                        <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                          <rect id="bound" x="0" y="0" width="24" height="24"></rect>
+                                          <circle id="Oval-5" fill="#000000" opacity="0.3" cx="12" cy="12" r="10">
+                                          </circle>
+                                          <path
+                                            d="M11,11 L11,7 C11,6.44771525 11.4477153,6 12,6 C12.5522847,6 13,6.44771525 13,7 L13,11 L17,11 C17.5522847,11 18,11.4477153 18,12 C18,12.5522847 17.5522847,13 17,13 L13,13 L13,17 C13,17.5522847 12.5522847,18 12,18 C11.4477153,18 11,17.5522847 11,17 L11,13 L7,13 C6.44771525,13 6,12.5522847 6,12 C6,11.4477153 6.44771525,11 7,11 L11,11 Z"
+                                            id="Combined-Shape" fill="#000000"></path>
+                                        </g>
+                                      </svg>
+                                    </span>
+                                  </a>
+                                  <a href="{{ form.url }}" class="menu-link menu-link-title">
+                                    <span class="menu-text mb-0">{{ form.name }}</span>
+                                  </a>
+                                </li>
+                              </ul>
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                      <div class="menu-submenu menu-submenu-classic menu-submenu-left m-0 p-0"
+                        ng-if="mg.menus.length > 4">
+                        <ul class="menu-subnav">
+                          <li class="menu-item menu-item-submenu" data-menu-toggle="hover" aria-haspopup="true"
+                            ng-repeat="menu in mg.menus">
+                            <a href="javascript:;" class="menu-link menu-toggle">
+                              <span class="menu-text">{{ menu.name }}</span>
+                              <i class="fa fa-chevron-right"></i>
+                            </a>
+                            <div class="menu-submenu menu-submenu-classic menu-submenu-right">
+                              <ul class="menu-subnav">
+                                <li class="menu-item" aria-haspopup="true" ng-repeat="form in menu.forms">
+                                  <a href="{{ form.add_form_url }}" class="menu-link menu-link-icon"
+                                    ng-if="form.add_form">
+                                    <span class="svg-icon svg-icon-2x opacity-50">
+                                      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                                        width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+                                        <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                          <rect id="bound" x="0" y="0" width="24" height="24"></rect>
+                                          <circle id="Oval-5" fill="#000000" opacity="0.3" cx="12" cy="12" r="10">
+                                          </circle>
+                                          <path
+                                            d="M11,11 L11,7 C11,6.44771525 11.4477153,6 12,6 C12.5522847,6 13,6.44771525 13,7 L13,11 L17,11 C17.5522847,11 18,11.4477153 18,12 C18,12.5522847 17.5522847,13 17,13 L13,13 L13,17 C13,17.5522847 12.5522847,18 12,18 C11.4477153,18 11,17.5522847 11,17 L11,13 L7,13 C6.44771525,13 6,12.5522847 6,12 C6,11.4477153 6.44771525,11 7,11 L11,11 Z"
+                                            id="Combined-Shape" fill="#000000"></path>
+                                        </g>
+                                      </svg>
+                                    </span>
+                                  </a>
+                                  <a href="{{ form.url }}" class="menu-link menu-link-title">
+                                    <span class="menu-text">{{ form.name }}</span>
+                                  </a>
+                                </li>
+                              </ul>
+                            </div>
+                          </li>
+                        </ul>
+                      </div>
+                    </li>
+                  </ul>
+                  <!--end::Header Nav-->
+                </div>
+                <!--end::Header Menu-->
+              </div>
+              <!--end::Header Menu Wrapper-->
+            </div>
+            <!--end::Left-->
+
+            <!--begin::Topbar-->
+            <div class="topbar">
+              <!--begin: Search -->
+              <div class="topbar-item" data-toggle="modal" data-target="#searchModal" ng-click="a.search.openSearch()">
+                <div class="btn btn-icon btn-clean btn-lg mr-1" id="kt_quick_search_toggle">
+                    <i class="fas fa-search"></i>
+                </div>
+              </div>
+              <!--begin::Dropdown-->
+              <div id="searchModal" tabindex="-1" role="dialog" class="modal fade p-0 m-0">
+                <div id="search-content" ng-keydown="a.search.searchKeyDown($event)" tabindex="-3"
+                  class="search-dropdown-container modal-lg d-flex flex-column modal-content modal-dialog modal-dialog-centered">
+                  <!--begin:Header-->
+                  <div class="d-flex flex-center search-dropdown-header">
+                    <h5 class="font-weight-bolder mb-0">{{ a.bConfig.langs.search }}</h5>
+                    <button type="button" class="close" ng-click="a.search.closeSearch()">
+                      <svg class="cursor-pointer" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M1.41427 0.335711L0.335022 1.41496L6.92227 7.99996L0.335022 14.5857L1.41502 15.665L8.00002 9.07771L14.5858 15.6642L15.6643 14.5857L9.07777 7.99996L15.6643 1.41421L14.585 0.334961L8.00002 6.92221L1.41427 0.335711Z" fill="white" fill-opacity="0.9" />
+                      </svg>
+                    </button>
+                  </div>
+                  <div class="d-flex search-filters-container align-items-center py-4 px-5 w-100">
+                    <div class="input-group search-input search-form">
+                      <input type="text"
+                          class="form-control"
+                          ng-change="a.search.changeSearchValue()"
+                          ng-model="a.search.value"
+                          placeholder="{{a.bConfig.langs.sb_search_query}}">
+                      <div class="input-group-append">
+                        <button class="btn btn-secondary btn-icon" type="button" ng-click="a.search.resetSearchValue()">
+                          <i class="fas fa-times"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  <!--end:Header-->
+                  <!--begin:Nav-->
+                  <div class="d-block navi search-result-box search-tag-list navi-spacer-x-0 w-100 px-5 pb-10 overflow-auto" ng-if="a.search.opened">
+                    <div class="row justify-content-start align-items-center mt-4 flex-row flex-nowrap m-0 w-100 overflow-auto">
+                      <a ng-click="a.search.selectHeader('')" class="mr-2 px-6 text-nowrap"
+                        ng-class="{'btn btn-primary' : a.search.header == '' || a.search.getAllResultsLength() == 0, 'search-category-link cursor-pointer': a.search.header != ''}">
+                        {{ a.bConfig.langs.sb_result_all }} ({{ a.search.getAllResultsLength() || 0 }})
+                      </a>
+                      <a ng-if="source.result.length && a.search.ready" class="mr-2"
+                        ng-class="{'btn btn-primary' : a.search.header == source.code, 'search-category-link cursor-pointer': a.search.header != source.code}"
+                        ng-click="a.search.selectHeader(source.code)" ng-repeat="source in a.search.sources">
+                        {{ source.name }}({{ source.result.length }})
+                      </a>
+                    </div>
+                    <!--begin::Item-->
+                    <!--begin::Search-results-->
+                    <div class="d-flex header-code-core flex-column justify-content-center align-items-center w-100 pt-4">
+                      <div ng-if="source.result.length && a.search.ready" class="w-100 pt-4 d-flex justify-content-center flex-column" ng-repeat="source in a.search.sources | filter: {code: a.search.header}">
+                        <span class="search-result-category">
+                          {{ source.name }}
+                        </span>
+                        <div class="search-result-container mt-2 mb-1">
+                          <div class="cursor-row cursor-pointer" ng-repeat="result in source.result" ng-click="a.search.sourceOpen(source, result)">
+                            <a ng-bind-html="result.name" class="result-name"></a>
+                            <a class="d-block" ng-if="result.found"> {{ result.found }}: <span ng-bind-html="result[result.found]"></span></a>
+                          </div>
+                        </div>
+                        <a href ng-if="source.hasMore" ng-click="a.search.showMore(source)" class="ml-auto show-more cursor-row">
+                          {{ a.bConfig.langs.sb_show_more }}
+                        </a>
+                      </div>
+                      <div ng-if="!a.search.getAllResultsLength() && a.search.ready && !a.search.searching">
+                        <h5>{{ a.bConfig.langs.sb_no_results }}</h5>
+                      </div>
+                    </div>
+                    <!--end::Search-results-->
+                    <!--end::Item-->
+                  </div>
+                  <!--end:Nav-->
+                </div>
+              </div>
+              <!--end::Dropdown-->
+              <!--end: Search -->
+              <!-- begin::Scan code icon -->
+              <div class="dropdown">
+                <!--begin::Toggle-->
+                <div class="topbar-item" data-toggle="modal" data-target="#barcodeModal" aria-expanded="false" ng-click="a.search.openBarcode()">
+                  <div class="btn btn-icon btn-dropdown btn-lg mr-1">
+                    <i class="fas fa-barcode"></i>
+                  </div>
+                </div>
+                <!--end::Toggle-->
+                <!--begin::Dropdown-->
+                <div class="modal fade p-0 m-0" tabindex="-1" id="barcodeModal">
+                  <div class="modal-content modal-dialog modal-dialog-center scan-code-dropdown-container">
+                    <!--begin:Header-->
+                    <div class="d-flex flex-center scan-code-dropdown-header">
+                      <h5 class="font-weight-bolder mb-0 my-2">{{ a.bConfig.langs.tb_barcode_scanner }}</h5>
+                      <button type="button" class="close" data-dismiss="modal">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M1.41427 0.335711L0.335022 1.41496L6.92227 7.99996L0.335022 14.5857L1.41502 15.665L8.00002 9.07771L14.5858 15.6642L15.6643 14.5857L9.07777 7.99996L15.6643 1.41421L14.585 0.334961L8.00002 6.92221L1.41427 0.335711Z" fill="white" fill-opacity="0.9" />
+                        </svg>
+                      </button>
+                    </div>
+                    <!--end:Header-->
+                    <!--begin:Nav-->
+                    <div class="navi navi-spacer-x-0 pt-5 pb-5">
+                      <!--begin::Item-->
+                      <div class="d-flex justify-content-center align-items-center pt-5 mb-4">
+                        <svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M21.625 26.3406C18.5185 26.3406 16 28.8589 16 31.9656V96.0343C16 99.141 18.5185 101.659 21.625 101.659H64L67.75 63.9911L64 26.3406H21.625Z" fill="#EBEBF0" />
+                          <path d="M106.375 26.3406H64V101.659H106.375C109.481 101.659 112 99.141 112 96.0343V31.9656C112 28.8591 109.481 26.3406 106.375 26.3406Z" fill="#D2D2D7" />
+                          <path d="M97.038 35.3032H102.663V92.6966H97.038V35.3032Z" fill="#373C41" />
+                          <path d="M85.0879 35.3032H90.7129V80.7463H85.0879V35.3032Z" fill="#373C41" />
+                          <path d="M73.1376 35.3032H78.7626V80.7463H73.1376V35.3032Z" fill="#373C41" />
+                          <path d="M61.1875 35.3032V80.7463H64L65.875 55.5624L64 35.3032H61.1875Z" fill="#5A5F64" />
+                          <path d="M64 35.3032H66.8125V80.7463H64V35.3032Z" fill="#373C41" />
+                          <path d="M49.2374 35.3032H54.8624V92.6966H49.2374V35.3032Z" fill="#5A5F64" />
+                          <path d="M37.287 35.3032H42.9121V80.7463H37.287V35.3032Z" fill="#5A5F64" />
+                          <path d="M25.3369 35.3032H30.9619V80.7463H25.3369V35.3032Z" fill="#5A5F64" />
+                          <path d="M90.713 92.5216H85.088V86.8966H90.713V92.5216Z" fill="#373C41" />
+                          <path d="M78.7628 92.5216H73.1378V86.8966H78.7628V92.5216Z" fill="#373C41" />
+                          <path d="M42.9121 92.5216H37.287V86.8966H42.9121V92.5216Z" fill="#5A5F64" />
+                          <path d="M30.9617 92.5216H25.3367V86.8966H30.9617V92.5216Z" fill="#5A5F64" />
+                          <path d="M61.1875 86.8965V92.5215H64L65.875 89.709L64 86.8965H61.1875Z" fill="#5A5F64" />
+                          <path d="M64 86.8965H66.8125V92.5215H64V86.8965Z" fill="#373C41" />
+                          <path d="M0.0103258 1.79551C0.00349778 1.86275 0 1.93096 0 2V22C0 23.1046 0.895431 24 2 24C3.10457 24 4 23.1046 4 22V4H22C23.1046 4 24 3.10457 24 2C24 0.895431 23.1046 0 22 0H2C0.964466 0 0.112746 0.786999 0.0103258 1.79551Z" fill="#B0C0CB" />
+                          <path d="M127.99 1.79551C127.997 1.86275 128 1.93096 128 2V22C128 23.1046 127.105 24 126 24C124.895 24 124 23.1046 124 22V4H106C104.895 4 104 3.10457 104 2C104 0.895431 104.895 0 106 0H126C127.036 0 127.887 0.786999 127.99 1.79551Z" fill="#B0C0CB" />
+                          <path d="M127.99 126.204C127.997 126.137 128 126.069 128 126V106C128 104.895 127.105 104 126 104C124.895 104 124 104.895 124 106V124H106C104.895 124 104 124.895 104 126C104 127.105 104.895 128 106 128H126C127.036 128 127.887 127.213 127.99 126.204Z" fill="#B0C0CB" />
+                          <path d="M0.0103264 126.204C0.00349839 126.137 0 126.069 0 126V106C0 104.895 0.895431 104 2 104C3.10457 104 4 104.895 4 106V124H22C23.1046 124 24 124.895 24 126C24 127.105 23.1046 128 22 128H2C0.964466 128 0.112746 127.213 0.0103264 126.204Z" fill="#B0C0CB" />
+                          <path d="M8 62C8 60.8954 8.89543 60 10 60H118C119.105 60 120 60.8954 120 62C120 63.1046 119.105 64 118 64H10C8.89543 64 8 63.1046 8 62Z" fill="#239AE7" />
+                          <path opacity="0.5" d="M16 92H112V96C112 99.3137 109.314 102 106 102H22C18.6863 102 16 99.3137 16 96V92Z" fill="#239AE7" />
+                          <path opacity="0.5" d="M16 64H112V92H16V64Z" fill="#239AE7" />
+                        </svg>
+                      </div>
+                      <p class="scan-code-footer-text">{{ a.bConfig.langs.tb_barcode_hint }}</p>
+                      <p class="scan-code-footer-text text-danger font-weight-bolder" ng-show="a.search.no_barcode_result">{{ a.bConfig.langs.tb_barcode_no_result }}</p>
+                      <!--end::Item-->
+                    </div>
+                    <!--end:Nav-->
+                  </div>
+                </div>
+                <!--end::Dropdown-->
+              </div>
+              <!-- end::Scan code icon-->
+
+              <!--begin::Quick Actions-->
+              <div class="dropdown">
+                <!--begin::Toggle-->
+                <div class="topbar-item" data-toggle="dropdown">
+                  <div class="btn btn-icon btn-dropdown btn-lg mr-1">
+                      <i class="fas fa-th"></i>
+                  </div>
+                </div>
+                <!--end::Toggle-->
+                <!--begin::Dropdown-->
+                <div class="dropdown-menu quick-actions-container p-0 m-0 dropdown-menu-right dropdown-menu-anim-up dropdown-menu-sm">
+                  <!--begin:Header-->
+
+                  <!--end:Header-->
+                  <!--begin:Nav-->
+                  <div class="navi navi-spacer-x-0 pt-3 pb-3">
+                    <!--begin::Item-->
+                    <a href class="navi-item px-6" ng-click="a.openTaskList()">
+                      <div class="navi-link">
+                        <div class="navi-icon">
+                          <i class="fas fa-tasks"></i>
+                        </div>
+                        <div class="navi-text ml-3">
+                          <div class="font-weight-bolder">
+                            {{ a.bConfig.langs.qa_all_tasks }}
+                          </div>
+                        </div>
+                      </div>
+                    </a>
+                    <a href class="navi-item px-6" ng-click="a.openAddTask()">
+                      <div class="navi-link">
+                        <div class="navi-icon">
+                          <i class="fas fa-plus"></i>
+                        </div>
+                        <div class="navi-text ml-3">
+                          <div class="font-weight-bolder">
+                            {{ a.bConfig.langs.qa_create_task }}
+                          </div>
+                        </div>
+                      </div>
+                    </a>
+                    <!--end::Item-->
+                  </div>
+                  <!--end:Nav-->
+                </div>
+                <!--end::Dropdown-->
+              </div>
+              <!--end::Quick Actions-->
+
+              <!--begin: Notifications -->
+              <div class="dropdown">
+                <!--begin::Toggle-->
+                <div class="topbar-item" data-toggle="dropdown">
+                  <div class="btn btn-icon btn-dropdown btn-lg mr-1 pulse pulse-primary">
+                      <i class="far fa-bell"></i>
+                    <span class="pulse-ring" ng-show="a.session.si.notifications.length"></span>
+                  </div>
+                </div>
+                <!--end::Toggle-->
+                <!--begin::Dropdown-->
+                <div
+                  class="dropdown-menu nf-container p-0 m-0 dropdown-menu-right dropdown-menu-anim-up dropdown-menu-lg">
+                  <!--begin::Header-->
+                  <div class="d-flex flex-column nf-header-container py-4 border-bottom">
+                    <!--begin::Title-->
+                    <h5 class="d-flex justify-content-between mb-0 px-4">
+                      <span class="my-2 nf-title">
+                        {{ a.bConfig.langs.tm_notifications }}
+                        ({{ a.session.si.notifications.length }})
+                      </span>
+                      <span class="btn btn-primary" ng-click="a.openNotificationList()">
+                        {{ a.bConfig.langs.nt_show_all }}
+                      </span>
+                    </h5>
+                    <!--end::Title-->
+                  </div>
+                  <!--end::Header-->
+                  <!--begin::Nav-->
+                  <div class="navi navi-hover nf-list rounded-bottom">
+                    <!--begin::Item-->
+                    <a href class="navi-item nf-container nf-bg-info" ng-repeat="nf in a.session.si.notifications"
+                      ng-click="a.openNotification({ notification_id: nf.notification_id })">
+                      <div class="navi-link py-4 d-flex justify-content-start align-items-start flex-row">
+                        <div class="navi-icon px-6 pt-1 d-flex align-items-start justify-content-center">
+                          <i class="fas fa-info-circle"></i>
+                        </div>
+                        <div class="d-flex justify-content-center align-items-start flex-column">
+                          <span class="nf-item-title">{{ nf.title }}</span>
+                          <span class="nf-item-subtitle">{{ nf.time }}</span>
+                        </div>
+                      </div>
+                    </a>
+                    <!--end::Item-->
+                    <div class="d-flex flex-center text-center text-muted min-h-200px"
+                      ng-if="a.session.si.notifications.length == 0">
+                      No new notifications.
+                    </div>
+                  </div>
+                  <!--end::Nav-->
+                </div>
+                <!--end::Dropdown-->
+              </div>
+              <!--end::Notifications-->
+
+              <!--begin::Contact Info Panel-->
+              <div class="dropdown" ng-if="a.session.si.project.contact_info">
+                <!--begin::Toggle-->
+                <div data-toggle="dropdown" class="topbar-item">
+                  <div class="btn btn-icon btn-clean btn-lg mr-1">
+                    <i class="fas fa-headset"></i>
+                  </div>
+                </div>
+                <!--end::Toggle-->
+                <!--begin::Dropdown-->
+                <div class="dropdown-menu p-0 m-0 dropdown-menu-right dropdown-menu-anim-up dropdown-menu-lg p-0">
+                  <!--begin::Header-->
+                  <div class="d-flex align-items-center justify-content-between flex-wrap p-6 border-bottom">
+                    <div class="d-flex align-items-center w-100">
+                      <!--begin::Text-->  
+                      <div class="m-0 font-size-h5 w-100">
+                        <span class="d-block title">{{ a.bConfig.langs.ci_contact_us }}</span>
+                      </div> 
+                      <!--end::Text-->
+                    </div>
+                  </div>
+                  <!--end::Header-->
+                  <!--begin::Nav-->
+                  <div class="navi navi-spacer-x-0 pt-5 pb-3">
+                    <!--begin::Item-->
+                    <a href="tel:{{ a.session.si.project.contact_info.phone_number }}" ng-if="a.session.si.project.contact_info.phone_number" class="navi-item px-6">
+                      <div class="navi-link">
+                        <div class="navi-icon">
+                          <i class="fa fa-phone"></i>
+                        </div>
+                        <div class="navi-text ml-3 d-flex justify-content-between">
+                          <div class="font-weight-bolder">
+                            {{ a.bConfig.langs.ci_support_phone_number }}
+                          </div>
+                          <div class="font-weight-bolder">
+                            {{ a.session.si.project.contact_info.phone_number }}
+                          </div>
+                        </div>
+                      </div>
+                    </a>
+                    <!--end::Item-->
+                    <!--begin::Item-->
+                    <a href class="navi-item px-6" ng-if="a.session.si.project.contact_info.work_day_name">
+                      <div class="navi-link">
+                        <div class="navi-icon">
+                          <i class="fa fa-clock"></i>
+                        </div>
+                        <div class="navi-text ml-3 d-flex justify-content-between">
+                          <div class="font-weight-bolder">
+                            {{ a.bConfig.langs.ci_work_day }}
+                          </div>
+                          <div class="font-weight-bolder">
+                            {{ a.session.si.project.contact_info.work_day_name }} ({{ a.session.si.project.contact_info.work_time_start + '-' + a.session.si.project.contact_info.work_time_end }})
+                          </div>
+                        </div>
+                      </div>
+                    </a>
+                    <!--end::Item-->
+                    <!--begin::Item-->
+                    <a href="{{ a.session.si.project.contact_info.knowledge_base }}" target="_blank" ng-if="a.session.si.project.contact_info.knowledge_base" class="navi-item px-6">
+                      <div class="navi-link">
+                        <div class="navi-icon pl-1">
+                          <i class="fa fa-exclamation"></i>
+                        </div>
+                        <div class="navi-text ml-3">
+                          <div class="font-weight-bolder">
+                            {{ a.bConfig.langs.ci_knowledge_base }}
+                          </div>
+                        </div>
+                      </div>
+                    </a>
+                    <!--end::Item-->
+                    <div class="navi-separator mt-6" ng-if="a.session.si.project.contact_info.knowledge_base || a.session.si.project.contact_info.work_schedule || a.session.si.project.contact_info.phone_number"></div>
+                    <!--begin::Item-->
+                    <a href="{{ a.session.si.project.contact_info.web_site }}" target="_blank" ng-if="a.session.si.project.contact_info.web_site" class="navi-item px-6">
+                      <div class="navi-link">
+                        <div class="navi-icon">
+                          <i class="fa fa-table"></i>
+                        </div>
+                        <div class="navi-text ml-3">
+                          <div class="font-weight-bolder">
+                            {{ a.session.si.project.contact_info.web_site }}
+                          </div>
+                        </div>
+                      </div>
+                    </a>
+                    <!--end::Item-->
+                    <!--begin::Item-->
+                    <a href="mailto:{{ a.session.si.project.contact_info.email }}" ng-if="a.session.si.project.contact_info.email" class="navi-item px-6">
+                      <div class="navi-link">
+                        <div class="navi-icon">
+                          <i class="fa fa-envelope"></i>
+                        </div>
+                        <div class="navi-text ml-3">
+                          <div class="font-weight-bolder">
+                            {{ a.session.si.project.contact_info.email }}
+                          </div>
+                        </div>
+                      </div>
+                    </a>
+                    <!--end::Item-->
+                    <!--begin::Item-->
+                    <a href="{{ a.session.si.project.contact_info.telegram_channel }}" target="_blank" ng-if="a.session.si.project.contact_info.telegram_channel" class="navi-item px-6">
+                      <div class="navi-link">
+                        <div class="navi-icon">
+                          <i class="fa fa-paper-plane"></i>
+                        </div>
+                        <div class="navi-text ml-3">
+                          <div class="font-weight-bolder">
+                            {{ a.bConfig.langs.ci_telegram_channel }}
+                          </div>
+                        </div>
+                      </div>
+                    </a>
+                    <!--end::Item-->
+                    <!--begin::Item-->
+                    <a href="{{ a.session.si.project.contact_info.video_course }}" target="_blank" ng-if="a.session.si.project.contact_info.video_course" class="navi-item px-6">
+                      <div class="navi-link">
+                        <div class="navi-icon">
+                          <i class="fa fa-play"></i>
+                        </div>
+                        <div class="navi-text ml-3">
+                          <div class="font-weight-bolder">
+                            {{ a.bConfig.langs.ci_video_course }}
+                          </div>
+                        </div>
+                      </div>
+                    </a>
+                    <!--end::Item-->
+                  </div>
+                  <!--end::Nav-->
+                </div>
+                <!--end::Dropdown-->
+              </div>
+              <!--end::Contact Info Panel-->
+
+              <!--begin::User-->
+              <div class="user-dropdown-menu dropdown">
+                <!--begin::Toggle-->
+                <div class="topbar-item" data-toggle="dropdown">
+                  <div class="btn btn-icon w-auto avatar-img-container btn-dropdown d-flex align-items-center btn-lg px-1">
+                    <span class="symbol symbol-35">
+                      <img alt="{{ a.session.si.user.prefix }}" ngf-src="a.session.si.avatar" ng-show="a.session.si.avatar" />
+                      <span class="symbol-label text-success bg-white-o-40 font-size-h5 font-weight-bolder" ng-if="!a.session.si.avatar">
+                        {{ a.session.si.user.prefix }}
+                      </span>
+                    </span>
+                  </div>
+                </div>
+                <!--end::Toggle-->
+                <!--begin::Dropdown-->
+                <div class="dropdown-menu p-0 m-0 dropdown-menu-right dropdown-menu-anim-up dropdown-menu-lg p-0">
+                  <!--begin::Header-->
+                  <div class="d-flex align-items-center justify-content-between flex-wrap p-6 border-bottom">
+                    <div class="d-flex align-items-center w-100">
+                      <!--begin::Text-->
+                      <div class="m-0 font-size-h5 user-menu-position w-100">
+                        <span class="d-block title">{{ a.session.si.user.name }}</span>
+                        <span class="subtitle small">{{ a.session.si.company_name}}</span>
+                      </div>
+                      <!--end::Text-->
+                    </div>
+                  </div>
+                  <!--end::Header-->
+                  <!--begin::Nav-->
+                  <div class="navi navi-spacer-x-0 pt-5 pb-3">
+                    <!--begin::Item-->
+                    <a href class="navi-item px-6" ng-click="a.openProfile()">
+                      <div class="navi-link">
+                        <div class="navi-icon">
+                            <i class="far fa-user"></i>
+                        </div>
+                        <div class="navi-text ml-3">
+                          <div class="font-weight-bolder">
+                            {{ a.bConfig.langs.profile }}
+                          </div>
+                        </div>
+                      </div>
+                    </a>
+                    <!--end::Item-->
+                     <!--begin::Item-->
+                     <a href class="navi-item px-6" ng-click="a.feedback.open()">
+                      <div class="navi-link">
+                        <div class="navi-icon">
+                          <i class="far fa-comment"></i>
+                        </div>
+                        <div class="navi-text ml-3">
+                          <div class="font-weight-bolder">
+                            {{ a.bConfig.langs.fb_send_feedback }}
+                          </div>
+                        </div>
+                      </div>
+                    </a>
+                    <!--end::Item-->
+                    <!--begin::Item-->
+                    <a href class="navi-item px-6" ng-click="a.openChangePassword()">
+                      <div class="navi-link">
+                        <div class="navi-icon">
+                            <i class="fas fa-unlock"></i>
+                        </div>
+                        <div class="navi-text ml-3">
+                          <div class="font-weight-bolder">
+                            {{ a.bConfig.langs.change_password }}
+                          </div>
+                        </div>
+                      </div>
+                    </a>
+                    <!--end::Item-->
+                    <!--begin::Item-->
+                    <a href class="navi-item px-6" ng-click="a.openFileManager()">
+                      <div class="navi-link">
+                        <div class="navi-icon">
+                            <i class="far fa-file"></i>
+                        </div>
+                        <div class="navi-text ml-3">
+                          <div class="font-weight-bolder">
+                            {{ a.bConfig.langs.file_manager }}
+                          </div>
+                        </div>
+                      </div>
+                    </a>
+                    <!--end::Item-->
+                    <!--begin::Item-->
+                    <a href class="navi-item px-6" ng-click="a.toggleFullScreen()">
+                      <div class="navi-link">
+                        <div class="navi-icon">
+                            <i class="fas fa-desktop"></i>
+                        </div>
+                        <div class="navi-text ml-3">
+                          <div class="font-weight-bolder">
+                            {{ a.bConfig.langs.toggle_full_screen }}
+                          </div>
+                        </div>
+                      </div>
+                    </a>
+                    <!--end::Item-->
+                    <!--begin::Item-->
+                    <a href class="navi-item px-6" ng-click="a.openSidebar('settings')">
+                      <div class="navi-link">
+                        <div class="navi-icon">
+                          <i class="fas fa-sliders-h"></i>
+                        </div>
+                        <div class="navi-text ml-3">
+                          <div class="font-weight-bolder">
+                            {{ a.bConfig.langs.quick_panel }}
+                          </div>
+                        </div>
+                      </div>
+                    </a>
+                    <!--end::Item-->
+                    <!--begin::Footer-->
+                    <div class="navi-separator mt-6"></div>
+                    <!--begin::Item-->
+                    <a href class="navi-item px-6" ng-click="a.session.lockScreen()">
+                      <div class="navi-link">
+                        <div class="navi-icon">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                        <div class="navi-text ml-3">
+                          <div class="font-weight-bolder">
+                            {{ a.bConfig.langs.lock_screen }}
+                          </div>
+                        </div>
+                      </div>
+                    </a>
+                    <!--end::Item-->
+                    <!--begin::Item-->
+                    <a href class="navi-item navi-logout px-6" ng-click="a.logout()">
+                      <div class="navi-link">
+                        <div class="navi-icon">
+                            <i class="fas fa-door-open"></i>
+                        </div>
+                        <div class="navi-text ml-3">
+                          <div class="font-weight-bolder">
+                            {{ a.bConfig.langs.logout }}
+                          </div>
+                        </div>
+                      </div>
+                    </a>
+                    <!--end::Item-->
+                    <!--begin::Item-->
+                    <a href class="navi-item navi-logout px-6" ng-click="a.logoutAndForget()">
+                      <div class="navi-link">
+                        <div class="navi-icon">
+                          <i class="fas fa-sign-out-alt"></i>
+                        </div>
+                        <div class="navi-text ml-3">
+                          <div class="font-weight-bolder">
+                            {{ a.bConfig.langs.logout_and_forget }}
+                          </div>
+                        </div>
+                      </div>
+                    </a>
+                    <!--end::Item-->
+                    <!--end::Footer-->
+                  </div>
+                  <!--end::Nav-->
+                </div>
+                <!--end::Dropdown-->
+              </div>
+              <!--end::User-->
+
+              <!-- begin::Locations toggle-->
+              <div class="header-logo custom-dropdown mr-3">
+                <div class="hover">
+                  <div ng-click="a.prepareProjects($event)" class="dropdown dropdown-locations-custom cursor-pointer" data-toggle="dropdown" aria-expanded="true">
+                    <div class="text-white d-flex flex-row">
+                      <div class="project-filial">
+                        <p class="d-block m-0 text-capitalize font-weight-bold">{{ a.session.si.project.name }}</p>
+                        <p class="text-muted m-0">{{ a.session.si.filial.name }}</p>
+                      </div>
+                      <div class="pt-3 px-2">
+                        <svg width="14" height="8" viewBox="0 0 14 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M1.10951 0.390503L0.390015 1.11L6.64001 7.36L6.99951 7.7035L7.35901 7.36L13.609 1.11L12.89 0.391003L7.00001 6.281L1.10951 0.390503Z" fill="white" fill-opacity="0.9" />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="dropdown-menu" ng-class="{'max-header-width':a.session.si.projects.length <= 1}">
+                    <div class="menus">
+                      <li class="project-list pb-4" ng-show="a.session.si.projects.length > 1">
+                        <span>{{ a.bConfig.langs.projects }}</span>
+                        <a href ng-class="{'selected': project.hash == a.temp_project.hash}" ng-repeat="project in a.session.si.projects">
+                          {{ project.name }}
+                        </a>
+                      </li>
+                      <li class="filial-list rounded-0">
+                        <div ng-if="a.temp_project.filials.length >= 10" class="position-relative filial-search form-group has-search m-0">
+                          <i class="fas fa-search form-control-feedback"></i>
+                          <input type="text" name="filialSearch" ng-model="a.searchFilial.name" class="form-control" placeholder="{{ ::a.bConfig.langs.search_filial }}">
+                        </div>
+                        <a href ng-class="{'selected': filial.id == a.session.si.filial.id && a.temp_project.hash == a.session.si.project.hash}"
+                            ng-click="a.changeFilial(filial.id)" ng-repeat="filial in a.temp_project.filials | filter: a.searchFilial">
+                          {{ filial.name }}
+                        </a>
+                      </li>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- end: Locations toggle-->
+            </div>
+            <!--end::Topbar-->
+          </div>
+          <!--end::Container-->
+        </div>
+        <!--end::Header-->
+
+        <!--begin::Content-->
+        <div id="kt_content" class="content d-flex flex-column flex-column-fluid">
+          <!--begin::Notifier-->
+          <div class="bg-light-danger px-4 py-1 w-100" ng-if="a.session.si.warning_message">
+            <span class="text-danger d-flex align-items-center" style="font-size: 1.1rem;">
+              <i class="fa fa-times p-2 cursor-pointer" ng-click="a.session.si.warning_message = ''"></i>
+              <span ng-bind-html="a.session.si.warning_message"></span>
+            </span>
+          </div>
+          <div class="alert alert-custom alert-notice px-4 py-1 w-100"
+            ng-class='{"alert-light-warning": a.session.si.project.subscription_infos.warning, "alert-light-danger": a.session.si.project.subscription_infos.danger}'
+            ng-if="a.session.si.project.subscription_infos.has_warning">
+            <div class="alert-icon"><i style="font-size: 1.3rem !important;" class="fas fa-exclamation-triangle"></i></div>
+            <div class="alert-text" ng-bind-html="a.session.si.project.subscription_infos.warning_message"></div>
+            <div class="alert-close">
+              <i class="fa fa-times p-2 cursor-pointer" ng-click="a.session.si.project.subscription_infos = {}"></i>
+            </div>
+          </div>
+          <!--end::Notifier-->
+          <!--begin::Subheader-->
+          <div class="subheader py-1 subheader-transparent" ng-if="a.showPageBar()">
+            <div class="container-fluid d-flex align-items-center justify-content-between flex-wrap flex-sm-nowrap"
+              ng-cloak>
+              <!--begin::Info-->
+              <div class="d-flex align-items-center flex-wrap position-relative pl-3 mr-2">
+                <!--begin::Page Title-->
+                <div class="dropdown cursor-pointer" data-toggle="dropdown" aria-expanded="true">
+                  <h6 class="text-dark font-weight-bolder my-1 mr-4 ml-n1">
+                    <span class="svg-icon svg-icon-primary svg-icon-2x opacity-80">
+                      <i class="fas fa-bars"></i>
+                    </span>
+                    {{ a.bFrame.pageTitle() }}
+                  </h6>
+                </div>
+                <div class="dropdown-menu" ng-show="a.bFrame.breadcrumbPages().length" style="min-width: 100%;">
+                  <a href class="dropdown-item" ng-repeat="pg in a.bFrame.breadcrumbPages()"
+                    ng-click="a.goBack($index)">
+                    <span>{{ $index + 1 }}.</span>&nbsp;{{ pg.title }}
+                  </a>
+                </div>
+                <!--end::Page Title-->
+                <div class="subheader-separator subheader-separator-ver my-2 mr-3 bg-gray-300"></div>
+                <!--begin::Breadcrump-->
+                <ul class="breadcrumb breadcrumb-transparent font-weight-bold p-0 m-0">
+                  <li class="breadcrumb-item no-before" ng-repeat="fs in a.bFrame.formSiblings()">
+                    <a href ng-click="a.openSibling(fs.url)">{{ fs.title }}</a>
+                  </li>
+                </ul>
+                <!--end::Breadcrumb-->
+              </div>
+              <!--end::Info-->
+              <!--begin::Toolbar-->
+              <div class="d-flex align-items-center">
+                <!--begin::Actions-->
+                <a class="btn subheader-btn btn-icon mr-2" ng-click="a.showTour()" ng-if="a.hasTour()" b-toggle="tooltip"
+                  title="{{  a.bConfig.langs.sh_show_tour }}" data-placement="bottom">
+                  <i class="fas fa-info"></i>
+                </a>
+                <a class="btn subheader-btn btn-icon mr-2" ng-click="a.openAddTask(true)" b-toggle="tooltip"
+                  title="{{ a.bConfig.langs.sh_add_task_current_form }}" data-placement="bottom">
+                  <i class="far fa-calendar-plus"></i>
+                </a>
+                <a class="btn subheader-btn btn-icon mr-2" ng-click="a.setAccess()" ng-if="a.showSetAccess()"
+                  b-toggle="tooltip" title="{{ a.bConfig.langs.sh_set_access }}" data-placement="bottom">
+                  <i class="fa fa-chalkboard-teacher"></i>
+                </a>
+                <a class="btn subheader-btn btn-icon mr-2" ng-click="a.sendAccessRequest()"
+                  ng-if="a.showAccessRequest()" b-toggle="tooltip" title="{{ a.bConfig.langs.sh_access_request }}"
+                  data-placement="bottom">
+                  <i class="fa fa-address-card"></i>
+                </a>
+                <a class="btn subheader-btn btn-icon mr-2" ng-click="a.customTranslate()"
+                  ng-if="a.showCustomTranslate()" b-toggle="tooltip" title="{{ a.bConfig.langs.sh_custom_translate }}"
+                  data-placement="bottom">
+                  <i class="fa fa-language"></i>
+                </a>
+                <!--end::Actions-->
+              </div>
+              <!--end::Toolbar-->
+            </div>
+          </div>
+          <!--end::Subheader-->
+
+          <!--begin::Entry-->
+          <div class="d-flex flex-column-fluid">
+            <!--begin::Container-->
+            <div class="container mw-100">
+              <b-page ng-repeat="bPageID in a.bFrame.pageIds" class="ng-hide" ng-show="$last"></b-page>
+            </div>
+            <!--end::Container-->
+          </div>
+          <!--end::Entry-->
+        </div>
+        <!--end::Content-->
+
+        <!--begin::Footer-->
+        <div class="footer bg-white py-3 d-flex flex-lg-column" id="kt_footer">
+          <!--begin::Container-->
+          <div class="container-fluid d-flex flex-column flex-md-row align-items-center justify-content-between">
+            <!--begin::Copyright-->
+            <div class="text-dark order-2 order-md-1">
+              <span class="text-muted font-weight-bold mr-2">
+                Copyright &copy; {{ a.session.si.project.config.company.foundation + '-' + a.session.si.current_year }},&nbsp;
+                <a href="{{ a.session.si.project.config.about }}" class="company-link" target="_blank" tabindex="-1">
+                  {{ a.session.si.project.config.company.name }}</a>. All rights reserved.
+                <span ng-if="a.session.si.project.contact_info.work_day_name">{{ a.session.si.project.contact_info.work_day_name }} ({{ a.session.si.project.contact_info.work_time_start + '-' + a.session.si.project.contact_info.work_time_end }}),&nbsp;</span>
+                <a ng-if="a.session.si.project.contact_info.phone_number" href="tel:{{ a.session.si.project.contact_info.phone_number }}" class="company-link" tabindex="-1">{{ a.session.si.project.contact_info.phone_number}}</a>,&nbsp;
+                <a ng-if="a.session.si.project.contact_info.knowledge_base" href="{{ a.session.si.project.contact_info.knowledge_base }}" class="company-link" target="_blank" tabindex="-1">{{ a.bConfig.langs.ci_knowledge_base }}</a>
+              </span>
+            </div>
+            <!--end::Copyright-->
+          </div>
+          <!--end::Container-->
+        </div>
+        <!--end::Footer-->
+      </div>
+      <!--end::Wrapper-->
+    </div>
+    <!--end::Page-->
+  </div>
+  <!--end::Main-->
+
+  <!--begin::Quick Panel Modal-->
+  <div id="kt_quick_sidebar" tabindex="-1">
+    <div id="quick_panel_sidebar">
+      <div class="quick-panel-body" ng-if="a.quick_sidebar.settings">
+        <span ng-class="{'d-block': a.quick_sidebar.settings}" ng-click="a.closeSidebar('settings')" class="quick-panel-closer"><i class="fas fa-times"></i></span>
+        <ul class="nav nav-pills todo-hide" role="tablist">
+          <li class="nav-item">
+            <a class="nav-link disabled" data-toggle="tab" data-target="#quick_panel_messages" role="tab"
+              aria-controls="home" aria-selected="true">
+              {{ a.bConfig.langs.qs_messages }}
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" data-toggle="tab" data-target="#quick_panel_settings" role="tab"
+              aria-controls="profile" aria-selected="false">
+              {{ a.bConfig.langs.qs_settings }}
+            </a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane fade" role="tabpanel" aria-labelledby="quick_panel_messages_tab"></div>
+          <div class="tab-pane fade show active" role="tabpanel" aria-labelledby="quick_panel_settings_tab">
+            <div class="quick-panel-tab-content">
+              <h5 class="mb-6 quick-panel-tab-header">{{ a.bConfig.langs.qs_general_settings }}</h5>
+              <div class="row" ng-if="a.settings.projects.length > 1">
+                <label class="col-sm-12 col-form-label">{{ a.bConfig.langs.gs_init_project }}</label>
+                <ui-select class="col-sm" ng-model="a.settings.init_project" ng-change="a.settings.changeProject()">
+                  <ui-select-match>{{ $select.selected.name }}</ui-select-match>
+                  <ui-select-choices repeat="item.code as item in a.settings.projects | filter: $select.search">
+                    {{ item.name }}
+                  </ui-select-choices>
+                </ui-select>
+              </div>
+              <div class="row py-2" ng-if="a.settings.filials.length > 1">
+                <label class="col-sm-12 col-form-label">{{ a.bConfig.langs.gs_init_filial }}</label>
+                <ui-select class="col-sm" ng-model="a.settings.init_filial" ng-change="a.settings.changeFilial()">
+                  <ui-select-match>{{ $select.selected.name }}</ui-select-match>
+                  <ui-select-choices repeat="item.id as item in a.settings.filials | filter: $select.search">
+                    {{ item.name }}
+                  </ui-select-choices>
+                </ui-select>
+              </div>
+              <div class="row py-2">
+                <label class="col-sm-12 col-form-label">{{ a.bConfig.langs.gs_start_kind }}</label>
+                <div class="col-sm-12">
+                  <label class="radio mb-4">
+                    <input type="radio" ng-value="'D'" ng-model="a.settings.start_kind" ng-change="a.settings.changeStartKind()" name="init-kind-radio">
+                    <span>{{ a.bConfig.langs.gs_sk_dashboard }}</span>
+                  </label>
+                  <label class="radio mb-4">
+                    <input type="radio" ng-value="'C'" ng-model="a.settings.start_kind" ng-change="a.settings.changeStartKind()" name="init-kind-radio">
+                    <span>{{ a.bConfig.langs.gs_sk_set_parameters }}</span>
+                  </label>
+                  <b-tree-select origin="a.settings.forms" id-key="menu_id" model="a.settings.init_form_id"
+                    on-select="a.settings.selectForm(row)" ng-show="a.settings.start_kind == 'C'"/>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--end::Quick Panel Modal-->
+
+  <!--begin::Scrolltop-->
+  <div id="kt_scrolltop" class="scrolltop">
+    <span class="svg-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px"
+        viewBox="0 0 24 24" version="1.1">
+        <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+          <polygon points="0 0 24 0 24 24 0 24" />
+          <rect fill="#000000" opacity="0.3" x="11" y="10" width="2" height="10" rx="1" />
+          <path
+            d="M6.70710678,12.7071068 C6.31658249,13.0976311 5.68341751,13.0976311 5.29289322,12.7071068 C4.90236893,12.3165825 4.90236893,11.6834175 5.29289322,11.2928932 L11.2928932,5.29289322 C11.6714722,4.91431428 12.2810586,4.90106866 12.6757246,5.26284586 L18.6757246,10.7628459 C19.0828436,11.1360383 19.1103465,11.7686056 18.7371541,12.1757246 C18.3639617,12.5828436 17.7313944,12.6103465 17.3242754,12.2371541 L12.0300757,7.38413782 L6.70710678,12.7071068 Z"
+            fill="#000000" fill-rule="nonzero" />
+        </g>
+      </svg>
+    </span>
+  </div>
+  <!--end::Scrolltop-->
+  <!--begin::Sticky Toolbar-->
+  <ul class="sticky-toolbar nav flex-column pl-2 pr-2 pt-3 pb-3 mt-4 todo-hide">
+    <!--begin::Item-->
+    <li class="nav-item mb-2" data-toggle="tooltip" title="{{ a.bConfig.langs.st_settings }}" data-placement="left">
+      <a class="btn btn-icon btn-bg-light btn-text-primary btn-hover-primary" href>
+        <i class="flaticon2-gear"></i>
+      </a>
+    </li>
+    <!--end::Item-->
+    <!--begin::Item-->
+    <li class="nav-item" id="kt_sticky_toolbar_chat_toggler" data-toggle="tooltip" title="{{ a.bConfig.langs.st_chat }}"
+      data-placement="left">
+      <a class="btn btn-icon btn-bg-light btn-text-danger btn-hover-danger" href>
+        <i class="flaticon2-chat-1"></i>
+      </a>
+    </li>
+    <!--end::Item-->
+  </ul>
+  <!--end::Sticky Toolbar-->
+
+  <div class="modal fade" id="biruniSortForm" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="biruniSortFormModalLabel">{{ a.bConfig.langs.sort }}</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <svg class="cursor-pointer" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M1.41427 0.335711L0.335022 1.41496L6.92227 7.99996L0.335022 14.5857L1.41502 15.665L8.00002 9.07771L14.5858 15.6642L15.6643 14.5857L9.07777 7.99996L15.6643 1.41421L14.585 0.334961L8.00002 6.92221L1.41427 0.335711Z" fill="white" fill-opacity="0.9" />
+            </svg>
+          </button>
+        </div>
+        <div class="modal-body p-0">
+          <div class="sort-form-actions-wrapper px-5 py-2 d-flex justify-content-between">
+            <button type="button" class="btn" ng-class="{'btn-default': !a.bSortForm.pinned, 'btn-primary': a.bSortForm.pinned}" ng-click="a.bSortForm.pinOrder()">
+              {{ a.bConfig.langs.sort_pin }}
+            </button>
+            <button type="button" class="btn btn-default" b-toggle data-container="body" data-title="{{ a.bConfig.langs.reset_to_default }}" on-click-yes="a.bSortForm.setDefault()">
+              <i class="fas fa-undo"></i>
+              {{ a.bConfig.langs.set_default }}
+            </button>
+          </div>
+          <div class="col-sm-24 p-5" ui-tree>
+            <div ui-tree-nodes ng-model="a.bSortForm.cols" class="sf-ui-tree-nodes">
+              <div ui-tree-node ng-repeat="fm in a.bSortForm.cols" class="row mb-2 sf-ui-tree-node">
+                <div class="sf-ui-tree-node-body p-4 col min-w-100 text-justify" ng-click="fm.dir=(fm.dir+1)%3">
+                  <div class="sf-ui-tree-node-drag text-justify">
+                    <span class="sf-ui-tree-node-label">{{ fm.label }}</span>
+                    <button type="button" ng-class="{'btn-primary': fm.clazz() != 'fa-remove', 'btn-default': fm.clazz() == 'fa-remove'}" class="btn">
+                      {{ fm.status(fm.clazz()) }}
+                      <i class="fas float-right ml-2 mt-1" ng-class="fm.clazz()"></i>
+                    </button>
+                  </div>
+                </div>
+                <div class="sf-ui-tree-handle p-4" ui-tree-handle><i class="fas fa-arrows-alt-v"></i></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer py-2 px-4">
+          <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="a.bSortForm.sortIt()">{{ a.bConfig.langs.apply }}</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal">{{ a.bConfig.langs.cancel }}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="biruniAlertExtended" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div class="modal-title">
+            <h4 class="mb-0 d-flex align-items-center">
+              <i class="fa fa-exclamation-circle text-danger my-n4 mr-4 opacity-50 h1 font-weight-bolder"></i>
+              <div>{{ a.bAlert.code }} —  <span class="font-weight-bolder breakable" ng-bind-html="a.bAlert.title"></span></div>
+            </h4>
+          </div>
+          <button type="button" class="close p-4 m-n4" data-dismiss="modal"><i aria-hidden="true" class="fa fa-times"></i></button>
+        </div>
+        <div class="modal-body">
+          <div class="error-message mb-5" style="font-weight: 400; line-height: 140%;">
+            <h5 style="color: rgba(12, 42, 62, 0.8);" ng-bind-html="a.bAlert.message"></h5>
+          </div>
+          <div class="collapse" style="color: rgba(12, 42, 62, 0.8); font-weight: 400; line-height: 140%;" id="recoms">
+            <footer class="blockquote-footer h5 text-primary user-select-none">{{ a.bConfig.langs.alert_solutions }}</footer>
+            <hr class="mt-0 border-primary" style="border-top-style: dashed;"/>
+            <div class="error-solutions">
+              <ul>
+                <li class="mb-4" ng-repeat="solution in a.bAlert.solutions" ng-bind-html="solution"></li>
+              </ul>
+            </div>
+          </div>
+          <div class="d-flex justify-content-between user-select-none" ng-if="a.bAlert.solutions.length > 0">
+            <!-- <a href class="opacity-70 border-bottom border-bottom-primary" >Узнать больше</a> -->
+            <a class="opacity-70 border-bottom border-bottom-primary text-primary cursor-pointer ml-auto" data-toggle="collapse" data-target="#recoms">
+              {{ a.bConfig.langs.alert_recommended }}
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="biruniAlert" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">{{ a.bAlert.title }}</h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+              aria-hidden="true">&times;</span></button>
+        </div>
+        <div class="modal-body">
+          <h4 class="text-danger breakable" ng-bind-html="a.bAlert.message"></h4>
+          <form ng-show="a.bAlert.route">
+            <div class="form-group">
+              <label class="control-label">Uri:</label>
+              <p><code>{{ a.bAlert.uri }}</code></p>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">{{a.bConfig.langs.close}}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="biruniConfirm" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-body">
+          <h4 class="breakable" ng-bind-html="a.bConfirm.message"></h4>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-dismiss="modal"
+              ng-click="a.bConfirm.clickYes()" ng-disabled="a.bConfirm.time">
+            {{a.bConfig.langs.yes}}
+            <span ng-if="a.bConfirm.time">({{ a.bConfirm.time }})</span>
+          </button>
+          <button type="button" class="btn btn-default" data-dismiss="modal"
+            ng-click="a.bConfirm.clickNo()">{{a.bConfig.langs.no}}</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="a.bConfirm.clickCancel()"
+            ng-if="a.bConfirm.hasCancel">{{a.bConfig.langs.cancel}}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pv-modal" id="biruniPreview" tabindex="-1">
+    <i class="pv-close" ng-click="a.bPreview.close()"></i>
+    <div class="pv-backdrop" ng-click="a.bPreview.close()"></div>
+    <div class="pv-content" tabindex="-1">
+      <div class="pv-header">
+        <h5 class="pv-title">{{ a.bPreview.file_name }}</h5>
+      </div>
+      <div class="pv-body" ng-click="a.bPreview.close()">
+        <!-- if file_type is image -->
+        <img ng-src="{{ a.bPreview.file_src }}" ng-click="$event.stopPropagation()" ng-dblclick="a.bPreview.scale(1)"
+          ng-if="a.bPreview.file_type == 'image'" alt="{{ a.bConfig.langs.pv_unavailable }}" />
+        <!-- if file_type is video -->
+        <video controls autoplay ng-click="$event.stopPropagation()" ng-dblclick="a.bPreview.scale(1)" ng-if="a.bPreview.file_type == 'video'"
+          tabindex="-1">
+          <source ng-src="{{ a.bPreview.file_src }}" type="video/mp4">
+          <source ng-src="{{ a.bPreview.file_src }}" type="video/ogg">
+          {{ a.bConfig.langs.pv_not_support_video }}
+        </video>
+        <!-- if file_type is onlyoffice -->
+        <iframe ng-if="a.bPreview.file_type == 'onlyoffice'" ng-src="{{ a.bPreview.file_src }}" style="width: 85vw; height: 100%;" frameborder="0" ></iframe>
+        <!-- if file_type is none -->
+        <h4 class="pv-no-content" ng-if="a.bPreview.file_type == 'none'">{{ a.bConfig.langs.pv_unable_to_preview }}</h4>
+      </div>
+      <div class="pv-footer" ng-style="{ 'visibility': a.bPreview.file_type == 'onlyoffice' || a.bPreview.file_type == 'none' ? 'hidden' : 'visible' }">
+        <a href="{{ a.bPreview.download_link }}" download class="pv-download mr-3" ng-if="a.bPreview.file_src && a.bPreview.download_link">
+          <i class="fa fa-download"></i>
+        </a>
+        <button ng-if="a.bPreview.file_type == 'image' || a.bPreview.file_type == 'video'" class="btn btn-icon-default text-white" ng-click="a.bPreview.rotateImage(-90)">
+          <i class="fas fa-undo-alt"></i>
+        </button>
+        <button ng-if="a.bPreview.file_type == 'image' || a.bPreview.file_type == 'video'" class="btn btn-icon-default text-white" ng-click="a.bPreview.rotateImage(90)">
+          <i class="fas fa-redo-alt"></i>
+        </button>
+        <button ng-if="a.bPreview.file_type == 'image' || a.bPreview.file_type == 'video'" class="btn btn-icon-default text-white" ng-click="a.bPreview.scale(-1)">
+          <i class="fa fa-search-minus"></i>
+        </button>
+        <button ng-if="a.bPreview.file_type == 'image' || a.bPreview.file_type == 'video'" class="btn btn-icon-default text-white" ng-click="a.bPreview.scale(1)">
+          <i class="fa fa-search-plus"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="pv-modal" id="biruniFaceCropper" tabindex="-1" ng-keydown="a.bFaceCropper.onKeyDown($event)">
+    <i class="pv-close" ng-click="a.bFaceCropper.close()"></i>
+    <div class="pv-backdrop"></div>
+    <div class="pv-content" tabindex="-1">
+      <div class="pv-header mb-0">
+        <h5 class="pv-title">{{ a.bFaceCropper.file_name }}</h5>
+      </div>
+      <div class="pv-body" style="width: 100%; height: 100%;">
+        <img class="crop_face_photo" style="max-width: 100%" ng-src="{{ a.bFaceCropper.file_src }}" ng-show="a.bFaceCropper.file_src && a.bFaceCropper.file_type == 'image' && a.bFaceCropper.cropper" alt="{{ a.bConfig.langs.pv_unavailable }}" />
+        <h4 class="pv-no-content" ng-if="a.bFaceCropper.file_type == 'none'">{{ a.bConfig.langs.pv_unable_to_preview }}</h4>
+      </div>
+      <div class="pv-footer mt-0">
+        <button ng-if="a.bFaceCropper.file_type == 'image'" id="shapeButton" class="btn btn-outline-dark text-white mr-2" ng-click="a.bFaceCropper.toggleShape()">{{ a.bConfig.langs.crp_shape }}</button>
+        <button ng-if="a.bFaceCropper.file_type == 'image'" id="maskButton" class="btn btn-outline-dark text-white mr-2" ng-click="a.bFaceCropper.toggleMask()">{{ a.bConfig.langs.crp_mask }}</button>
+        <button ng-if="a.bFaceCropper.file_type == 'image'" class="btn btn-icon-default text-white" ng-click="a.bFaceCropper.imageRotate(-90)">
+          <i class="fas fa-undo-alt" style="padding: 0;"></i>
+        </button>
+        <button ng-if="a.bFaceCropper.file_type == 'image'" class="btn btn-icon-default text-white" ng-click="a.bFaceCropper.imageRotate(90)">
+          <i class="fas fa-redo-alt" style="padding: 0;"></i>
+        </button>
+        <button ng-if="a.bFaceCropper.file_type == 'image'" class="btn btn-outline-dark text-white ml-2" ng-click="a.bFaceCropper.crop()">{{ a.bConfig.langs.crp_save }}</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="biruniGridFilter" tabindex=-1 role="dialog" style="overflow-y:scroll !important;">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="biruniGridFilterModalLabel">{{ a.bConfig.langs.gf_filter_title  }}</h5>
+          <button type="button" class="close" data-dismiss="modal">
+            <svg class="cursor-pointer" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M1.41427 0.335711L0.335022 1.41496L6.92227 7.99996L0.335022 14.5857L1.41502 15.665L8.00002 9.07771L14.5858 15.6642L15.6643 14.5857L9.07777 7.99996L15.6643 1.41421L14.585 0.334961L8.00002 6.92221L1.41427 0.335711Z" fill="white" fill-opacity="0.9" />
+            </svg>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form name="filter-body">
+            <div class="b-filter-actions-wrapper d-flex justify-content-between px-5 py-3">
+              <div class="dropdown">
+                <button type="button" class="btn btn-default dropdown-toggle mr-2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  {{ a.bGridFilter.container.name || a.bConfig.langs.gf_template }}
+                </button>
+                <div class="dropdown-menu">
+                  <div ng-show="a.bGridFilter.newFilterMode" class="add-new-field-wrapper">
+                    <input type="text" class="form-control" placeholder="{{ a.bConfig.langs.gf_input_filter }}"
+                        ng-model="a.bGridFilter.new_filter_name" ng-keypress="a.bGridFilter.keypressNewFilter($event)"/>
+                    <div class="w-100 d-flex justify-content-between mt-2" ng-show="a.bGridFilter.newFilterMode">
+                      <button type="button" class="btn btn-primary" ng-click="a.bGridFilter.saveNewFilter()">
+                        {{ a.bConfig.langs.gf_save_template }}
+                      </button>
+                      <button type="button" class="btn btn-default" ng-click="a.bGridFilter.clearNewFilter()">
+                        {{ a.bConfig.langs.cancel }}
+                      </button>
+                    </div>
+                  </div>
+                  <div class="dropdown-item cursor-pointer py-2 px-4 b-filter-add-item-action" ng-hide="a.bGridFilter.newFilterMode" ng-click="a.bGridFilter.addNewFilter($event)">
+                    <i class="fas fa-save mr-4"></i>
+                    {{ a.bConfig.langs.gf_new_template }}
+                  </div>
+                  <div ng-click="a.bGridFilter.setTemplate(item)" ng-class="{'b-filter-current-item': item.code == a.bGridFilter.container.code}"
+                      class="dropdown-item cursor-pointer py-2 px-4 d-flex justify-content-between" ng-repeat="item in a.bGridFilter.templates">
+                    <span class="b-filter-template-item-text-container">
+                      <span class="b-filter-template-item-text" ng-hide="item.editTextMode">{{ item.name }}</span>
+                      <input type="text" class="form-control" placeholder="{{ a.bConfig.langs.gf_input_filter }}" ng-model="item.name"
+                        ng-click="$event.stopPropagation()" ng-keypress="a.bGridFilter.editListName(item, $event)" ng-show="item.editTextMode"/>
+                    </span>
+                    <div class="dropdown-item-actions" ng-hide="item.editTextMode">
+                      <i class="b-filter-pin fas fa-thumbtack cursor-pointer text-hover-primary"
+                        ng-class="{'b-filter-pinned' : item.pin == 'Y'}"
+                        ng-click="a.bGridFilter.doAction(item, 'pin', $event)">
+                      </i>
+                      <i class="fas fa-pencil-alt cursor-pointer text-hover-primary" ng-click="a.bGridFilter.doAction(item, 'edit', $event)"></i>
+                      <i class="fas fa-trash cursor-pointer text-hover-danger" ng-click="a.bGridFilter.doAction(item, 'remove', $event)"></i>
+                    </div>
+                    <div class="dropdown-item-actions" ng-show="item.editTextMode">
+                      <i class="fas fa-save cursor-pointer text-hover-primary" ng-click="a.bGridFilter.saveEditFilter(item)"></i>
+                      <i class="fas fa-times cursor-pointer text-hover-danger" ng-click="a.bGridFilter.cancelEditFilter(item)"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="b-filter-actions-right">
+                <button type="button" class="btn btn-default" b-toggle data-container="body" data-title="{{ a.bConfig.langs.reset_to_default }}" on-click-yes="a.bGridFilter.setDefault()">
+                  <i class="fas fa-undo"></i>
+                  {{ a.bConfig.langs.set_default }}
+                </button>
+                <div class="btn-group filter-field-add-dropdown">
+                  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    {{ a.bConfig.langs.gf_add_filter_field  }}
+                  </button>
+                  <div class="dropdown-menu dropdown-menu-right">
+                    <div class="dropdown-item d-flex align-items-center w-100" ng-repeat="f in a.bGridFilter.getUncheckedFilters()" ng-click="a.bGridFilter.addFilterItem(f.name)">
+                      {{ f.label }}
+                    </div>
+                    <div class="dropdown-item" ng-if="!a.bGridFilter.getUncheckedFilters().length">{{ a.bConfig.langs.gf_no_filters }}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="b-filter-wrapper">
+              <div class="b-filter-inner-container">
+                <div class="b-filter-field-container">
+                  <div class="b-filter-field-container-list">
+                    <div ng-include="'b-grid-filter.html'">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="b-filter-bottom-wrapper">
+              <div class="b-filter-bottom-actions">
+                <button type="submit" class="btn btn-primary" ng-click="a.bGridFilter.run()">{{ a.bConfig.langs.apply }}</button>
+                <button type="button" class="btn btn-default" data-dismis="modal" ng-click="a.bGridFilter.showAll()">{{ a.bConfig.langs.gf_show_all }}</button>
+                <button type="button" class="btn btn-default" data-dismis="modal" ng-click="a.bGridFilter.close()">{{ a.bConfig.langs.close }}</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="text/ng-template" id="b-grid-filter.html">
+    <div ui-tree>
+      <div ui-tree-nodes ng-model="a.bGridFilter.container.filters" ng-if="a.bGridFilter.container.filters.length > 0" class="b-filter-edit">
+        <div ui-tree-node ng-repeat="f in a.bGridFilter.container.filters" b-control-field>
+          <div class="b-filter-moving" ui-tree-handle><i class="fas fa-arrows-alt-v"></i></div>
+          <div class="b-filter-item">
+            <div class="b-filter-header">
+              <p class="b-filter-item-title">
+                {{ f.label }}
+                <span ng-class="{'text-primary': f.checkbox_state == 'N', 'text-muted': f.checkbox_state == 'P'}" class="b-filter-select-all p-0 pl-2"
+                    ng-if="f.mode=='md' && f.count <= a.bGridFilter.md_max_count" ng-click="a.bGridFilter.selectAll(f)">
+                  {{ f.checkbox_state == 'N' ? a.bConfig.langs.gf_select_all : a.bConfig.langs.gf_unselect_all }}
+                </span>
+              </p>
+              <span class="b-filter-remove" ng-click="a.bGridFilter.deleteFilterItem(f)">
+                <i class="fas fa-times"></i>
+              </span>
+            </div>
+            <div class="b-filter-item-content">
+              <div role="group" class="mr-4 filter-operator">
+                <button type="button" class="filter-type-btn btn btn-icon dropdown-toggle no-after"
+                    ng-class="{'btn-default': !f.nulls, 'btn-warning': f.nulls}" data-toggle="dropdown" tabindex="-1">
+                  <i ng-class="f.operation.class"></i>
+                </button>
+                <div class="dropdown-menu" x-placement="bottom-start">
+                  <a href class="dropdown-item" ng-repeat="oper in f.operations" ng-click="f.operation = oper; f.op = oper.op">
+                    <i ng-class="oper.class"></i>
+                    {{ oper.text }}
+                  </a>
+                  <div class="dropdown-divider"></div>
+                  <a href class="px-4 text-dark d-block py-1" ng-click="a.bGridFilter.selectNulls(f, '=', $event)">
+                    <label class="checkbox">
+                      <input type="checkbox" name="include-nulls" ng-checked="f.nulls == '='">
+                      <span>{{ a.bConfig.langs.gf_include_nulls }}</span>
+                    </label>
+                  </a>
+                  <a href class="px-4 text-dark d-block py-1" ng-click="a.bGridFilter.selectNulls(f, '<>', $event)">
+                    <label class="checkbox">
+                      <input type="checkbox" name="include-not-nulls" ng-checked="f.nulls == '<>'">
+                      <span>{{ a.bConfig.langs.gf_include_not_nulls }}</span>
+                    </label>
+                  </a>
+                </div>
+              </div>
+              <div class="filter-body">
+                <div ng-if="f.mode=='search'"><input class="form-control" ng-model="f.val"></div>
+                <div ng-if="f.mode=='rangeNumber'">
+                  <input class="form-control" ng-model="f.val.left" b-number style="width:224px;display: inline-block;">
+                  <div style="width:14px;display: inline-block;">&nbsp;</div>
+                  <input class="form-control" ng-model="f.val.right" b-number style="width:224px;display: inline-block;">
+                </div>
+                <div ng-if="f.mode=='rangeDate'">
+                  <input class="form-control" ng-model="f.val.left" b-date-picker="{{ f.dateModelFormat }}"
+                    view-format="{{ f.dateViewFormat }}" style="width:224px;display: inline-block;">
+                  <div style="width:14px;display: inline-block;">&nbsp;</div>
+                  <input class="form-control" ng-model="f.val.right" b-date-picker="{{ f.dateModelFormat }}"
+                    view-format="{{ f.dateViewFormat }}" style="width:224px;display: inline-block;">
+                </div>
+                <div ng-if="f.mode=='number'">
+                  <input class="form-control" ng-model="f.val" b-number style="width:224px;display: inline-block;">
+                </div>
+                <div ng-if="f.mode=='date'">
+                  <input class="form-control" ng-model="f.val" b-date-picker="{{ f.dateModelFormat }}"
+                    view-format="{{ f.dateViewFormat }}" style="width:224px;display: inline-block;">
+                </div>
+                <div ng-if="f.mode=='mc'">
+                  <label class="checkbox mt-2" ng-repeat="v in f.val">
+                    <input type="checkbox" ng-model="v.val" />
+                    <span>{{ v.name }}</span>
+                  </label>
+                </div>
+                <div ng-if="f.mode=='mt'">
+                  <b-tree-select multiple origin="f.val" model="f.model" />
+                </div>
+                <div ng-if="f.mode=='md'">
+                  <b-input multiple=3 name="{{ a.bGridFilter.query_name }}" model="f.val" label="name" run-page="a.bGridFilter.page"
+                    refer-name="{{ f.decorateWith }}" on-change="a.bGridFilter.onQueryChange(f, query, value)"
+                    on-select="a.bGridFilter.onSelect(f, row)" on-delete="a.bGridFilter.onDelete(f, index, row)">
+                    <div class="col-sm-24">{{row.name}}</div>
+                  </b-input>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </script>
+
+  <div class="modal fade" id="biruniPgGridFilter" tabindex="-1" role="dialog" style="overflow-y:scroll !important;">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">{{ a.bConfig.langs.gf_filter_title  }}</h5>
+          <button type="button" class="close" data-dismiss="modal">
+            <svg class="cursor-pointer" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M1.41427 0.335711L0.335022 1.41496L6.92227 7.99996L0.335022 14.5857L1.41502 15.665L8.00002 9.07771L14.5858 15.6642L15.6643 14.5857L9.07777 7.99996L15.6643 1.41421L14.585 0.334961L8.00002 6.92221L1.41427 0.335711Z" fill="white" fill-opacity="0.9" />
+            </svg>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form name="filter-body">
+            <div class="b-filter-wrapper">
+              <div class="b-filter-inner-container">
+                <div ng-include="'b-pg-grid-filter.html'"></div>
+              </div>
+            </div>
+            <div class="b-filter-bottom-wrapper">
+              <div class="b-filter-bottom-actions">
+                <button type="submit" class="btn btn-primary" ng-click="a.bPgGridFilter.run()">{{ a.bConfig.langs.apply }}</button>
+                <button type="button" class="btn btn-default" data-dismis="modal" ng-click="a.bPgGridFilter.showAll()">{{ a.bConfig.langs.gf_show_all }}</button>
+                <button type="button" class="btn btn-default" data-dismis="modal" ng-click="a.bPgGridFilter.close()">{{ a.bConfig.langs.close }}</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="sendFeedback" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content" ng-show="!a.feedback.sended">
+        <div class="modal-header">
+          <h5 class="modal-title">{{ a.bConfig.langs.fb_send_feedback }}</h5>
+          <button type="button" class="close" data-dismiss="modal">
+            <svg class="cursor-pointer" width="12" height="12" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M1.41427 0.335711L0.335022 1.41496L6.92227 7.99996L0.335022 14.5857L1.41502 15.665L8.00002 9.07771L14.5858 15.6642L15.6643 14.5857L9.07777 7.99996L15.6643 1.41421L14.585 0.334961L8.00002 6.92221L1.41427 0.335711Z" fill="black" fill-opacity="0.9"/>
+            </svg>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form name="form">
+            <div class="form-group">
+              <label class="mb-2">{{ a.bConfig.langs.fb_rate_us }}<r></label><br>
+              <div class="user-select-none" ng-class="{'text-danger': a.feedback.rate_invalid}">
+                <span role="button" class="text-center mr-3" ng-class="(a.feedback.rate >= 1) && 'font-yellow-lemon'" ng-click="a.feedback.changeRate(1)">
+                  <i ng-class="(a.feedback.rate >= 1) ? 'fas' : 'far'" class="fa-star fa-2x"></i>
+                </span>
+                <span role="button" class="text-center mr-3" ng-class="(a.feedback.rate >= 2) && 'font-yellow-lemon'" ng-click="a.feedback.changeRate(2)">
+                  <i ng-class="(a.feedback.rate >= 2) ? 'fas' : 'far'" class="fa-star fa-2x"></i>
+                </span>
+                <span role="button" class="text-center mr-3" ng-class="(a.feedback.rate >= 3) && 'font-yellow-lemon'" ng-click="a.feedback.changeRate(3)">
+                  <i ng-class="(a.feedback.rate >= 3) ? 'fas' : 'far'" class="fa-star fa-2x"></i>
+                </span>
+                <span role="button" class="text-center mr-3" ng-class="(a.feedback.rate >= 4) && 'font-yellow-lemon'" ng-click="a.feedback.changeRate(4)">
+                  <i ng-class="(a.feedback.rate >= 4) ? 'fas' : 'far'" class="fa-star fa-2x"></i>
+                </span>
+                <span role="button" class="text-center" ng-class="(a.feedback.rate >= 5) && 'font-yellow-lemon'" ng-click="a.feedback.changeRate(5)">
+                  <i ng-class="(a.feedback.rate >= 5) ? 'fas' : 'far'" class="fa-star fa-2x"></i>
+                </span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>{{ a.bConfig.langs.fb_feedback_type }}</label><br/>
+              <label class="radio">
+                <input type="radio" name="type" value="S" ng-model="a.feedback.type"/>
+                <span>{{ a.bConfig.langs.fb_ft_suggestion }}</span>
+              </label>
+              <label class="radio">
+                <input type="radio" name="type" value="C" ng-model="a.feedback.type"/>
+                <span>{{ a.bConfig.langs.fb_ft_comment }}</span>
+              </label>
+            </div>
+            <div class="form-group">
+              <label>{{ a.bConfig.langs.fb_note }}<r ng-if="a.feedback.rate !=5"></label>
+              <textarea class="form-control" rows="3" ng-model="a.feedback.note" b-maxlength="300" ng-required="a.feedback.rate != 5"></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="separator separator-solid my-6"></div>
+        <div class="form-group row">
+          <div class="col-sm-12 pl-12">
+            <label class="checkbox">
+              <input type="checkbox" ng-true-value="'Y'" ng-false-value="'N'" ng-model="a.feedback.anonymous"/>
+              <span>{{ a.bConfig.langs.fb_make_anonymous }}</span>
+            </label>
+          </div>
+          <div class="col-sm-12 text-right pr-12">
+            <button type="button" class="btn btn-primary" ng-click="a.feedback.send()">{{ a.bConfig.langs.fb_send }}</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">{{ a.bConfig.langs.close }}</button>
+          </div>
+        </div>
+      </div>
+      <div class="modal-content" ng-show="a.feedback.sended">
+        <div class="modal-body text-center">
+          <i style="color:Dodgerblue" class="far fa-check-circle fa-3x mb-4"></i>
+          <h4>{{ a.bConfig.langs.fb_thank_you }}</h4>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">{{ a.bConfig.langs.close }}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="text/ng-template" id="b-pg-grid-filter.html">
+    <div class="b-filter-edit pb-3" ng-if="a.bPgGridFilter.filters.length > 0">
+      <div class="form-group p-4 mb-0" ng-repeat="f in a.bPgGridFilter.filters">
+        <div class="b-filter-header">
+          <p class="b-filter-item-title">
+            {{ f.label }}
+            <span ng-class="{'text-primary': f.checkbox_state == '0', 'text-muted': f.checkbox_state == '1'}" class="b-filter-select-all p-0 pl-2"
+                ng-if="f.mode == 'select' && f.count" ng-click="a.bPgGridFilter.selectAll(f)">
+              {{ f.checkbox_state == '0' ? a.bConfig.langs.gf_select_all : a.bConfig.langs.gf_unselect_all }}
+            </span>
+          </p>
+        </div>
+        <div class="b-filter-item-content">
+          <div role="group" class="mr-4 filter-operator">
+            <button type="button" class="filter-type-btn btn btn-default btn-icon dropdown-toggle no-after" data-toggle="dropdown" tabindex="-1">
+              <i ng-class="f.operation.class"></i>
+            </button>
+            <div class="dropdown-menu" x-placement="bottom-start">
+              <a href class="dropdown-item btn-icon" ng-repeat="oper in f.operations" ng-click="f.operation = oper; f.op = oper.op">
+                <i ng-class="oper.class"></i>
+                {{ oper.text }}
+              </a>
+            </div>
+          </div>
+          <div class="filter-body">
+            <div ng-if="f.mode=='search'"><input class="form-control" ng-model="f.val"></div>
+            <div ng-if="f.mode=='range-number'">
+              <input class="form-control" ng-model="f.val.left" b-number style="width:224px;display: inline-block;">
+              <div style="width:14px;display: inline-block;">&nbsp;</div>
+              <input class="form-control" ng-model="f.val.right" b-number style="width:224px;display: inline-block;">
+            </div>
+            <div ng-if="f.mode=='range-date'">
+              <input class="form-control" ng-model="f.val.left" b-date-picker style="width:224px;display: inline-block;">
+              <div style="width:14px;display: inline-block;">&nbsp;</div>
+              <input class="form-control" ng-model="f.val.right" b-date-picker style="width:224px;display: inline-block;">
+            </div>
+            <div ng-if="f.mode=='number'">
+              <input class="form-control" ng-model="f.val" b-number style="width:224px;display: inline-block;">
+            </div>
+            <div ng-if="f.mode=='date'">
+              <input class="form-control" ng-model="f.val" b-date-picker="{{ f.dateModelFormat }}"
+                view-format="{{ f.dateViewFormat }}" style="width:224px;display: inline-block;">
+            </div>
+            <div ng-if="f.mode=='checkbox'">
+              <label class="checkbox mt-2" ng-repeat="v in f.list">
+                <input type="checkbox" ng-model="v.val" />
+                <span>{{ v.name }}</span>
+              </label>
+            </div>
+            <div ng-if="f.mode=='select'">
+              <b-input multiple=3 name="{{ f.query_name }}" local-data="f.list" model="f.val" model-key="id" label="name">
+                {{ row.name }}
+              </b-input>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </script>
+
+  <script type="text/ng-template" id="b-pagination.html">
+  <div class="input-group">
+    <input type="text" ng-style="{'border-top-left-radius': (o.small ? '3px' : '4px'), 'border-bottom-left-radius': (o.small ? '3px' : '4px')}" class="form-control" ng-class="{'input-sm': o.small}"
+           placeholder="{{o.bConfig.langs.search_for}}" ng-keypress="onSearchKeyPress($event)" ng-model="o.searchValue" ng-blur="onSearchBlur()" ng-if="o.hasSearch"/>
+    <div class="input-group-btn">
+      <div class="btn-group" ng-if="o.hasFilter">
+        <button type="button" class="btn btn-default" ng-class="{'btn-warning': !o.isViewAll}" ng-click="openFilter()" tabindex=-1><i class="fa fa-filter"></i></button>
+      </div>
+      <div class="btn-group">
+        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" tabindex=-1>
+          {{o.rowPerPageTitle}} <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" style="left: auto; right: 0%;"><li ng-repeat="i in o.limits">
+          <a href ng-click="changeLimit(i)">
+            <span ng-style="styleForCurrentLimit(i)">{{i}}</span>
+          </a>
+        </li></ul>
+      </div>
+      <button type="button" class="btn btn-default" ng-click="firstPage()" ng-disabled="!hasPrevPage()" tabindex=-1><i class="fa fa-fast-backward"></i></button>
+      <button type="button" class="btn btn-default" ng-click="prevPage()" ng-disabled="!hasPrevPage()" tabindex=-1><i class="fa fa-backward"></i></button>
+      <div class="btn-group">
+        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" tabindex=-1>
+          {{o.currentPage}} <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-left" role="menu" style="left: auto; right: 0%;"><li ng-repeat="i in o.pageNumbers">
+          <a href ng-click="changePage(i)">
+            <span ng-style="styleForCurrentPage(i)">{{i}}</span>
+          </a>
+        </li></ul>
+      </div>
+      <button type="button" class="btn btn-default" ng-click="nextPage()" ng-disabled="!hasNextPage()" tabindex=-1><i class="fa fa-forward"></i></button>
+      <button type="button" class="btn btn-default" ng-click="lastPage()" ng-disabled="!hasNextPage()" tabindex=-1><i class="fa fa-fast-forward"></i></button>
+      <div class="btn-group" ng-if="o.hasColumnList">
+        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" tabindex=-1 ng-click="openColumnList()">
+          <i class="fa fa-th-list"></i>
+        </button>
+        <ul class="dropdown-menu" style="left: auto; right: 0%;"><li ng-repeat="i in o.columnList">
+          <div class="checkbox" style="margin-left : 30px">
+            <label>
+              <input type="checkbox" ng-model="i.checked"/>{{i.label}}
+            </label>
+          </div>
+        </li></ul>
+      </div>
+    </div>
+  </div>
+  <div class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header"></div>
+        <div class="modal-body">
+          <div class="form-container"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="onFilter()">{{ o.bConfig.langs.apply }}</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="onViewAll()">{{ o.bConfig.langs.gf_show_all }}</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="onClose()">{{ o.bConfig.langs.close }}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</script>
+
+  <script type="text/ng-template" id="b-mini-confirm.html">
+  <div class="text-center">
+    <div class="btn-group">
+      <button type="button" class="<%= yesBtnClass %>" ng-click="_$toggle.clickYes()">
+        <i class="<%= yesIconClass %>"></i>
+        <%= yesText %>
+      </button>
+      <button type="button" class="<%= noBtnClass %>" ng-click="_$toggle.clickNo()">
+        <i class="<%= noIconClass %>"></i>
+        <%= noText %>
+      </button>
+    </div>
+  </div>
+</script>
+
+  <div id="closing-session">
+    <div class="cs-backdrop"> </div>
+    <div class="cs-dialog cs-timeout">
+      <div class="cs-content">
+        <div class="cs-head">
+          <h3 class="text-center">{{ a.bConfig.langs.session_timeout_title }}</h4>
+        </div>
+        <div class="cs-body">
+          <h6>{{ a.bConfig.langs.session_expired }}</h6>
+          <h6>{{ a.bConfig.langs.session_redirection }} <span class="seconds"></span>
+            {{ a.bConfig.langs.session_seconds }}
+          </h6>
+
+          <div class="cs-progress">
+            <div class="cs-block-list">
+              <div class="cs-block-item"></div>
+              <div class="cs-block-item"></div>
+              <div class="cs-block-item"></div>
+              <div class="cs-block-item"></div>
+              <div class="cs-block-item"></div>
+              <div class="cs-block-item"></div>
+              <div class="cs-block-item"></div>
+              <div class="cs-block-item"></div>
+            </div>
+          </div>
+        </div>
+        <div class="cs-footer text-right">
+          <button type="button" class="btn btn-danger" ng-click="a.session.lockScreen()">
+            {{ a.bConfig.langs.lock_screen }}</button>
+          <button type="button" class="btn btn-primary" ng-click="a.session.sessionStay()">
+            {{ a.bConfig.langs.session_stay }}</button>
+        </div>
+      </div>
+    </div>
+    <div class="cs-dialog cs-lock">
+      <div class="cs-content">
+        <form class="login-form">
+          <div class="cs-head">
+            <img ngf-src="a.session.si.avatar_locked" ng-if="a.session.si.avatar_locked" />
+            <span class="cs-avatar-alt" ng-if="!a.session.si.avatar_locked">
+              {{ a.session.si.user.prefix }}
+            </span>
+            <h3 class="mt-3">{{ a.session.si.user.name }}</h4>
+            <a href class="not-you" ng-click="a.logout(true)">{{ a.bConfig.langs.not_you }}?</a>
+          </div>
+          <div class="cs-body">
+            <div class="cs-password">
+              <i class="fa fa-lock cs-left-icon"></i>
+              <i class="fa cs-right-icon" ng-class="{'fa-eye': show_password, 'fa-eye-slash': !show_password}"
+                ng-mousedown="show_password = true" ng-mouseup="show_password = false"></i>
+              <input class="form-control" type="{{ show_password ? 'text' : 'password' }}" autocomplete="off"
+                placeholder="{{ a.bConfig.langs.password }}" ng-model="a.session.si.rePassword" />
+            </div>
+            <span class="cs-error-text">{{ a.session.si.reError || '&nbsp;' }}</span>
+          </div>
+          <div class="cs-footer">
+            <button type="submit" class="btn btn-dark" ng-click="a.relogin()">{{ a.bConfig.langs.sign_in }}</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="cs-logo">
+      <img ng-src="{{a.session.si.project.config.img_src.session_lock}}" />
+    </div>
+  </div>
+
+  <audio id="biruniBeep" src="assets/beep.mp3" preload="auto"></audio>
+
+  <!--begin::Global Config(global config for global JS scripts)-->
+  <script>var KTAppSettings = { "breakpoints": { "sm": 576, "md": 768, "lg": 992, "xl": 1200, "xxl": 1200 }, "colors": { "theme": { "base": { "white": "#ffffff", "primary": "#6993FF", "secondary": "#E5EAEE", "success": "#1BC5BD", "info": "#8950FC", "warning": "#FFA800", "danger": "#F64E60", "light": "#F3F6F9", "dark": "#212121" }, "light": { "white": "#ffffff", "primary": "#E1E9FF", "secondary": "#ECF0F3", "success": "#C9F7F5", "info": "#EEE5FF", "warning": "#FFF4DE", "danger": "#FFE2E5", "light": "#F3F6F9", "dark": "#D6D6E0" }, "inverse": { "white": "#ffffff", "primary": "#ffffff", "secondary": "#212121", "success": "#ffffff", "info": "#ffffff", "warning": "#ffffff", "danger": "#ffffff", "light": "#464E5F", "dark": "#ffffff" } }, "gray": { "gray-100": "#F3F6F9", "gray-200": "#ECF0F3", "gray-300": "#E5EAEE", "gray-400": "#D6D6E0", "gray-500": "#B5B5C3", "gray-600": "#80808F", "gray-700": "#464E5F", "gray-800": "#1B283F", "gray-900": "#212121" } }, "font-family": "Poppins" };</script>
+  <!--end::Global Config-->
+  <!--begin::Global Theme Bundle(used by all pages)-->
+  <script src="assets/metronic/js/scripts.bundle.js" type="text/javascript"></script>
+  <!--end::Global Theme Bundle-->
+</body>
+</html>
