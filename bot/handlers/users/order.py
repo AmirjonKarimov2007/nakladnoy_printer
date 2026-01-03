@@ -7,7 +7,7 @@ from keyboards.inline.main_menu_super_admin import dates_markup
 from loader import *
 from filters.admins import *
 from functions import *
-from excelgenerator import print_excel_file,process_order
+from excelgenerator import print_excel_file,process_order, qrcode_generator
 from data.config import ADMINS
 
 @dp.message_handler(IsAdmin(),text="📄Profil Spiskalari",state='*')
@@ -65,18 +65,29 @@ async def get_order(call: CallbackQuery):
     text += f"💸Buyurtma Narx: <code>{total_amount}</code>\n"
     markup = InlineKeyboardMarkup(row_width=2)
     user = await db.select_user(user_id=call.from_user.id)
+    qrcode =  qrcode_generator(deal_id)
+
     user = user[0]
     if user['yiguvchi']:
         markup.add(InlineKeyboardButton(text=f"⚙️Tayyorlash",callback_data=f"preparation:{deal_id}:today"))
     else:
         markup.insert(InlineKeyboardButton(text=f"🖨Chiqarish",callback_data=f"print_order:{deal_id}:today"))
-        markup.add(InlineKeyboardButton(text=f"⚙️Tayyorlash",callback_data=f"preparation:{deal_id}:today"))
+        markup.add(InlineKeyboardButton(text=f"🖨 Narx Chiqarish",callback_data=f"print_price:{deal_id}:today"))
+        markup.insert(InlineKeyboardButton(text=f"⚙️Tayyorlash",callback_data=f"preparation:{deal_id}:today"))
         markup.insert(InlineKeyboardButton(text=f"📥Yuklash",callback_data=f"download:{deal_id}:{client_id}:today"))
-    await call.message.delete()
+    
     try:
-        await call.message.answer(text=f"<b>{text}</b>",reply_markup=markup)
+        with open(qrcode, 'rb') as photo:
+            await call.message.edit_media(
+                media=InputMediaPhoto(photo, caption=text, parse_mode="HTML"),
+                reply_markup=markup
+            )
     except:
-        await call.message.answer(text=f"<b>{text}</b>",reply_markup=markup)
+        with open(qrcode, 'rb') as photo:
+            await call.message.edit_media(
+                media=InputMediaPhoto(photo, caption=text, parse_mode="HTML"),
+                reply_markup=markup
+            )
 
 @dp.callback_query_handler(IsAdmin(),text_contains="yesterday:",state='*')
 async def today_spiska(call: CallbackQuery):
@@ -108,13 +119,21 @@ async def get_order(call: CallbackQuery):
     markup = InlineKeyboardMarkup(row_width=2)
     user = await db.select_user(user_id=call.from_user.id)
     user = user[0]
+    qrcode =  qrcode_generator(deal_id)
+    
     if user['yiguvchi']:
         markup.add(InlineKeyboardButton(text=f"⚙️Tayyorlash",callback_data=f"preparation:{deal_id}:yesterday"))
     else:
         markup.insert(InlineKeyboardButton(text=f"🖨Chiqarish",callback_data=f"print_order:{deal_id}:yesterday"))
-        markup.add(InlineKeyboardButton(text=f"⚙️Tayyorlash",callback_data=f"preparation:{deal_id}:tyesterdayoday"))
+        markup.add(InlineKeyboardButton(text=f"🖨 Narx Chiqarish",callback_data=f"print_price:{deal_id}:yesterday"))
+        markup.insert(InlineKeyboardButton(text=f"⚙️Tayyorlash",callback_data=f"preparation:{deal_id}:tyesterdayoday"))
         markup.insert(InlineKeyboardButton(text=f"📥Yuklash",callback_data=f"download:{deal_id}:{client_id}:tyesterdayoday"))
-    await call.message.edit_text(text=f"<b>{text}</b>",reply_markup=markup)
+    
+    with open(qrcode, 'rb') as photo:
+        await call.message.edit_media(
+            media=InputMediaPhoto(photo, caption=text, parse_mode="HTML"),
+            reply_markup=markup
+        )
 
 @dp.callback_query_handler(IsAdmin(),text_contains=f"print_order:",state='*')
 async def prin_order(call: CallbackQuery):
@@ -227,13 +246,61 @@ def check_file_in_orders(file_name):
     else:
         return False
 
+import json
+@dp.callback_query_handler(IsAdmin(), text_contains="print_price:", state="*")
+async def print_price(call: types.CallbackQuery):
+    try:
+        deal_id, date = call.data.split(":")[1:3]
+
+        if date == 'today':
+            order = await get_today_order_info_by_deal_id(deal_id_to_find=deal_id)
+        elif date == 'yesterday':
+            order = await get_lastday_order_info_by_deal_id(deal_id_to_find=deal_id)
+        else:
+            return await call.answer("❌ Sana noto‘g‘ri!")
+
+        if order:
+            await process_price(order['order_products'], call)
+        else:
+            await call.answer("❌Buyurtma Printerdan Chiqarish Amalga oshmadi")
+
+    except Exception as e:
+        print(e)
 
 
+async def process_price(order_products, call):
+    for order in order_products:
+        product = await get_product_by_id(order['product_id'])
+        barcode = order['product_barcode']
+        # Barcode tekshirish
+        if barcode == "null" or barcode==None:
+            try:
+                number = barcode.rsplit("/")
+                barcode = number[1].rsplit(" ")[1]
+                if not barcode.isdigit():
+                    barcode = "0000000000000"
+            except:
+                barcode = "0000000000000"
 
-
-
-
-
+        # Nomni 50 belgigacha qisqartirish
+        name = product[0]['name'][-50:]
+        price_uzs = int(product[0]['price_uzs'])
+        price_uzs = "{:,}".format(price_uzs).replace(",", " ")
+        price_usd = product[0]['price_usd']
+        soni = 1 if int(order['sold_quant']) > 10 else int(order['sold_quant'])
+        a = await print_barcode(
+            word_name=call.message.message_id,
+            data_to_encode=barcode,
+            name=name,
+            price=price_uzs,
+            barcode_name=f'{call.id}.png',
+            usd_price=price_usd,
+            page=soni
+        )
+        if a:
+            pass
+        else:
+            await call.message.answer(f"❌Narx chiqarib bo'lmadi. - {name} - {price_usd}")
 
 
 

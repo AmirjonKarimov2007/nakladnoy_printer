@@ -179,6 +179,10 @@ def add_qrcode_centered(ws, qrcode_path, cell_address='C2'):
 
 from loader import bot
 from data.config import ADMINS
+from openpyxl.drawing.image import Image  # Rasmlar bilan ishlash uchun
+
+
+
 async def process_order(deal_id, output_path, moment,moneytype = "usd"):
     try:
         if moment == 'today':
@@ -311,8 +315,19 @@ async def process_order(deal_id, output_path, moment,moneytype = "usd"):
         ws.column_dimensions['E'].width = E_qator + 3
         ws.column_dimensions['F'].width = 11
         ws.column_dimensions['G'].width = 12
-
         position = add_qrcode_centered(ws, qrcode_path)
+        try:
+            uzum_path = "UZUMDA.png"
+            if os.path.exists(uzum_path):
+                img_uzum = Image(uzum_path)
+                # Hajmini kichraytiramiz (masalan 70x70 pixel)
+                img_uzum.width = 90
+                img_uzum.height = 90
+                # Uni G2 yoki H2 atrofiga qo'yamiz (Asosiy QR kodga xalaqit bermasligi uchun)
+                ws.add_image(img_uzum, 'G2') 
+        except Exception as e:
+            print(f"UZUMDA rasmida xatolik: {e}")
+
 
 
         # Faylni saqlash

@@ -5,11 +5,15 @@ from functions import *
 from loader import dp, bot, db
 from data.config import ROOM_ID
 from filters.admins import IsAdmin
+import openpyxl
+from openpyxl.styles import Font
+from io import BytesIO
+from excelgenerator import update_excel_with_products
+
 
 PER_PAGE = 10
 users_pages = {}
-selected_orders = {}  # Foydalanuvchi tanlagan buyurtmalar
-
+selected_orders = {}  
 @dp.message_handler(IsAdmin(), commands="rasxod", state="*")
 async def spiskalar(message: types.Message):
     xabar = await message.answer(text='⏳')
@@ -104,11 +108,6 @@ async def change_page(callback_query: types.CallbackQuery):
     new_page = current_page - 1 if action == "consumption_prev_page" else current_page + 1
     await show_orders(callback_query.message, user_id, new_page, call=callback_query)
 
-
-import openpyxl
-from openpyxl.styles import Font
-from io import BytesIO
-from excelgenerator import update_excel_with_products
 
 
 @dp.callback_query_handler(IsAdmin(), lambda c: c.data == "export_selected_orders")
