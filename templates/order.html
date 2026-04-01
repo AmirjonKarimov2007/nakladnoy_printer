@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#0a0a14" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <title>Spiska Picker Pro Max</title>
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-icon">📦</div>
+        <div>
+          <h1>Spiska Picker Pro Max</h1>
+          <p>Yig'ish • Analytics • Report</p>
+        </div>
+      </div>
+
+      <div class="top-actions">
+        <button class="icon-btn" id="themeBtn" title="Tema" aria-label="Change theme">🌙</button>
+      </div>
+    </header>
+
+    <main class="page">
+      {% if order %}
+      <!-- HERO (API order) -->
+      <section class="glass-card hero-card">
+        <div class="hero-top">
+          <div class="hero-top-left">
+            <div class="label">Buyurtma ID</div>
+            <h2>#{{ order.deal_id }}</h2>
+          </div>
+          <div class="status-pill">✨ Faol</div>
+        </div>
+
+        <div class="hero-meta">
+          <div class="meta-chip">🏢 <b>{{ order.filial_code }}</b></div>
+          <div class="meta-chip">🕒 <b>{{ order.deal_time }}</b></div>
+          <div class="meta-chip">📅 <b>{{ today }}</b></div>
+        </div>
+
+        <div class="hero-tools">
+          <input id="searchInput" class="input" type="text" placeholder="🔍 Mahsulot nomi yoki barcode..." aria-label="Qidirish" />
+        </div>
+      </section>
+
+      <!-- STATS -->
+      <section class="stats-grid">
+        <div class="glass-card stat-card">
+          <span class="stat-title">Qatorlar</span>
+          <strong id="statRows">{{ order.items_count }}</strong>
+        </div>
+        <div class="glass-card stat-card">
+          <span class="stat-title">Jami dona</span>
+          <strong id="statQty">{{ order.total_qty }}</strong>
+        </div>
+        <div class="glass-card stat-card">
+          <span class="stat-title">Summa</span>
+          <strong id="statAmount">{{ order.total_amount }}</strong>
+        </div>
+        <div class="glass-card stat-card success">
+          <span class="stat-title">Tugallangan</span>
+          <strong id="statCompleted">0%</strong>
+        </div>
+      </section>
+
+      <!-- ANALYTICS -->
+      <section class="glass-card analytics-card">
+        <div class="section-head">
+          <h3>📊 Tahlil</h3>
+        </div>
+
+        <div class="analytics-grid">
+          <div class="analytic-box">
+            <span>Yig'ildi</span>
+            <b id="pickedRows">0 / {{ order.items_count }}</b>
+          </div>
+          <div class="analytic-box">
+            <span>Qoldi</span>
+            <b id="remainingRows">{{ order.items_count }}</b>
+          </div>
+          <div class="analytic-box warning">
+            <span>Topilmadi</span>
+            <b id="notFoundCount">0</b>
+          </div>
+          <div class="analytic-box danger">
+            <span>Kam chiqdi</span>
+            <b id="partialCount">0</b>
+          </div>
+        </div>
+
+        <div class="progress-wrap">
+          <div class="progress-label">
+            <span>Progress</span>
+            <span id="progressText">0%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ACTIONS -->
+      <section class="glass-card action-bar">
+        <div class="action-grid">
+          <button class="small-btn primary" id="updateProductsBtn" aria-label="Mahsulotlarni yangilash">
+            <span>🔄</span>
+            <span>Yangilash</span>
+          </button>
+          <button class="small-btn warn" id="exportCsvBtn" aria-label="CSV eksport qilish">
+            <span>📄</span>
+            <span>CSV</span>
+          </button>
+          <button class="small-btn info" id="printPdfBtn" aria-label="PDF chop qilish">
+            <span>🖨️</span>
+            <span>Print</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- PRODUCT LIST -->
+      <section class="glass-card list-section">
+        <div class="section-head">
+          <h3>🛒 Mahsulotlar</h3>
+          <button class="small-btn ghost" id="resetAllBtn" style="font-size:12px;padding:10px 14px;" aria-label="Barchani qayta tiklash">
+            <span>🔄</span>
+            <span>Reset</span>
+          </button>
+        </div>
+
+        <div class="product-list" id="productList">
+          {% for product in order.products %}
+          <article
+            class="product-card"
+            data-index="{{ product.index }}"
+            data-id="{{ product.product_id }}"
+            data-barcode="{{ product.barcode }}"
+            data-name="{{ product.name }}"
+            data-qty="{{ product.qty }}"
+            data-price="{{ product.price }}"
+            data-total="{{ product.total }}"
+          >
+            <div class="product-topline">
+              <div class="line-left">
+                <span class="badge">#{{ product.index }}</span>
+                <span class="barcode-badge">{{ product.barcode }}</span>
+              </div>
+            </div>
+
+            <div class="product-main">
+              <div class="img-wrap" onclick="openLightbox(this)" role="button" tabindex="0" aria-label="{{ product.name }} rasmini ko'rish">
+                <img
+                  class="product-img"
+                  src="{{ product.image_url }}"
+                  alt="{{ product.name }}"
+                  loading="lazy"
+                  onerror="this.onerror=null;this.src='https://placehold.co/400x400/1a1a2e/a0a0b0?text=No+Image';"
+                />
+              </div>
+
+              <div class="content-col">
+                <div class="product-title">{{ product.name }}</div>
+
+                <div class="meta-grid">
+                  <div class="mini-box">
+                    <span>Soni</span>
+                    <b>{{ product.qty }}</b>
+                  </div>
+                  <div class="mini-box">
+                    <span>Narxi</span>
+                    <b>{{ product.price }}</b>
+                  </div>
+                  <div class="mini-box total">
+                    <span>Jami</span>
+                    <b>{{ product.total }}</b>
+                  </div>
+                </div>
+
+                <div class="status-actions">
+                  <button class="status-btn success status-pick" data-status="picked" aria-label="Yig'ildi">
+                    ✅ Yig'ildi
+                  </button>
+                  <button class="status-btn danger status-not-found" data-status="not_found" aria-label="Topilmadi">
+                    ❌ Topilmadi
+                  </button>
+                  <button class="status-btn warn status-partial" data-status="partial" aria-label="Kam chiqdi">
+                    ⚠️ Kam
+                  </button>
+                  <button class="status-btn info status-replaced" data-status="replaced" aria-label="Almashtirildi">
+                    🔄 Alma
+                  </button>
+                </div>
+
+                <div class="status-line">
+                  <span class="status-label">Status:</span>
+                  <span class="status-value">Kutilmoqda</span>
+                </div>
+              </div>
+            </div>
+          </article>
+          {% endfor %}
+        </div>
+      </section>
+
+      {% elif is_manual_order %}
+      <!-- MANUAL ORDER HERO -->
+      <section class="glass-card hero-card">
+        <div class="hero-top">
+          <div class="hero-top-left">
+            <div class="label">Manual Order</div>
+            <h2 id="dealIdDisplay">#...</h2>
+          </div>
+          <div class="status-pill">✨ Faol</div>
+        </div>
+
+        <div class="hero-meta">
+          <div class="meta-chip">🏢 <b id="filialCodeDisplay">5012602</b></div>
+          <div class="meta-chip">🕒 <b id="dealTimeDisplay">...</b></div>
+          <div class="meta-chip">📅 <b>{{ today }}</b></div>
+        </div>
+
+        <div class="hero-tools">
+          <input id="searchInput" class="input" type="text" placeholder="🔍 Mahsulot nomi yoki barcode..." aria-label="Qidirish" />
+        </div>
+      </section>
+
+      <!-- MANUAL ORDER STATS -->
+      <section class="stats-grid">
+        <div class="glass-card stat-card">
+          <span class="stat-title">Qatorlar</span>
+          <strong id="statRows">...</strong>
+        </div>
+        <div class="glass-card stat-card">
+          <span class="stat-title">Jami dona</span>
+          <strong id="statQty">...</strong>
+        </div>
+        <div class="glass-card stat-card">
+          <span class="stat-title">Summa</span>
+          <strong id="statAmount">...</strong>
+        </div>
+        <div class="glass-card stat-card success">
+          <span class="stat-title">Tugallangan</span>
+          <strong id="statCompleted">0%</strong>
+        </div>
+      </section>
+
+      <!-- MANUAL ORDER ANALYTICS -->
+      <section class="glass-card analytics-card">
+        <div class="section-head">
+          <h3>📊 Tahlil</h3>
+        </div>
+
+        <div class="analytics-grid">
+          <div class="analytic-box">
+            <span>Yig'ildi</span>
+            <b id="pickedRows">0 / ...</b>
+          </div>
+          <div class="analytic-box">
+            <span>Qoldi</span>
+            <b id="remainingRows">...</b>
+          </div>
+          <div class="analytic-box warning">
+            <span>Topilmadi</span>
+            <b id="notFoundCount">0</b>
+          </div>
+          <div class="analytic-box danger">
+            <span>Kam chiqdi</span>
+            <b id="partialCount">0</b>
+          </div>
+        </div>
+
+        <div class="progress-wrap">
+          <div class="progress-label">
+            <span>Progress</span>
+            <span id="progressText">0%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- MANUAL ORDER ACTIONS -->
+      <section class="glass-card action-bar">
+        <div class="action-grid">
+          <button class="small-btn primary" id="updateProductsBtn" aria-label="Mahsulotlarni yangilash">
+            <span>🔄</span>
+            <span>Yangilash</span>
+          </button>
+          <button class="small-btn warn" id="exportCsvBtn" aria-label="CSV eksport qilish">
+            <span>📄</span>
+            <span>CSV</span>
+          </button>
+          <button class="small-btn info" id="printPdfBtn" aria-label="PDF chop qilish">
+            <span>🖨️</span>
+            <span>Print</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- MANUAL ORDER PRODUCT LIST -->
+      <section class="glass-card list-section">
+        <div class="section-head">
+          <h3>🛒 Mahsulotlar <span id="productCount"></span></h3>
+          <button class="small-btn ghost" id="resetAllBtn" style="font-size:12px;padding:10px 14px;" aria-label="Barchani qayta tiklash">
+            <span>🔄</span>
+            <span>Reset</span>
+          </button>
+        </div>
+
+        <div class="product-list" id="productList">
+          <!-- Mahsulotlar JavaScript bilan dinamik ravishda qo'shiladi -->
+        </div>
+      </section>
+
+      {% else %}
+      <section class="glass-card empty-state">
+        <div class="empty-icon">📦</div>
+        <h2>Buyurtma topilmadi</h2>
+        <p>URL oxiriga order_id qo'shing:</p>
+        <code>?order_id=12345</code>
+      </section>
+      {% endif %}
+    </main>
+  </div>
+
+  <!-- LIGHTBOX MODAL -->
+  <div class="lightbox" id="lightbox" onclick="closeLightbox(event)" aria-hidden="true">
+    <button class="lightbox-nav lightbox-prev" id="lightboxPrev" onclick="navigateLightbox(event, -1)" aria-label="Oldingi rasm">❮</button>
+    <div class="lightbox-content" onclick="event.stopPropagation()">
+      <button class="lightbox-close" onclick="closeLightbox(event)" aria-label="Yopish">×</button>
+      <img class="lightbox-img" id="lightboxImg" src="" alt="" />
+      <div class="lightbox-info">
+        <h4 id="lightboxTitle">Mahsulot</h4>
+        <p id="lightboxBarcode">Barcode: —</p>
+      </div>
+    </div>
+    <button class="lightbox-nav lightbox-next" id="lightboxNext" onclick="navigateLightbox(event, 1)" aria-label="Keyingi rasm">❯</button>
+  </div>
+
+  <script>
+    window.ORDER_DATA = {{ order|tojson if order else 'null' }};
+    window.IS_MANUAL_ORDER = {{ 'true' if is_manual_order else 'false' }};
+  </script>
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

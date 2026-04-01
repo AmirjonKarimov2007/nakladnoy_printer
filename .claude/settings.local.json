@@ -1,0 +1,16 @@
+{
+  
+  "permissions": {
+    "allow": [
+      "Bash(python:*)",
+      "Bash(\"C:\\\\Users\\\\alfatech.uz\\\\Desktop\\\\nakladnoy_printer-web\\\\products.json\")",
+      "Bash(pkill:*)",
+      "Bash(taskkill:*)",
+      "Bash(tasklist)",
+      "Bash(curl -I http://localhost:5000/)",
+      "Bash(dir products.json)",
+      "Bash(dir \"C:\\\\Users\\\\alfatech.uz\\\\Desktop\\\\nakladnoy_printer-web\")",
+      "Bash(findstr /products.json)"
+    ]
+  }
+}
