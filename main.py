@@ -229,6 +229,18 @@ def get_inventory_data(code="", begin_created_on="", end_created_on="", begin_mo
         return None
 
 
+def load_products_json():
+    """products.json fayldan ma'lumot olish"""
+    try:
+        with open('products.json', 'r', encoding='utf-8') as file:
+            return json.load(file)
+    except FileNotFoundError:
+        return None
+    except Exception as e:
+        print(f"❌ products.json o'qishda xatolik: {e}")
+        return None
+
+
 def save_to_products_json(data):
     try:
         with open('products.json', 'w', encoding='utf-8') as file:

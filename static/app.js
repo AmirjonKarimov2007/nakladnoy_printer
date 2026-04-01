@@ -45,8 +45,8 @@ if (isManualOrder && order) {
       card.dataset.name = product.name;
       card.dataset.qty = product.qty;
       card.dataset.boxQuant = product.box_quant || 0;
-      card.dataset.price = product.price;
-      card.dataset.total = product.total;
+      card.dataset.price = formatPrice(product.price);
+      card.dataset.total = formatPrice(product.total);
 
       card.innerHTML = `
         <div class="product-topline">
@@ -77,7 +77,7 @@ if (isManualOrder && order) {
               </div>
               <div class="mini-box">
                 <span>Narxi</span>
-                <b>${product.price}</b>
+                <b>${formatPrice(product.price)}</b>
               </div>
               <div class="mini-box total">
                 <span>Jami</span>
@@ -155,12 +155,23 @@ if (order) {
     }
     const karobka = Math.floor(qty / boxQuant);
     const qolgan = qty % boxQuant;
-    // Agar qolgan 0 bo'lsa (aniq karobka), faqat "X karobka" deb ko'rsatish
+    // Agar qolgan 0 bo'lsa (aniq karobka), faqat "0 dona" deb ko'rsatish
     if (qolgan === 0) {
-      return `${formatNumber(karobka)} karobka`;
+      return `0 dona`;
     } else {
       return `${formatNumber(karobka)} karobka ${formatNumber(qolgan)} dona`;
     }
+  }
+
+  function formatPrice(price) {
+    // Narxni "12 000" kabi formatlash
+    const priceStr = String(price);
+    if (priceStr.includes('.')) {
+      const [whole, decimal] = priceStr.split('.');
+      const decimalPart = decimal.padEnd(3, '0').slice(0, 3);
+      return `${whole} ${decimalPart}`;
+    }
+    return priceStr;
   }
 
   function getStorage() {

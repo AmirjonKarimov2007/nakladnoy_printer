@@ -219,6 +219,7 @@ function extractExcelColumns(jsonData) {
       const price = getCellValue(row, 'H');    // H ustun - Narx
       const total = getCellValue(row, 'I');    // I ustun - Jami narx
 
+      // Agar code (barcode) bo'sh bo'lsa, product yaratmasin
       if (code && String(code).trim() !== "") {
         data.push({
           code: String(code).trim(),
