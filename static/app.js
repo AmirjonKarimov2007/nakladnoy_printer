@@ -155,9 +155,14 @@ if (order) {
     }
     const karobka = Math.floor(qty / boxQuant);
     const qolgan = qty % boxQuant;
-    // Agar qolgan 0 bo'lsa (aniq karobka), faqat "0 dona" deb ko'rsatish
+    // Agar qolgan 0 bo'lsa (aniq karobka)
     if (qolgan === 0) {
-      return `0 dona`;
+      // Agar 1 ta karobka bo'lsa, "1 dona" deb ko'rsatish, aks holda "0 karobka"
+      if (karobka === 1) {
+        return `1 dona`;
+      } else {
+        return `0 karobka`;
+      }
     } else {
       return `${formatNumber(karobka)} karobka ${formatNumber(qolgan)} dona`;
     }
