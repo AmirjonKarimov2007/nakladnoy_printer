@@ -198,7 +198,7 @@ def get_inventory_data(code="", begin_created_on="", end_created_on="", begin_mo
         if response.status_code != 200:
             print(f"❌ Inventory API status code: {response.status_code}")
             return None
-
+# yangi git uchun
         try:
             return response.json()
         except Exception:
