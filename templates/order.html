@@ -328,10 +328,11 @@
           } else {
             const karobka = Math.floor(qty / boxQuant);
             const qolgan = qty % boxQuant;
-            if (qolgan > 0) {
-              el.textContent = karobka.toLocaleString('uz-UZ') + ' karobka ' + qolgan.toLocaleString('uz-UZ') + ' dona';
-            } else {
+            // Agar qolgan 0 bo'lsa (aniq karobka), faqat "X karobka" deb ko'rsatish
+            if (qolgan === 0) {
               el.textContent = karobka.toLocaleString('uz-UZ') + ' karobka';
+            } else {
+              el.textContent = karobka.toLocaleString('uz-UZ') + ' karobka ' + qolgan.toLocaleString('uz-UZ') + ' dona';
             }
           }
         });

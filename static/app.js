@@ -155,10 +155,11 @@ if (order) {
     }
     const karobka = Math.floor(qty / boxQuant);
     const qolgan = qty % boxQuant;
-    if (qolgan > 0) {
-      return `${formatNumber(karobka)} karobka ${formatNumber(qolgan)} dona`;
-    } else {
+    // Agar qolgan 0 bo'lsa (aniq karobka), faqat "X karobka" deb ko'rsatish
+    if (qolgan === 0) {
       return `${formatNumber(karobka)} karobka`;
+    } else {
+      return `${formatNumber(karobka)} karobka ${formatNumber(qolgan)} dona`;
     }
   }
 
@@ -320,10 +321,11 @@ if (order) {
         const bq = parseFloat(boxQuant);
         const karobka = Math.floor(qty / bq);
         const qolgan = qty % bq;
-        if (qolgan > 0) {
-          qtyDisplay = `${karobka} karobka ${qolgan} dona`;
-        } else {
+        // Agar qolgan 0 bo'lsa (aniq karobka), faqat "X karobka" deb ko'rsatish
+        if (qolgan === 0) {
           qtyDisplay = `${karobka} karobka`;
+        } else {
+          qtyDisplay = `${karobka} karobka ${qolgan} dona`;
         }
       }
 
