@@ -88,6 +88,9 @@ def normalize_order(order_data):
     total_qty = 0
     total_amount = 0
 
+    # products.json'dan box_quant olish
+    products_json_data = load_products_json()
+
     for i, p in enumerate(raw_products, start=1):
         qty = safe_float(p.get("sold_quant"))
         price = safe_float(p.get("product_price"))
@@ -96,15 +99,31 @@ def normalize_order(order_data):
         total_qty += qty
         total_amount += amount
 
+        # box_quent topish
+        box_quant = 0
+        product_id = safe_str(p.get("product_id"))
+        barcode = safe_str(p.get("product_barcode"))
+
+        if products_json_data:
+            # products.json dan qidirish
+            products_array = products_json_data.get("inventory", []) if isinstance(products_json_data, dict) else products_json_data
+            for prod in products_array:
+                if (safe_str(prod.get("product_id")) == product_id or
+                    safe_str(prod.get("barcodes")) == barcode or
+                    safe_str(prod.get("code")) == barcode):
+                    box_quant = safe_float(prod.get("box_quant")) or 0
+                    break
+
         products.append({
             "index": i,
-            "product_id": safe_str(p.get("product_id")),
-            "barcode": safe_str(p.get("product_barcode")),
+            "product_id": product_id,
+            "barcode": barcode,
             "name": safe_str(p.get("product_name")),
             "qty": qty,
             "price": price,
             "total": amount,
-            "image_url": build_image_url(safe_str(p.get("product_id")))
+            "box_quant": box_quant,
+            "image_url": build_image_url(product_id)
         })
 
     return {
