@@ -119,9 +119,6 @@ if (order) {
   // DOM
   // =========================
   const searchInput = document.getElementById("searchInput");
-  const updateProductsBtn = document.getElementById("updateProductsBtn");
-  const exportCsvBtn = document.getElementById("exportCsvBtn");
-  const printPdfBtn = document.getElementById("printPdfBtn");
   const resetAllBtn = document.getElementById("resetAllBtn");
   const themeBtn = document.getElementById("themeBtn");
 
@@ -329,8 +326,6 @@ if (order) {
     URL.revokeObjectURL(url);
   }
 
-  exportCsvBtn.addEventListener("click", exportCSV);
-
   // =========================
   // PRINT / PDF
   // =========================
@@ -446,18 +441,22 @@ if (order) {
     w.print();
   }
 
-  printPdfBtn.addEventListener("click", printReport);
+  // =========================
+  // UPDATE PRODUCTS (Vaqt cheklovi: 00:00 - 09:00 orasida ishlash)
+  // =========================
+  function isUpdateTimeAllowed() {
+    const now = new Date();
+    const hour = now.getHours();
+    // Faqat tundan 00:00 dan ertalab 09:00 gacha ishlash
+    return hour >= 0 && hour < 9;
+  }
 
-  // =========================
-  // UPDATE PRODUCTS
-  // =========================
   function updateProducts() {
-    updateProductsBtn.disabled = true;
-    updateProductsBtn.innerHTML = `
-      <span>⏳</span>
-      <span>Yangilanyapti...</span>
-    `;
-    updateProductsBtn.style.opacity = "0.7";
+    // Vaqt tekshirish
+    if (!isUpdateTimeAllowed()) {
+      alert("⏰ Mahsulotlarni yangilash faqat tundan 00:00 dan ertalab 09:00 gacha mumkin!");
+      return;
+    }
 
     fetch("/api/update-products")
       .then(response => response.json())
@@ -475,18 +474,8 @@ if (order) {
       .catch(error => {
         console.error("Xatolik:", error);
         alert("❌ Xatolik yuz berdi. Internetni tekshiring.");
-      })
-      .finally(() => {
-        updateProductsBtn.disabled = false;
-        updateProductsBtn.innerHTML = `
-          <span>🔄</span>
-          <span>Yangilash</span>
-        `;
-        updateProductsBtn.style.opacity = "1";
       });
   }
-
-  updateProductsBtn.addEventListener("click", updateProducts);
 
   // =========================
   // RESET ALL
