@@ -153,7 +153,9 @@
                 <div class="meta-grid">
                   <div class="mini-box">
                     <span>Soni</span>
-                    <b>{{ product.qty }}</b>
+                    <b class="qty-display" data-qty="{{ product.qty }}" data-box-quant="{{ product.box_quant or 0 }}">
+                      {{ product.qty }}
+                    </b>
                   </div>
                   <div class="mini-box">
                     <span>Narxi</span>
@@ -314,5 +316,27 @@
     window.IS_MANUAL_ORDER = {{ 'true' if is_manual_order else 'false' }};
   </script>
   <script src="{{ url_for('static', filename='app.js') }}"></script>
+  <script>
+    // API orderlar uchun karobka formatlash
+    if (!window.IS_MANUAL_ORDER && window.ORDER_DATA) {
+      document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.qty-display').forEach(function(el) {
+          const qty = parseFloat(el.dataset.qty);
+          const boxQuant = parseFloat(el.dataset.boxQuant);
+          if (!boxQuant || boxQuant === 0) {
+            el.textContent = qty.toLocaleString('uz-UZ') + ' dona';
+          } else {
+            const karobka = Math.floor(qty / boxQuant);
+            const qolgan = qty % boxQuant;
+            if (qolgan > 0) {
+              el.textContent = karobka.toLocaleString('uz-UZ') + ' karobka ' + qolgan.toLocaleString('uz-UZ') + ' dona';
+            } else {
+              el.textContent = karobka.toLocaleString('uz-UZ') + ' karobka';
+            }
+          }
+        });
+      });
+    }
+  </script>
 </body>
 </html>

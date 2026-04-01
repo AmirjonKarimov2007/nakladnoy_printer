@@ -44,6 +44,7 @@ if (isManualOrder && order) {
       card.dataset.barcode = product.barcode;
       card.dataset.name = product.name;
       card.dataset.qty = product.qty;
+      card.dataset.boxQuant = product.box_quant || 0;
       card.dataset.price = product.price;
       card.dataset.total = product.total;
 
@@ -72,7 +73,7 @@ if (isManualOrder && order) {
             <div class="meta-grid">
               <div class="mini-box">
                 <span>Soni</span>
-                <b>${product.qty}</b>
+                <b>${formatQty(product.qty, parseInt(product.box_quant) || 0)}</b>
               </div>
               <div class="mini-box">
                 <span>Narxi</span>
@@ -146,6 +147,19 @@ if (order) {
 
   function formatMoney(n) {
     return `${formatNumber(n)} so'm`;
+  }
+
+  function formatQty(qty, boxQuant) {
+    if (!boxQuant || boxQuant === 0) {
+      return `${formatNumber(qty)} dona`;
+    }
+    const karobka = Math.floor(qty / boxQuant);
+    const qolgan = qty % boxQuant;
+    if (qolgan > 0) {
+      return `${formatNumber(karobka)} karobka ${formatNumber(qolgan)} dona`;
+    } else {
+      return `${formatNumber(karobka)} karobka`;
+    }
   }
 
   function getStorage() {
@@ -298,11 +312,26 @@ if (order) {
     productCards.forEach(card => {
       const state = getCardState(card);
 
+      // Karobka formatlash
+      let qtyDisplay = card.dataset.qty || "";
+      const boxQuant = card.dataset.boxQuant || "0";
+      if (boxQuant && boxQuant !== "0") {
+        const qty = parseFloat(card.dataset.qty) || 0;
+        const bq = parseFloat(boxQuant);
+        const karobka = Math.floor(qty / bq);
+        const qolgan = qty % bq;
+        if (qolgan > 0) {
+          qtyDisplay = `${karobka} karobka ${qolgan} dona`;
+        } else {
+          qtyDisplay = `${karobka} karobka`;
+        }
+      }
+
       rows.push([
         card.dataset.index || "",
         card.dataset.barcode || "",
         card.dataset.name || "",
-        card.dataset.qty || "",
+        qtyDisplay,
         card.dataset.price || "",
         card.dataset.total || "",
         statusMap[state.status] || "Kutilmoqda"
